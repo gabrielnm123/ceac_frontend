@@ -1,0 +1,50 @@
+.layout-base {
+  position: absolute;
+  top: 0;
+  left: 0;
+  min-width: 100%;
+  min-height: 100%;
+}
+
+.header-base {  
+  display: flex;
+  align-items: center;
+  background-color: #1677ff;
+  min-height: 85px;
+}
+
+.logo-base {
+  width: auto;
+  height: 75px;
+}
+
+.menu-base {
+  flex: 1;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.ant-menu {
+  background-color: #1677ff !important;
+}
+
+.content-base {
+  display: flex;
+  flex-direction: column;
+  padding: 0 48px;
+}
+
+.content-breadcrumb-base {
+  margin: 16px 0;
+}
+
+.content-div1-base {
+  display: flex;
+  align-self: center;
+  padding: 24px;
+  min-width: 25%;
+}
+
+.footer-base {
+  text-align: center;
+}

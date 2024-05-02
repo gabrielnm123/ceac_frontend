@@ -1,0 +1,11 @@
+.form-login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.username-login, .password-login {
+  width: 75%;
+  flex: 1;
+}
