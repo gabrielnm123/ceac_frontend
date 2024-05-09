@@ -1,63 +1,65 @@
 import axios from 'axios';
 
-const api = {
-  get: async function(url: string, parameters: object) {
+class Api {
+  url = process.env.REACT_APP_URL || 'http://localhost:8002'
+
+  async get(path: string, parameters: object) {
     try {
-      const resposta = await axios.get(url, { params: parameters });
+      const resposta = await axios.get(this.url+path, { params: parameters });
       return resposta.data;
     } catch (erro) {
       console.error(erro);
     }
-  },
+  }
 
-  post: async function(url: string, data: object) {
+  async post(path: string, data: object) {
     try {
-      const resposta = await axios.post(url, data);
+      const resposta = await axios.post(this.url+path, data);
       return resposta.data;
     } catch (erro) {
       console.error(erro);
     }
-  },
+  }
 
-  put: async function(url: string, data: object) {
+  async put(path: string, data: object) {
     try {
-      const resposta = await axios.put(url, data);
+      const resposta = await axios.put(this.url+path, data);
       return resposta.data;
     } catch (erro) {
       console.error(erro);
     }
-  },
+  }
 
-  patch: async function(url: string, data: object) {
+  async patch(path: string, data: object) {
     try {
-      const resposta = await axios.patch(url, data);
+      const resposta = await axios.patch(this.url+path, data);
       return resposta.data;
     } catch (erro) {
       console.error(erro);
     }
-  },
+  }
 
-  delete: async function(url: string) {
+  async delete(path: string, parameters: object) {
     try {
-      const resposta = await axios.delete(url);
+      const resposta = await axios.delete(this.url+path, { params: parameters });
       return resposta.data;
     } catch (erro) {
       console.error(erro);
     }
-  },
+  }
 
-  head: async function(url: string) {
+  async head(path: string, parameters: object) {
     try {
-      const resposta = await axios.head(url);
+      const resposta = await axios.head(this.url+path, { params: parameters });
       return resposta.headers;
     } catch (erro) {
       console.error(erro);
     }
-  },
+  }
 
-  options: async function(url: string) {
+  async options(path: string, parameters: object) {
     try {
-      const resposta = await axios.options(url);
+      const resposta = await axios.options(this.url+path, { params: parameters });
       return resposta.headers['allow'];
     } catch (erro) {
       console.error(erro);
@@ -65,4 +67,4 @@ const api = {
   }
 };
 
-export default api;
+export default Api;
