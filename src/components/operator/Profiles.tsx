@@ -6,7 +6,7 @@ import {
   TeamOutlined,
   UserOutlined,
 } from '@ant-design/icons';
-import type { MenuItem } from './types/MenuItem';
+import type MenuItem from './types/MenuItem';
 
 function getItem(
   label: React.ReactNode,
@@ -33,3 +33,5 @@ const items: MenuItem[] = [
   getItem('Team', 'sub2', <TeamOutlined />, [getItem('Team 1', '6'), getItem('Team 2', '8')]),
   getItem('Files', '9', <FileOutlined />),
 ];
+
+export default items;

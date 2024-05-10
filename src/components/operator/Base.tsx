@@ -1,8 +1,8 @@
-import React from 'react';
+import React from 'react';  
 import './css/Base.css'
 import Logo from '../img/ceac.png'
 import { Breadcrumb, Layout, Menu, theme } from 'antd';
-import type { BaseProps } from './types/MenuItem';
+import type BaseProps from './types/BaseProps';
 
 const Base: React.FC<BaseProps> = (props) => {
   const { Header, Content, Footer } = Layout;
