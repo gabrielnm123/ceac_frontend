@@ -2,12 +2,15 @@ import React, { useEffect } from "react";
 import { Form, Input, Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import './css/Login.css'
-import Api from "../../services/api"; // Certifique-se de importar a classe Api
-// import Test from "./Test";
+import Api from "../../services/api";
+
+var refresh;
+var access;
+var invalidLogin;
 
 const Login: React.FC = () => {
-  const api = new Api(); // Crie uma nova instância da classe Api
-  const navigate = useNavigate(); // Crie uma instância do useHistory
+  const api = new Api();
+  const navigate = useNavigate();
 
   useEffect(() => {
     document.title = 'Autenticação';
@@ -16,8 +19,12 @@ const Login: React.FC = () => {
   const onFinish = (values: any) => {
     api.post('/api/token/', values)
       .then(result => {
-        // console.log('Access:', result.access);
-        // console.log('Refresh:', result.refresh);
+        if (result.refresh && result.access) {
+          refresh = result.refresh;
+          access = result.access;
+        } else if (result.detail === 'Usuário e/ou senha incorreto(s)') {
+          invalidLogin = 'Usuário e/ou senha incorreto(s)'
+        }
         navigate('/test');
       })
       .catch(error => console.error(error));
@@ -58,4 +65,4 @@ const Login: React.FC = () => {
 
 const breadcrumbItemLogin = ['Autenticação']
 
-export { Login, breadcrumbItemLogin }
+export { Login, breadcrumbItemLogin, refresh, access }
