@@ -1,8 +1,9 @@
 import MenuItem from "./MenuItem";
+import React = require("react");
 
 type BaseProps = {
   content: React.ReactNode;
-  breadcrumbItem: Array<string>;
+  breadcrumbItem: Array<React.JSX.Element>;
   menuItem?: Array<MenuItem>;
 };
 

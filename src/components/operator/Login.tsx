@@ -1,37 +1,32 @@
 import React, { useEffect } from "react";
-import { Form, Input, Button } from 'antd';
+import { Form, Input, Button, Anchor } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import './css/Login.css'
 import Api from "../../services/api";
+// import { Link as RouterLink } from 'react-router-dom';
 
-var refresh;
-var access;
-var invalidLogin;
+const { Link } = Anchor;
 
 const Login: React.FC = () => {
-  const api = new Api();
+  const api = new Api;
   const navigate = useNavigate();
 
   useEffect(() => {
     document.title = 'Autenticação';
   })
 
-  const onFinish = (values: any) => {
+  const onFinish = (values: object) => {
     api.post('/api/token/', values)
       .then(result => {
-        if (result.refresh && result.access) {
-          refresh = result.refresh;
-          access = result.access;
-        } else if (result.detail === 'Usuário e/ou senha incorreto(s)') {
-          invalidLogin = 'Usuário e/ou senha incorreto(s)'
-        }
+        localStorage.setItem('refresh', result.data.refresh);
+        localStorage.setItem('access', result.data.access);
         navigate('/test');
       })
-      .catch(error => console.error(error));
+      .catch(error => console.error(error));  
   };
 
   const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo);
+    console.log('Failed:', errorInfo);  
   };
 
   return (
@@ -63,6 +58,6 @@ const Login: React.FC = () => {
   )
 }
 
-const breadcrumbItemLogin = ['Autenticação']
+const breadcrumbItemLogin = [<Link href="/login" title='Autenticação' />]
 
-export { Login, breadcrumbItemLogin, refresh, access }
+export { Login, breadcrumbItemLogin }
