@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import Api from '../../services/api';
 import { useNavigate } from 'react-router-dom';
+import Api from '../../services/api';
 
 const Test: React.FC = () => {
   const api = new Api;
@@ -21,14 +21,14 @@ const Test: React.FC = () => {
               // aqui quero colocar um codigo recarrega essa pagina
             })
             .catch(error => {
-              navigate('/login');
+              navigate('/operador/login');
             })
         }
       });
   }, []);
 
   if (status === 200) {
-    return <h1>{ status }</h1>;
+    return (<h1>{ status }</h1>);
   }
 }
 
