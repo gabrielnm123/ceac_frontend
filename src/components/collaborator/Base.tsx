@@ -24,7 +24,7 @@ const Base: React.FC<BaseProps> = (props) => {
         />
       </Header>
       <Content className='content-base'>
-        <Breadcrumb
+        <Breadcrumb className='breadcrumb'
           items={breadcrumbItem}
         />
         <div

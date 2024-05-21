@@ -21,7 +21,7 @@ const Test: React.FC = () => {
               // aqui quero colocar um codigo recarrega essa pagina
             })
             .catch(error => {
-              navigate('/operador/login');
+              navigate('/login');
             })
         }
       });

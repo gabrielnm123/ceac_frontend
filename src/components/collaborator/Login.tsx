@@ -20,7 +20,7 @@ const Login: React.FC = () => {
       .then(result => {
         localStorage.setItem('refresh', result.data.refresh);
         localStorage.setItem('access', result.data.access);
-        navigate('/operador/test');
+        navigate('/test');
       })
       .catch(error => console.error(error));  
   };
@@ -58,6 +58,6 @@ const Login: React.FC = () => {
   )
 }
 
-const breadcrumbItemLogin = [<Link href="/login" title='Autenticação' />]
+const breadcrumbItemLogin = [<Link href="/" title='Site' />, 'Autenticação']
 
 export { Login, breadcrumbItemLogin }
