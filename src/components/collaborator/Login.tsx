@@ -1,9 +1,8 @@
 import React, { useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
-import { Form, Input, Button, Anchor } from 'antd';
+import { Form, Input, Button, Anchor, Alert, message } from 'antd';
 import './css/Login.css'
 import Api from "../../services/api";
-// import { Link as RouterLink } from 'react-router-dom';
 
 const { Link } = Anchor;
 
@@ -20,9 +19,18 @@ const Login: React.FC = () => {
       .then(result => {
         localStorage.setItem('refresh', result.data.refresh);
         localStorage.setItem('access', result.data.access);
-        navigate('/test');
+        api.get('/api/current_user/')
+          .then(result => {
+            localStorage.setItem('userId', result.data.id);
+          })
+          .catch(() => {
+            message.error('Um erro ocorreu, tente novamente!')
+          })
+        navigate('/perfis');
       })
-      .catch(error => console.error(error));  
+      .catch(() => 
+        message.error('Usuário ou senha inválida(s)!')
+      )
   };
 
   const onFinishFailed = (errorInfo: any) => {
