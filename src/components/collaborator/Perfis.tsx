@@ -13,17 +13,17 @@ const Perfis: React.FC = () => {
     // const api_with_url = new Api(result.data.groups)
     let perfis = []
     for (let i = 0; i < perfis_urls.length; i++) {
-      
+
     }
     })
 
-if (accessStatus === 200) {
-  return (
-    <>
-    <h1>passou</h1>
-    </>
-  )
-}
-}
+  if (accessStatus === 200) {
+    return (
+      <>
+      <h1>passou</h1>
+      </>
+    )
+  }
+  }
 
 export default Perfis;
