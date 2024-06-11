@@ -1,23 +1,20 @@
 import React, { useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
-import { Form, Input, Button, Anchor, Alert, message } from 'antd';
+import { Form, Input, Button, Anchor, message } from 'antd';
 import './css/Login.css'
-import Api from "../../services/api";
-import axiosInstance from "../../services/axiosInstance";
-import { url } from '../../services/env';
 import axios from "axios";
 
 const { Link } = Anchor;
 
 const Login: React.FC = () => {
-  const api = new Api;
+  const url = process.env.REACT_APP_URL || 'http://localhost:8002/api/'
   const navigate = useNavigate();
 
   useEffect(() => {
     document.title = 'Autenticação';
   })
 
-  const onFinish2 = async (values: object) => {
+  const onFinish = async (values: object) => {
     try {
       const response = await axios.post(`${url}token/`, values)
       const refresh = response.data.refresh
@@ -40,26 +37,6 @@ const Login: React.FC = () => {
       message.error('Usuário ou senha inválida(s)!')
     }
   }
-
-  const onFinish = (values: object) => {
-    api.post('/api/token/', values)
-      .then(result => {
-        localStorage.setItem('refresh', result.data.refresh);
-        localStorage.setItem('access', result.data.access);
-        api.get('/api/current_user/')
-          .then(result => {
-            console.log('passou:', result.data);
-            // localStorage.setItem('userId', result.data.id);
-          })
-          .catch(() => {
-            message.error('Um erro ocorreu, tente novamente!')
-          })
-        navigate('/perfis');
-      })
-      .catch(() => 
-        message.error('Usuário ou senha inválida(s)!')
-      )
-  };
 
   const onFinishFailed = (errorInfo: any) => {
     console.log('Failed:', errorInfo);  
