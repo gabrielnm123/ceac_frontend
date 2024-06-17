@@ -3,11 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { Form, Input, Button, Anchor, message } from 'antd';
 import './css/Login.css'
 import axios from "axios";
+import { url } from "../../env";
 
 const { Link } = Anchor;
 
 const Login: React.FC = () => {
-  const url = process.env.REACT_APP_URL || 'http://localhost:8002/api/'
   const navigate = useNavigate();
 
   useEffect(() => {
