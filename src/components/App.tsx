@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Base from './collaborator/Base';
 import { Login, breadcrumbItemLogin } from './collaborator/Login';
-import Perfis from './collaborator/Perfis';
+import Perfil from './collaborator/Perfil';
 
 const App: React.FC = () => {
   useEffect(() => {
@@ -14,7 +14,7 @@ const App: React.FC = () => {
       <BrowserRouter basename="/colaborador">
         <Routes>
           <Route path='/login' element={<Base content={<Login />} breadcrumbItem={breadcrumbItemLogin} /* menuItem={items} */ />} />
-          <Route path='/perfis' element={<Perfis />} />
+          <Route path='/perfil' element={<Perfil />} />
         </Routes>
       </BrowserRouter>
     </>

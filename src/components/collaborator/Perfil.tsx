@@ -11,6 +11,7 @@ const Perfis: React.FC = () => {
   const [array, setArray] = useState< null | Array<string> >(null);
 
   useEffect(() => {
+    document.title = 'Perfil';
     const fetchPerfisLinks = async (userId: string) => {
       try {
         const response = await axios.get(url + `users/${userId}/`, {
