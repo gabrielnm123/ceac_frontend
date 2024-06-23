@@ -19,8 +19,13 @@ const Login: React.FC = () => {
       const response = await axios.post(`${url}token/`, values)
       const refresh = response.data.refresh
       const access = response.data.access
+      const headers = {
+        'Authorization': `Bearer ${access}`,
+        'Content-Type': 'application/json'
+      }
       localStorage.setItem('refresh', refresh);
       localStorage.setItem('access', access);
+      localStorage.setItem('headers', JSON.stringify(headers));
       try {
         const response = await axios.get(url + 'current_user/', {
           headers: {

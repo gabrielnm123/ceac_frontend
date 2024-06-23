@@ -18,7 +18,13 @@ const authenticationVerify = (path: string) => {
         try {
           const response = await axios.post(url + 'token/refresh/', {refresh: refresh});
           setAccessStatus(response.status);
-          localStorage.setItem('access', response.data.access);
+          const access = response.data.access;
+          const headers = {
+            'Authorization': `Bearer ${access}`,
+            'Content-Type': 'application/json'
+          }
+          localStorage.setItem('access', access);
+          localStorage.setItem('headers', JSON.stringify(headers));
         } catch (error) {
           setAccessStatus(error.status);
           navigate(path);
