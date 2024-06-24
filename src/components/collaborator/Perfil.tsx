@@ -21,7 +21,9 @@ const Perfis: React.FC = () => {
           headers: headers
         })
         return response.data.groups;
-      } catch {}
+      } catch {
+        authenticationVerify('/login')
+      }
     }
 
     const fetchPerfisDetails = async () => {
@@ -35,7 +37,9 @@ const Perfis: React.FC = () => {
           perfisNames.push(perfil.data.name)
         }
         setArray(perfisNames);
-      } catch {}
+      } catch {
+        authenticationVerify('/login')
+      }
     }
 
      fetchPerfisDetails()
