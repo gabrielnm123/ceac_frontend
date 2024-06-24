@@ -3,6 +3,7 @@ import authenticationVerify from "../../services/authenticationVerify";
 import axios from "axios";
 import { url } from "../../env";
 import { Form, Input, Button, Anchor, message } from 'antd';
+import './css/Perfil.css'
 
 const { Link } = Anchor;
 
@@ -11,7 +12,7 @@ const Perfis: React.FC = () => {
   const userId = localStorage.getItem('userId');
   const access = localStorage.getItem('access')
   const headers = JSON.parse(localStorage.getItem('headers'))
-  const [array, setArray] = useState< null | Array<string> >(null);
+  const [namesState, setArray] = useState< null | Array<string> >(null);
 
   useEffect(() => {
     document.title = 'Perfil';
@@ -21,9 +22,7 @@ const Perfis: React.FC = () => {
           headers: headers
         })
         return response.data.groups;
-      } catch {
-        authenticationVerify('/login')
-      }
+      } catch {authenticationVerify('/login')}
     }
 
     const fetchPerfisDetails = async () => {
@@ -36,10 +35,14 @@ const Perfis: React.FC = () => {
           })
           perfisNames.push(perfil.data.name)
         }
-        setArray(perfisNames);
-      } catch {
-        authenticationVerify('/login')
-      }
+        const user = await axios.get(`${url}users/${userId}/`, {headers: headers})
+        if (user.data.is_superuser) {
+          perfisNames.splice(0, 0, 'SUPER USUÁRIO')
+          setArray(perfisNames);
+        } else {
+          setArray(perfisNames);
+        }
+      } catch {authenticationVerify('/login')}
     }
 
      fetchPerfisDetails()
@@ -51,13 +54,15 @@ const Perfis: React.FC = () => {
       <Form
         className="form-perfil"
         >
-          {array ? (array.map((perfilName, index) => (
+          <Anchor className="anchor-link">
+          {namesState ? (namesState.map((perfilName, index) => (
             <Form.Item
               className="item-perfil"
               key={index}>
-                {perfilName}
+                <Link className="link-perfil" href="/test" title={perfilName} />
             </Form.Item>
           ))) : [] }
+          </Anchor>
         </Form>
     )
   }
