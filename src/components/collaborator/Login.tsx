@@ -1,11 +1,9 @@
 import React, { useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
-import { Form, Input, Button, Anchor, message } from 'antd';
+import { Form, Input, Button, message } from 'antd';
 import './css/Login.css'
 import axios from "axios";
 import { url } from "../../env";
-
-const { Link } = Anchor;
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -76,6 +74,4 @@ const Login: React.FC = () => {
   )
 }
 
-const breadcrumbItemLogin = [<Link href="/" title='Site' />, 'Autenticação']
-
-export { Login, breadcrumbItemLogin }
+export default Login;
