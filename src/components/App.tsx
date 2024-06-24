@@ -14,7 +14,7 @@ const App: React.FC = () => {
       <BrowserRouter basename="/colaborador">
         <Routes>
           <Route path='/login' element={<Base content={<Login />} breadcrumbItem={breadcrumbItemLogin} /* menuItem={items} */ />} />
-          <Route path='/perfil' element={<Perfil />} />
+          <Route path='/perfil' element={<Base content={<Perfil />} breadcrumbItem={breadcrumbItemLogin} />} />
         </Routes>
       </BrowserRouter>
     </>

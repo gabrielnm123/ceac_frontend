@@ -37,7 +37,7 @@ const Login: React.FC = () => {
       } catch {
         message.error('Um erro ocorreu, tente novamente!')
       }
-      navigate('/perfis');
+      navigate('/perfil');
     } catch {
       message.error('Usuário ou senha inválida(s)!')
     }

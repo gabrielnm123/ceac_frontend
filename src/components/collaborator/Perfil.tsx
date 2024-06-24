@@ -2,6 +2,9 @@ import React, { useEffect, useState } from "react";
 import authenticationVerify from "../../services/authenticationVerify";
 import axios from "axios";
 import { url } from "../../env";
+import { Form, Input, Button, Anchor, message } from 'antd';
+
+const { Link } = Anchor;
 
 const Perfis: React.FC = () => {
   const accessStatus = authenticationVerify('/login');
@@ -41,13 +44,17 @@ const Perfis: React.FC = () => {
 
   if (accessStatus === 200) {
     return (
-      <>
-      <ul>
-        {array ? (array.map((perfilName, index) => (
-          <li key={index}>{perfilName}</li>
-        ))) : '' }
-      </ul>
-      </>
+      <Form
+        className="form-perfil"
+        >
+          {array ? (array.map((perfilName, index) => (
+            <Form.Item
+              className="item-perfil"
+              key={index}>
+                {perfilName}
+            </Form.Item>
+          ))) : [] }
+        </Form>
     )
   }
   }
