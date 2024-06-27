@@ -45,7 +45,7 @@ const Perfis: React.FC = () => {
       } catch {authenticationVerify('/login')}
     }
 
-     fetchPerfisDetails()
+    fetchPerfisDetails()
   }, [userId, access])
 
 
