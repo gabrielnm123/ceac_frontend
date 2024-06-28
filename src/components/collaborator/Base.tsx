@@ -1,7 +1,7 @@
 import React from 'react';  
 import './css/Base.css'
 import Logo from '../img/ceac.png'
-import { Breadcrumb, Layout, Menu, theme, Typography } from 'antd';
+import { Layout, Menu, theme, Typography } from 'antd';
 import type BaseProps from './types/BaseProps';
 
 const Base: React.FC<BaseProps> = (props) => {
@@ -23,9 +23,6 @@ const Base: React.FC<BaseProps> = (props) => {
         />
       </Header>
       <Content className='content-base'>
-        {/* <Breadcrumb className='breadcrumb'
-          items={breadcrumbItem}
-        /> */}
         <Title className='title'>{props.title}</Title>
         <div
           style={{

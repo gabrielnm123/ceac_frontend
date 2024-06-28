@@ -10,7 +10,7 @@ const Login: React.FC = () => {
 
   useEffect(() => {
     document.title = 'Autenticação';
-  })
+  }, [])
 
   const onFinish = async (values: object) => {
     try {

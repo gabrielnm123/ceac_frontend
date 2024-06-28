@@ -5,18 +5,16 @@ import { url } from "../env";
 
 const authenticationVerify = (path: string) => {
   const navigate = useNavigate();
-  const refresh = localStorage.getItem('refresh');
-  const access = localStorage.getItem('access');
   const [accessStatus, setAccessStatus] = useState<null | number>(null);
 
   useEffect(() => {
     const verify = async () => {
       try {
-        const response = await axios.post(url + 'token/verify/', {token: access});
+        const response = await axios.post(url + 'token/verify/', {token: localStorage.getItem('access')});
         setAccessStatus(response.status);
       } catch {
         try {
-          const response = await axios.post(url + 'token/refresh/', {refresh: refresh});
+          const response = await axios.post(url + 'token/refresh/', {refresh: localStorage.getItem('refresh')});
           setAccessStatus(response.status);
           const access = response.data.access;
           const headers = {
@@ -32,7 +30,7 @@ const authenticationVerify = (path: string) => {
       }
     }
     verify();
-  }, [url, access, refresh, navigate, path])
+  }, [localStorage.getItem('access'), localStorage.getItem('refresh')])
   return accessStatus;
 }
 
