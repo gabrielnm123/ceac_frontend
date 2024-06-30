@@ -7,13 +7,15 @@ import { useNavigate } from "react-router-dom";
 const Modulos: React.FC = () => {
   const accessStatus = authenticationVerify('/login');
   const perfisNames = perfisArrays();
-  const perfilName = localStorage.getItem('perfilName')
+  const perfilName = localStorage.getItem('perfilName');
   const navigate = useNavigate();
 
   if (accessStatus === 200 && perfisNames.includes(perfilName)) {
-    return (
-      <SearchFicha />
-    )
+    if (perfilName === perfisNames[0]) {
+      return (
+        <SearchFicha />
+      )
+    }
   } else {navigate('/perfil')}
 }
 

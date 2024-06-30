@@ -9,10 +9,8 @@ const { Link } = Anchor;
 const Perfis: React.FC = () => {
   const accessStatus = authenticationVerify('/login');
   const perfisNames = perfisArrays();
-  
   const selectPerfil = (perfilName: string) => {
     localStorage.setItem('perfilName', perfilName)
-    return `/${perfilName.toLowerCase()}`
   }
 
   if (accessStatus === 200) {
@@ -21,11 +19,15 @@ const Perfis: React.FC = () => {
         className="form-perfil"
         >
           <Anchor className="anchor-link">
-          {perfisNames ? (perfisNames.map((perfilName, index) => (
+          {perfisNames ? (perfisNames.map((perfilName: string, index: number) => (
             <Form.Item
               className="item-perfil"
               key={index}>
-                <Link className="link-perfil" href={selectPerfil(perfilName)} title={perfilName} />
+                <div onClick={() => selectPerfil(perfilName)}>
+                  <Link className="link-perfil"
+                  href={`/colaborador/${perfilName.toLowerCase()}`}
+                  title={perfilName} />
+                </div>
             </Form.Item>
           ))) : [] }
           </Anchor>

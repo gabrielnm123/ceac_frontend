@@ -3,7 +3,7 @@ import React = require("react");
 
 type BaseProps = {
   content: React.ReactNode;
-  title: string;
+  title?: string;
   menuItem?: Array<MenuItem>;
 };
 
