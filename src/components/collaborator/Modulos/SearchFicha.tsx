@@ -1,8 +1,16 @@
 import React from "react";
+import Base from "../Base";
+import { Form, Input, Button, message } from 'antd';
+import { items } from "./MenuItems";
 
 const SearchFicha: React.FC = () => {
   return (
-    <h1>teste</h1>
+    <Base content={
+      <Form>
+
+      </Form>
+    } title="Buscar Ficha"
+    menuItem={items} />
   )
 }
 

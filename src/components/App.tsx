@@ -5,6 +5,8 @@ import Login from './collaborator/Login';
 import Perfil from './collaborator/Perfil';
 import Favicon from './img/ceac.ico'
 import Modulos from './collaborator/Modulos/Modulos';
+import { getMenuItem } from './collaborator/Modulos/MenuItems';
+import { UserOutlined } from '@ant-design/icons';
 
 const App: React.FC = () => {
   useEffect(() => {
@@ -21,8 +23,10 @@ const App: React.FC = () => {
       <BrowserRouter basename="/colaborador">
         <Routes>
           <Route path='/login' element={<Base content={<Login />} title='Autenticação' /* menuItem={items} */ />} />
-          <Route path='/perfil' element={<Base content={<Perfil />} title='Perfil' />} />
-          <Route path={`/${localStorage.getItem('perfilName')}`} element={<Base content={<Modulos />} /* title='Módulos' */ />} />
+          <Route path='/perfil' element={<Base content={<Perfil />} title='Perfil' menuItem={[].push(getMenuItem(
+            
+          ))}/>} />
+          <Route path={`/${localStorage.getItem('perfilName')}`} element={<Modulos /> } />
         </Routes>
       </BrowserRouter>
     </>

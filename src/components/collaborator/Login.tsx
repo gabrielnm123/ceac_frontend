@@ -42,7 +42,7 @@ const Login: React.FC = () => {
   }
 
   const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo);  
+    message.error('Um erro ocorreu, tente novamente!') 
   };
 
   return (
