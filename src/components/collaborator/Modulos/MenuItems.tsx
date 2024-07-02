@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Children } from 'react';
 import {
   DesktopOutlined,
   FileOutlined,
@@ -13,13 +13,15 @@ function getMenuItem(
   key: React.Key,
   icon?: React.ReactNode,
   children?: MenuItem[],
+  onClick?: () => void,
 ): MenuItem {
   return {
     key,
     icon,
     children,
     label,
-  } as MenuItem;
+    onClick,
+  };
 }
 
 const items: MenuItem[] = [
@@ -34,4 +36,4 @@ const items: MenuItem[] = [
   getMenuItem('Files', '9', <FileOutlined />),
 ];
 
-export { items, getMenuItem };
+export default getMenuItem;
