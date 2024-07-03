@@ -12,7 +12,7 @@ const perfisArrays = () => {
           headers: JSON.parse(localStorage.getItem('headers'))
         })
         return user.data.groups;
-      } catch {authenticationVerify('/login')}
+      } catch {/* authenticationVerify('/login') */}
     }
 
     const fetchPerfisNames = async () => {
@@ -32,7 +32,7 @@ const perfisArrays = () => {
         } else {
           localStorage.setItem('perfisNames', JSON.stringify(perfisNames));
         }
-      } catch {authenticationVerify('/login')}
+      } catch {/* authenticationVerify('/login') */}
     }
     
     fetchPerfisNames()

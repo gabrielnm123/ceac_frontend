@@ -23,8 +23,7 @@ const authenticationVerify = (path: string) => {
           }
           localStorage.setItem('access', access);
           localStorage.setItem('headers', JSON.stringify(headers));
-        } catch (error) {
-          setAccessStatus(error.status);
+        } catch {
           navigate(path);
         }
       }
