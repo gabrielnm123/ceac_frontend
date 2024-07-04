@@ -20,7 +20,7 @@ const Perfis: React.FC = () => {
             perfisNames ? perfisNames.map((perfilName: string, index: number) => ({
               key: index,
               href: `/colaborador/${perfilName.toLowerCase()}`,
-              title: perfilName,
+              title: <span onClick={() => selectPerfil(perfilName)}>{perfilName}</span>,
               onClick: () => selectPerfil(perfilName)
             })) : []
           } />
