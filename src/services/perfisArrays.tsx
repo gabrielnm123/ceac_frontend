@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import authenticationVerify from "./authenticationVerify";
+// import authenticationVerify from "./authenticationVerify";
 import axios from "axios";
 import { url } from "../env";
 
@@ -12,7 +12,7 @@ const perfisArrays = () => {
           headers: JSON.parse(localStorage.getItem('headers'))
         })
         return user.data.groups;
-      } catch {/* authenticationVerify('/login') */}
+      } catch {}
     }
 
     const fetchPerfisNames = async () => {
@@ -32,7 +32,7 @@ const perfisArrays = () => {
         } else {
           localStorage.setItem('perfisNames', JSON.stringify(perfisNames));
         }
-      } catch {/* authenticationVerify('/login') */}
+      } catch {}
     }
     
     fetchPerfisNames()

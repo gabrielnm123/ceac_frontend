@@ -5,8 +5,7 @@ import Login from './collaborator/Login';
 import Perfil from './collaborator/Perfil';
 import Favicon from './img/ceac.ico'
 import Modulos from './collaborator/Modulos/Modulos';
-import getMenuItem from './collaborator/Modulos/MenuItems';
-import { UserOutlined, LogoutOutlined } from '@ant-design/icons';
+import { itemUser } from './collaborator/Modulos/MenuItems';
 
 const logout = () => {
   localStorage.removeItem('refresh');
@@ -30,11 +29,7 @@ const App: React.FC = () => {
     <BrowserRouter basename="/colaborador">
       <Routes>
         <Route path='/login' element={<Base content={<Login />} title='Autenticação' />} />
-        <Route path='/perfil' element={<Base content={<Perfil />} title='Perfil' menuItem={[
-          getMenuItem('User', 0, <UserOutlined />, [
-            getMenuItem(<a href='/colaborador/login'>Sair</a>, 1, <LogoutOutlined />, undefined, logout)
-          ])
-        ]}/>} />
+        <Route path='/perfil' element={<Base content={<Perfil />} title='Perfil' menuItem={itemUser()} />} />
         <Route path={`/${localStorage.getItem('perfilName')}`} element={<Modulos /> } />
       </Routes>
     </BrowserRouter>

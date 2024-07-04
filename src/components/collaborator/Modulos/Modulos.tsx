@@ -3,7 +3,7 @@ import authenticationVerify from "../../../services/authenticationVerify";
 import SearchFicha from "./SearchFicha";
 import perfisArrays from "../../../services/perfisArrays";
 import { useNavigate } from "react-router-dom";
-import { Form, Input, Button, message } from 'antd';
+// import { Form, Input, Button, message } from 'antd';
 
 const Modulos: React.FC = () => {
   const accessStatus = authenticationVerify('/login');
@@ -12,7 +12,7 @@ const Modulos: React.FC = () => {
   const navigate = useNavigate();
 
   if (accessStatus === 200 && perfisNames.includes(perfilName)) {
-    if (perfilName === perfisNames[0]) {
+    if (perfilName === 'SUPER USUÁRIO') {
       return (
         <SearchFicha />
       )
