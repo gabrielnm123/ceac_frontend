@@ -7,7 +7,7 @@ import {
   UserOutlined,
   LogoutOutlined
 } from '@ant-design/icons';
-import type MenuItem from '../types/MenuItem';
+import type MenuItem from './types/MenuItem';
 
 function getMenuItem(
   label: React.ReactNode,

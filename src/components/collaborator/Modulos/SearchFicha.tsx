@@ -11,27 +11,30 @@ import {
   Select,
   TreeSelect,
 } from 'antd';
-import { itemUser } from "./MenuItems";
+import { itemUser } from "../MenuItems";
+import MaskedInput from 'antd-mask-input';
 
 const { RangePicker } = DatePicker;
-
-const formItemLayout = {
-  labelCol: {
-    xs: { span: 24 },
-    sm: { span: 6 },
-  },
-  wrapperCol: {
-    xs: { span: 24 },
-    sm: { span: 14 },
-  },
-};
+const { Option } = Select
 
 const SearchFicha: React.FC = () => {
   return (
     <Base content={
-      <Form {...formItemLayout} variant="filled" style={{ maxWidth: 600 }}>
-        <Form.Item label="Input" name="Input" rules={[{ required: true, message: 'Please input!' }]}>
+      <Form className="form-searcheFicha">
+        <Form.Item label="Nome" name="nome" className="searcheFicha-nome">
           <Input />
+        </Form.Item>
+        <Form.Item label="CPF" name="cpf" className="searcheFicha-cpf">
+          <MaskedInput mask="000.000.000-00" />
+        </Form.Item>
+        <Form.Item label="Gênero" name="genero" className="searcheFicha-genero">
+          <Select>
+            <Option value="M">Masculino</Option>
+            <Option value="F">Feminino</Option>
+          </Select>
+        </Form.Item>
+        <Form.Item label="Data de Nascimento" name="data-nascimento" className="searcheFicha-nascimento">
+          <DatePicker />
         </Form.Item>
 
         <Form.Item
@@ -96,13 +99,13 @@ const SearchFicha: React.FC = () => {
 
         <Form.Item wrapperCol={{ offset: 6, span: 16 }}>
           <Button type="primary" htmlType="submit">
-            Submit
+            Buscar
           </Button>
         </Form.Item>
       </Form>
-    } title="Buscar Ficha"
+    } title="Buscar Ficha do Cliente"
       menuItem={itemUser()} />
-  )
+    )
 }
 
 export default SearchFicha;

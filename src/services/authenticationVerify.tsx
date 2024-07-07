@@ -29,7 +29,8 @@ const authenticationVerify = (path: string) => {
       }
     }
     verify();
-  }, [localStorage.getItem('access'), localStorage.getItem('refresh')])
+  }, [])
+
   return accessStatus;
 }
 

@@ -7,11 +7,12 @@ import './css/Perfil.css'
 const Perfis: React.FC = () => {
   const accessStatus = authenticationVerify('/login');
   const perfisNames = perfisArrays();
+
   const selectPerfil = (perfilName: string) => {
     localStorage.setItem('perfilName', perfilName)
   }
 
-  if (accessStatus === 200) {
+  if (accessStatus === 200 && perfisNames[0] !== null) {
     return (
       <Form
         className="form-perfil"

@@ -4,25 +4,21 @@ import Base from './collaborator/Base';
 import Login from './collaborator/Login';
 import Perfil from './collaborator/Perfil';
 import Favicon from './img/ceac.ico'
-import Modulos from './collaborator/Modulos/Modulos';
-import { itemUser } from './collaborator/Modulos/MenuItems';
-
-const logout = () => {
-  localStorage.removeItem('refresh');
-  localStorage.removeItem('access');
-  localStorage.removeItem('headers');
-  localStorage.removeItem('userId');
-};
+import Modulo from './collaborator/Modulos/Modulo';
+import { itemUser } from './collaborator/MenuItems';
+import moment from 'moment';
+import 'moment/locale/pt-br';
 
 const App: React.FC = () => {
   useEffect(() => {
-    document.documentElement.lang = 'pt-br';
+    document.documentElement.lang = 'pt-BR';
+    moment.locale('pt-br');
     const favicon = document.createElement('link');
     favicon.type = 'image/x-icon';
     favicon.rel = 'icon';
     favicon.href = Favicon;
     document.head.appendChild(favicon);
-  }, [localStorage.getItem('perfilName')]);
+  }, []);
   
   return (
     <>
@@ -30,10 +26,10 @@ const App: React.FC = () => {
       <Routes>
         <Route path='/login' element={<Base content={<Login />} title='Autenticação' />} />
         <Route path='/perfil' element={<Base content={<Perfil />} title='Perfil' menuItem={itemUser()} />} />
-        <Route path={`/${localStorage.getItem('perfilName')}`} element={<Modulos /> } />
+        <Route path={`/${localStorage.getItem('perfilName')}`} element={<Modulo /> } />
       </Routes>
     </BrowserRouter>
-  </>
+    </>
 );
 };
 

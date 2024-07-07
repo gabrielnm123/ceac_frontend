@@ -1,9 +1,10 @@
-import { useEffect } from "react";
-// import authenticationVerify from "./authenticationVerify";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { url } from "../env";
 
 const perfisArrays = () => {
+  const [getPerfisNames, setPerfisNames] = useState< Array<string> | Array<null> >([null])
+
   useEffect(() => {
     document.title = 'Perfil';
     const fetchPerfisLinks = async (userId: string) => {
@@ -28,17 +29,17 @@ const perfisArrays = () => {
         const user = await axios.get(`${url}users/${localStorage.getItem('userId')}/`, {headers: JSON.parse(localStorage.getItem('headers'))})
         if (user.data.is_superuser) {
           perfisNames.splice(0, 0, 'SUPER USUÁRIO')
-          localStorage.setItem('perfisNames', JSON.stringify(perfisNames));
+          setPerfisNames(perfisNames);
         } else {
-          localStorage.setItem('perfisNames', JSON.stringify(perfisNames));
+          setPerfisNames(perfisNames);
         }
       } catch {}
     }
     
     fetchPerfisNames()
-  }, [localStorage.getItem('userId'), JSON.parse(localStorage.getItem('headers'))])
+  }, [])
   
-  return JSON.parse(localStorage.getItem('perfisNames'));
+  return getPerfisNames;
 }
 
 export default perfisArrays;

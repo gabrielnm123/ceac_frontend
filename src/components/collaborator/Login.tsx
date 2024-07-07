@@ -55,6 +55,7 @@ const Login: React.FC = () => {
         className="username-login"
         name="username"
         rules={[{ required: true, message: 'Insira seu nome de usuário!' }]}
+        label="Usuário"
       >
         <Input placeholder="Nome de usuário" />
       </Form.Item>
@@ -62,6 +63,7 @@ const Login: React.FC = () => {
         className="password-login"
         name="password"
         rules={[{ required: true, message: 'Insira sua senha!' }]}
+        label="Senha"
       >
         <Input.Password placeholder="Senha" />
       </Form.Item>
