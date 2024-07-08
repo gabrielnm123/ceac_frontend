@@ -1,0 +1,30 @@
+.form-search-ficha {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-search-ficha-minus-button {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+
+.form-search-ficha-button {
+  align-self: center;
+}
+
+.form-search-ficha-select{
+  min-width: 200px;
+}
+.form-search-ficha-select-genero{
+  min-width: 100px;
+}
+.form-search-ficha-masked-input-cpf{
+  max-width: 120px;
+}
+.form-search-ficha-select-escolaridade{
+  min-width: 160px;
+}
+.form-search-ficha-select-uf{
+  min-width: 170px;
+}

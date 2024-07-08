@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import Base from './collaborator/Base';
 import Login from './collaborator/Login';
 import Perfil from './collaborator/Perfil';
@@ -27,6 +27,7 @@ const App: React.FC = () => {
         <Route path='/login' element={<Base content={<Login />} title='Autenticação' />} />
         <Route path='/perfil' element={<Base content={<Perfil />} title='Perfil' menuItem={itemUser()} />} />
         <Route path={`/${localStorage.getItem('perfilName')}`} element={<Modulo /> } />
+        <Route path="*" element={<Navigate to="/perfil" />} />
       </Routes>
     </BrowserRouter>
     </>
