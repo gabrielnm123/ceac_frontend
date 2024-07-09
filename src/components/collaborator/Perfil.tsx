@@ -9,6 +9,7 @@ const Perfis: React.FC = () => {
   const perfisNames = perfisArrays();
 
   const selectPerfil = (perfilName: string) => {
+    authenticationVerify('/login');
     localStorage.setItem('perfilName', perfilName)
   }
 

@@ -2,23 +2,36 @@ import React from "react";
 import Base from "../Base";
 import {
   Button,
-  Cascader,
   DatePicker,
   Form,
-  Input,
-  InputNumber,
   Mentions,
   Select,
-  TreeSelect,
 } from 'antd';
 import { itemUser } from "../MenuItems";
 import MaskedInput from 'antd-mask-input';
-import '../css/SearchFicha.css' 
+import '../css/SearchFicha.css'
+import authenticationVerify from "../../../services/authenticationVerify";
+import axios from "axios";
+import { url } from "../../../env";
 
-const { RangePicker } = DatePicker;
 const { Option } = Select
 
 const SearchFicha: React.FC = () => {
+  const onFinish = async (/* values: object */) => {
+    authenticationVerify('/login');
+    try {
+      const response = await axios.get('http://localhost:8000/api/capacita/fichas/', {
+        params: { nome_completo: 'GABRIEL NUNES DE MATOS' },
+        headers: JSON.parse(localStorage.getItem('headers'))
+      });
+      console.log(response.data);
+    } catch (error) {
+      console.error('Erro ao buscar ficha:', error);
+    }
+  }
+
+  onFinish();
+
   return (
     <Base content={
       <Form className="form-search-ficha">
@@ -83,67 +96,6 @@ const SearchFicha: React.FC = () => {
             </Select>
           </Form.Item>
         </div>
-
-        {/* <Form.Item
-          label="InputNumber"
-          name="InputNumber"
-          rules={[{ required: true, message: 'Please input!' }]}
-        >
-          <InputNumber style={{ width: '100%' }} />
-        </Form.Item>
-
-        <Form.Item
-          label="TextArea"
-          name="TextArea"
-          rules={[{ required: true, message: 'Please input!' }]}
-        >
-          <Input.TextArea />
-        </Form.Item>
-
-        <Form.Item
-          label="Mentions"
-          name="Mentions"
-          rules={[{ required: true, message: 'Please input!' }]}
-        >
-          <Mentions />
-        </Form.Item>
-
-        <Form.Item label="Select" name="Select" rules={[{ required: true, message: 'Please input!' }]}>
-          <Select showSearch />
-        </Form.Item>
-
-        <Form.Item
-          label="Cascader"
-          name="Cascader"
-          rules={[{ required: true, message: 'Please input!' }]}
-        >
-          <Cascader />
-        </Form.Item>
-
-        <Form.Item
-          label="TreeSelect"
-          name="TreeSelect"
-          rules={[{ required: true, message: 'Please input!' }]}
-        >
-          <TreeSelect />
-        </Form.Item>
-
-        <Form.Item
-          label="DatePicker"
-          name="DatePicker"
-          rules={[{ required: true, message: 'Please input!' }]}
-        >
-          <DatePicker />
-        </Form.Item>
-
-        <Form.Item
-          label="RangePicker"
-          name="RangePicker"
-          rules={[{ required: true, message: 'Please input!' }]}
-        >
-          <RangePicker />
-        </Form.Item> */}
-
         <Form.Item className="form-search-ficha-button">
           <Button type="primary" htmlType="submit">
             Buscar
