@@ -2,8 +2,7 @@ import React, { useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { Form, Input, Button, message } from 'antd';
 import './css/Login.css'
-import axios from "axios";
-import { url } from "../../env";
+import axiosInstance from "../../services/axiosInstance";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -14,7 +13,7 @@ const Login: React.FC = () => {
 
   const onFinish = async (values: object) => {
     try {
-      const response = await axios.post(`${url}token/`, values)
+      const response = await axiosInstance.post(`token/`, values)
       const refresh = response.data.refresh
       const access = response.data.access
       const headers = {
@@ -25,11 +24,7 @@ const Login: React.FC = () => {
       localStorage.setItem('access', access);
       localStorage.setItem('headers', JSON.stringify(headers));
       try {
-        const response = await axios.get(url + 'current_user/', {
-          headers: {
-            'Authorization': `Bearer ${access}`
-          }
-        })
+        const response = await axiosInstance.get('current_user/')
         const userId = response.data.id;
         localStorage.setItem('userId', userId);
       } catch {
@@ -42,7 +37,8 @@ const Login: React.FC = () => {
   }
 
   const onFinishFailed = (errorInfo: any) => {
-    message.error('Um erro ocorreu, tente novamente!') 
+    message.error('Um erro ocorreu, tente novamente!')
+    console.log(errorInfo) 
   };
 
   return (

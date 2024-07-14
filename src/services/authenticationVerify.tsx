@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
-import { url } from "../env";
+import axiosInstance from "./axiosInstance";
 
 const authenticationVerify = (path: string) => {
   const navigate = useNavigate();
@@ -10,11 +9,11 @@ const authenticationVerify = (path: string) => {
   useEffect(() => {
     const verify = async () => {
       try {
-        const response = await axios.post(url + 'token/verify/', {token: localStorage.getItem('access')});
+        const response = await axiosInstance.post('token/verify/', {token: localStorage.getItem('access')});
         setAccessStatus(response.status);
       } catch {
         try {
-          const response = await axios.post(url + 'token/refresh/', {refresh: localStorage.getItem('refresh')});
+          const response = await axiosInstance.post('token/refresh/', {refresh: localStorage.getItem('refresh')});
           setAccessStatus(response.status);
           const access = response.data.access;
           const headers = {

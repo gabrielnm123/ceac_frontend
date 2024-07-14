@@ -34,7 +34,7 @@ const itemUser = () => {
   };
 
   return [
-    getMenuItem('User', 0, <UserOutlined />, [
+    getMenuItem('Operador', 0, <UserOutlined />, [
       getMenuItem(<a href='/colaborador/login'>Sair</a>, 1, <LogoutOutlined />, undefined, logout)
     ])
   ]
