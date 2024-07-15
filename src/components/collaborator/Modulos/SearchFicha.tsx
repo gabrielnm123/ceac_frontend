@@ -13,14 +13,12 @@ import {
 import { itemUser } from "../MenuItems";
 import MaskedInput from 'antd-mask-input';
 import '../css/SearchFicha.css'
-import authenticationVerify from "../../../services/authenticationVerify";
 import axiosInstance from "../../../services/axiosInstance";
 
 const { Option } = Select
 
 const SearchFicha: React.FC = () => {
   const onFinish = async (values: object) => {
-    authenticationVerify('/login');
     try {
       const response = await axiosInstance.get('capacita/fichas/', {
         params: values,
@@ -33,7 +31,10 @@ const SearchFicha: React.FC = () => {
 
   return (
     <Base content={
-      <Form className="form-search-ficha">
+      <Form
+        className="form-search-ficha"
+        onFinish={onFinish}
+      >
         <div className="form-search-ficha-minus-button">
           <Form.Item label="Nome" name="nome" className="form-search-ficha-nome">
             <Mentions />
