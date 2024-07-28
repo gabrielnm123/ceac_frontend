@@ -31,6 +31,7 @@ const itemUser = () => {
     localStorage.removeItem('access');
     localStorage.removeItem('headers');
     localStorage.removeItem('userId');
+    localStorage.removeItem('perfilName');
   };
 
   return [

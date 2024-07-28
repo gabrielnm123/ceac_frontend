@@ -3,6 +3,8 @@ import authenticationVerify from "../../../services/authenticationVerify";
 import SearchFicha from "./SearchFicha";
 import perfisArrays from "../../../services/perfisArrays";
 import { useNavigate } from "react-router-dom";
+import Base from "../Base";
+import { itemUser } from "../MenuItems";
 // import { Form, Input, Button, message } from 'antd';
 
 const Modulos: React.FC = () => {
@@ -20,10 +22,12 @@ const Modulos: React.FC = () => {
   if (accessStatus === 200 && perfisNames.includes(perfilName)) {
     if (perfilName === 'SUPER USUÁRIO') {
       return (
-        <SearchFicha />
+        <Base content={<SearchFicha />}
+        title="Buscar Ficha do Cliente"
+        menuItem={itemUser()} />
       )
     }
-  } else {}
+  }
 }
 
 export default Modulos;
