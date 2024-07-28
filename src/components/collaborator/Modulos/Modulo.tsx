@@ -1,30 +1,41 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import authenticationVerify from "../../../services/authenticationVerify";
-import SearchFicha from "./SearchFicha";
 import perfisArrays from "../../../services/perfisArrays";
 import { useNavigate } from "react-router-dom";
 import Base from "../Base";
-import { itemUser } from "../MenuItems";
-// import { Form, Input, Button, message } from 'antd';
+import itemUser from "../menuItems/itemUser";
+import itemCapacita from "../menuItems/itemCapacita";
+import type MenuItem from "../types/MenuItem";
+import SearchFicha from "./SearchFicha";
 
 const Modulos: React.FC = () => {
   const accessStatus = authenticationVerify('/login');
   const perfisNames: Array<string> = perfisArrays();
   const perfilName = localStorage.getItem('perfilName');
+  const [getItems, setItems] = useState<null | Array<MenuItem | Array<MenuItem>>>(null);
+  const [getBaseContent, setBaseContent] = useState<null |React.ReactNode>(null);
+  const [getBaseTitle, setBaseTitle] = useState<null | string>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (!perfisNames.includes(perfilName) && perfisNames[0] !== null) {
       navigate('/perfil')
+    } else if (perfilName === 'SUPER USUÁRIO') {
+      const user = itemUser();
+      const capacita = itemCapacita(setBaseContent, setBaseTitle);
+      const items = user.concat(capacita);
+      setItems(items)
     }
   }, [perfilName, perfisNames])
 
   if (accessStatus === 200 && perfisNames.includes(perfilName)) {
     if (perfilName === 'SUPER USUÁRIO') {
       return (
-        <Base content={<SearchFicha />}
-        title="Buscar Ficha do Cliente"
-        menuItem={itemUser()} />
+        <Base
+        content={getBaseContent || <SearchFicha />}
+        title={getBaseTitle || 'Buscar Ficha do Cliente'}
+        menuItem={getItems}
+        />
       )
     }
   }

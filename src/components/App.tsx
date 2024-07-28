@@ -5,7 +5,7 @@ import Login from './collaborator/Login';
 import Perfil from './collaborator/Perfil';
 import Favicon from './img/ceac.ico'
 import Modulo from './collaborator/Modulos/Modulo';
-import { itemUser } from './collaborator/MenuItems';
+import itemUser from './collaborator/menuItems/itemUser';
 import moment from 'moment';
 import 'moment/locale/pt-br';
 
