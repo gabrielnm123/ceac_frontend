@@ -6,7 +6,7 @@ import Base from "../Base";
 import itemUser from "../menuItems/itemUser";
 import itemCapacita from "../menuItems/itemCapacita";
 import type MenuItem from "../types/MenuItem";
-import SearchFicha from "./SearchFicha";
+import SearchClient from "./SearchClient";
 
 const Modulos: React.FC = () => {
   const accessStatus = authenticationVerify('/login');
@@ -32,7 +32,7 @@ const Modulos: React.FC = () => {
     if (perfilName === 'SUPER USUÁRIO') {
       return (
         <Base
-        content={getBaseContent || <SearchFicha />}
+        content={getBaseContent || <SearchClient />}
         title={getBaseTitle || 'Buscar Ficha do Cliente'}
         menuItem={getItems}
         />

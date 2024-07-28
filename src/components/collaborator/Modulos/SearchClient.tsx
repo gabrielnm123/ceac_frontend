@@ -10,12 +10,12 @@ import {
   message
 } from 'antd';
 import MaskedInput from 'antd-mask-input';
-import '../css/SearchFicha.css'
+import '../css/SearchClient.css'
 import axiosInstance from "../../../services/axiosInstance";
 
 const { Option } = Select
 
-const SearchFicha: React.FC = () => {
+const SearchClient: React.FC = () => {
   const onFinish = async (values: object) => {
     try {
       const response = await axiosInstance.get('capacita/fichas/', {
@@ -27,37 +27,37 @@ const SearchFicha: React.FC = () => {
     }
   }
 
-  return (
+      return (
     <Form
       className="form-search-ficha"
       onFinish={onFinish}
     >
-      <div className="form-search-ficha-minus-button">
-        <Form.Item label="Nome" name="nome" className="form-search-ficha-nome">
+      <div className="form-search-client-minus-button">
+        <Form.Item label="Nome" name="nome" className="form-search-client-nome">
           <Mentions />
         </Form.Item>
-        <Form.Item label="CPF" name="cpf" className="form-search-ficha-cpf">
-          <MaskedInput mask="000.000.000-00" className="form-search-ficha-masked-input-cpf"/>
+        <Form.Item label="CPF" name="cpf" className="form-search-client-cpf">
+          <MaskedInput mask="000.000.000-00" className="form-search-client-masked-input-cpf"/>
         </Form.Item>
-        <Form.Item label="Data de Nascimento" name="data-nascimento" className="form-search-ficha-nascimento">
+        <Form.Item label="Data de Nascimento" name="data-nascimento" className="form-search-client-nascimento">
           <DatePicker format="DD/MM/YYYY"/>
         </Form.Item>
-        <Form.Item label="Gênero" name="genero" className="form-search-ficha-genero">
-          <Select showSearch className="form-search-ficha-select-genero">
+        <Form.Item label="Gênero" name="genero" className="form-search-client-genero">
+          <Select showSearch className="form-search-client-select-genero">
             <Option value="M">Masculino</Option>
             <Option value="F">Feminino</Option>
           </Select>
         </Form.Item>
-        <Form.Item label="Escolaridade" name="escolaridade" className="form-search-ficha-escolaridade">
-          <Select showSearch className="form-search-ficha-select-escolaridade">
+        <Form.Item label="Escolaridade" name="escolaridade" className="form-search-client-escolaridade">
+          <Select showSearch className="form-search-client-select-escolaridade">
             <Option value="fundamental">Ensino Fundamental</Option>
             <Option value="medio">Ensino Médio</Option>
             <Option value="graduacao">Graduação</Option>
             <Option value="pos_graduacao">Pós-Graduação</Option>
           </Select>
         </Form.Item>
-        <Form.Item label="UF" name="uf" className="form-search-ficha-uf">
-          <Select showSearch className="form-search-ficha-select-uf">
+        <Form.Item label="UF" name="uf" className="form-search-client-uf">
+          <Select showSearch className="form-search-client-select-uf">
               <Option value="AC">Acre</Option>
               <Option value="AL">Alagoas</Option>
               <Option value="AP">Amapá</Option>
@@ -87,19 +87,19 @@ const SearchFicha: React.FC = () => {
               <Option value="TO">Tocantins</Option>
           </Select>
         </Form.Item>
-        <Form.Item label="Atividade" name="atividade" className="form-search-ficha-atividade">
-          <Select showSearch className="form-search-ficha-select">
+        <Form.Item label="Atividade" name="atividade" className="form-search-client-atividade">
+          <Select showSearch className="form-search-client-select">
             <Option value="atividade1">Atividade 1</Option>
           </Select>
         </Form.Item>
-        <Form.Item label="Contato" name="contato" className="form-search-ficha-contato">
-          <MaskedInput mask="(00) 0.0000-0000" className="form-search-ficha-masked-input-contato"/>
+        <Form.Item label="Contato" name="contato" className="form-search-client-contato">
+          <MaskedInput mask="(00) 0.0000-0000" className="form-search-client-masked-input-contato"/>
         </Form.Item>
-        <Form.Item label="Email" name="email" className="form-search-ficha-email">
-          <Input className="form-search-ficha-masked-input-email"/>
+        <Form.Item label="Email" name="email" className="form-search-client-email">
+          <Input className="form-search-client-masked-input-email"/>
         </Form.Item>
       </div>
-      <Form.Item className="form-search-ficha-button">
+      <Form.Item className="form-search-client-button">
         <Button type="primary" htmlType="submit">
           Buscar
         </Button>
@@ -108,4 +108,4 @@ const SearchFicha: React.FC = () => {
     )
 }
 
-export default SearchFicha;
+export default SearchClient;
