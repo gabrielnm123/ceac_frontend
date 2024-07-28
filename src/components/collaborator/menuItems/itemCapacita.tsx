@@ -7,14 +7,14 @@ import getMenuItem from './getMenuItem';
 import SearchFicha from '../Modulos/SearchFicha';
 
 const itemCapacita = (BaseContent: React.Dispatch<React.SetStateAction<React.ReactNode>>, BaseTitle: React.Dispatch<React.SetStateAction<string>>) => {
-  const buscaCliente = () => {
+  const buscarCliente = () => {
     BaseContent(<SearchFicha />);
     BaseTitle('Buscar Ficha do Cliente');
   }
 
   return [
     getMenuItem('Capacita', 'capacita', <ReadOutlined />, [
-      getMenuItem('Buscar Cliente', 'capacita_buscarCliente', <SearchOutlined />, undefined, buscaCliente)
+      getMenuItem('Buscar Cliente', 'capacita_buscarCliente', <SearchOutlined />, undefined, buscarCliente)
     ])
   ]
 }
