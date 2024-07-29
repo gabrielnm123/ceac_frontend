@@ -21,7 +21,6 @@ const SearchClient: React.FC = () => {
       const response = await axiosInstance.get('capacita/clientes/', {
         params: values,
       });
-      console.log(response.data);
     } catch (error) {
       console.error('Erro ao buscar cliente:', error);
     }
