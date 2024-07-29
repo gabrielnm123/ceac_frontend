@@ -12,7 +12,7 @@ const Modulos: React.FC = () => {
   const accessStatus = authenticationVerify('/login');
   const perfisNames: Array<string> = perfisArrays();
   const perfilName = localStorage.getItem('perfilName');
-  const [getItems, setItems] = useState<null | Array<MenuItem | Array<MenuItem>>>(null);
+  const [getItems, setItems] = useState<null | Array<MenuItem>>(null);
   const [getBaseContent, setBaseContent] = useState<null |React.ReactNode>(null);
   const [getBaseTitle, setBaseTitle] = useState<null | string>(null);
   const navigate = useNavigate();

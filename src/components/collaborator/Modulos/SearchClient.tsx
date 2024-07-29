@@ -18,18 +18,18 @@ const { Option } = Select
 const SearchClient: React.FC = () => {
   const onFinish = async (values: object) => {
     try {
-      const response = await axiosInstance.get('capacita/fichas/', {
+      const response = await axiosInstance.get('capacita/clientes/', {
         params: values,
       });
       console.log(response.data);
     } catch (error) {
-      console.error('Erro ao buscar ficha:', error);
+      console.error('Erro ao buscar cliente:', error);
     }
   }
 
       return (
     <Form
-      className="form-search-ficha"
+      className="form-search-client"
       onFinish={onFinish}
     >
       <div className="form-search-client-minus-button">

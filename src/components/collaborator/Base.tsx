@@ -5,7 +5,7 @@ import { Layout, Menu, theme, Typography } from 'antd';
 import type BaseProps from './types/BaseProps';
 
 const Base: React.FC<BaseProps> = (props) => {
-  const {Title} = Typography;
+  const { Title } = Typography;
   const { Header, Content, Footer } = Layout;
 
   const {
@@ -15,8 +15,9 @@ const Base: React.FC<BaseProps> = (props) => {
   return (
     <Layout className='layout-base'>
       <Header className='header-base'>
-        <img src={Logo} alt="logo" className='logo-base'/>
-        <Menu className='menu-base'
+        <img src={Logo} alt="logo" className='logo-base' />
+        <Menu
+          className='menu-base'
           theme="dark"
           mode="horizontal"
           items={props.menuItem}

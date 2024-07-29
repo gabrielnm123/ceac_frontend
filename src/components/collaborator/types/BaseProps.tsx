@@ -4,7 +4,7 @@ import React = require("react");
 type BaseProps = {
   content: React.ReactNode;
   title?: string;
-  menuItem?: Array<MenuItem | Array<MenuItem>>;
+  menuItem?: Array<MenuItem>;
 };
 
 export default BaseProps;
