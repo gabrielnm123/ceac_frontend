@@ -9,7 +9,7 @@ const Perfis: React.FC = () => {
   const perfisNames = perfisArrays();
 
   const selectPerfil = (event: React.MouseEvent<HTMLElement>, link: { title: React.ReactNode }) => {
-    localStorage.setItem('perfilName', link.title as string);;
+    localStorage.setItem('perfilName', link.title as string);
   };
 
   if (accessStatus === 200 && perfisNames[0] !== null) {

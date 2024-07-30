@@ -12,10 +12,12 @@ import {
 import MaskedInput from 'antd-mask-input';
 import '../css/SearchClient.css'
 import axiosInstance from "../../../services/axiosInstance";
+import authenticationVerify from "../../../services/authenticationVerify";
 
 const { Option } = Select
 
 const SearchClient: React.FC = () => {
+  authenticationVerify('/login');
   const onFinish = async (values: object) => {
     try {
       const response = await axiosInstance.get('capacita/clientes/', {

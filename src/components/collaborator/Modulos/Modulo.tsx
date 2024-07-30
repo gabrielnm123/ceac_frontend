@@ -25,6 +25,8 @@ const Modulos: React.FC = () => {
       const capacita = itemCapacita(setBaseContent, setBaseTitle);
       const items = user.concat(capacita);
       setItems(items)
+    } else {
+      // CRIAR LÓGICA PRA CRIAÇÃO DOS ITENS DO MENU
     }
   }, [perfilName, perfisNames])
 
@@ -37,6 +39,8 @@ const Modulos: React.FC = () => {
         menuItem={getItems}
         />
       )
+    } else if (accessStatus === 200) {
+      // CRIAR LÓGICA PRA APRESENTAÇÃO DA PÁGINA
     }
   }
 }
