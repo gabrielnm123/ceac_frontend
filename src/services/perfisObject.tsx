@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axiosInstance from "./axiosInstance";
 
 const perfisObject = () => {
-  const [getPerfis, setPerfis] = useState< { [key: string]: Array<string> } | {} >({})
+  const [getPerfis, setPerfis] = useState< { [key: string]: Array<string> } | {[key: string]: null} >({'null': null})
 
   useEffect(() => {
     const fetchPerfisNames = async () => {
@@ -10,7 +10,7 @@ const perfisObject = () => {
         const user = await axiosInstance.get(`users/${localStorage.getItem('userId')}/`);
         const perfisLinks = user.data.groups;
         const perfisNamePermissions: { [key: string]: Array<string> } = {};
-        for (let perfilLink of perfisLinks) {
+        for (const perfilLink of perfisLinks) {
           const perfil = await axiosInstance.get(perfilLink);
           const permissionCodeName = []
           for (const permission of perfil.data.permissions) {
@@ -20,6 +20,7 @@ const perfisObject = () => {
           perfisNamePermissions[perfil.data.name] = permissionCodeName;
         }
         if (user.data.is_superuser) {
+          perfisNamePermissions['SUPER USUÁRIO'] = ['SUPER USUÁRIO']
           setPerfis(perfisNamePermissions);
         } else {
           setPerfis(perfisNamePermissions);
