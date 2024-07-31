@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import authenticationVerify from "../../../services/authenticationVerify";
-import perfisArrays from "../../../services/perfisArrays";
+import perfisObject from "../../../services/perfisObject";
 import { useNavigate } from "react-router-dom";
 import Base from "../Base";
 import itemUser from "../menuItems/itemUser";
@@ -10,7 +10,8 @@ import SearchClient from "./SearchClient";
 
 const Modulos: React.FC = () => {
   const accessStatus = authenticationVerify('/login');
-  const perfisNames: Array<string> = perfisArrays();
+  const perfisNamePermissions = perfisObject();
+  const perfisNames = Object.keys(perfisNamePermissions);
   const perfilName = localStorage.getItem('perfilName');
   const [getItems, setItems] = useState<null | Array<MenuItem>>(null);
   const [getBaseContent, setBaseContent] = useState<null |React.ReactNode>(null);
