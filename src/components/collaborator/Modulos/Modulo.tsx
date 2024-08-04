@@ -9,7 +9,7 @@ import type MenuItem from "../types/MenuItem";
 
 const Modulos: React.FC = () => {
   const [getItems, setItems] = useState<null | Array<MenuItem>>(null);
-  const [getBaseContent, setBaseContent] = useState<null |React.ReactNode>(null);
+  const [getBaseContent, setBaseContent] = useState<null | React.ReactNode>(null);
   const [getBaseTitle, setBaseTitle] = useState<null | string>(null);
   const navigate = useNavigate();
   const accessStatus = authenticationVerify('/login');
@@ -18,28 +18,32 @@ const Modulos: React.FC = () => {
   const perfilName = localStorage.getItem('perfilName');
   const permissions = perfisNamePermissions[perfilName];
   const user = itemUser();
-  const capacita = itemCapacita(setBaseContent, setBaseTitle, permissions);
-  const items = user.concat(capacita);
-  
+
   useEffect(() => {
     if (!perfisNames.includes(perfilName) && perfisNames[0] !== 'null') {
-      navigate('/perfil')
-    } else {
-      setItems(items)
-      // console.log(items)
-      // console.log(getItems)
+      navigate('/perfil');
     }
-  }, [perfisNamePermissions])
+  }, [perfisNamePermissions]);
 
-  if (accessStatus === 200 && perfisNames.includes(perfilName)) {
+  useEffect(() => {
+    if (permissions) {
+      const capacita = itemCapacita(setBaseContent, setBaseTitle, permissions);
+      const items = user.concat(capacita);
+      setItems(items);
+    }
+  }, [permissions]);
+  
+  if (accessStatus === 200 && perfisNames.includes(perfilName) && getItems) {
     return (
       <Base
-      content={getBaseContent/*  || <SearchClient /> */}
-      title={getBaseTitle/*  || 'Buscar Ficha do Cliente' */}
-      menuItem={getItems}
+        content={getBaseContent}
+        title={getBaseTitle}
+        menuItem={getItems}
       />
-    )
+    );
   }
-}
+  
+  return null;
+};
 
 export default Modulos;
