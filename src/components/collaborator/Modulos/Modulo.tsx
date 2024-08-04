@@ -11,24 +11,25 @@ const Modulos: React.FC = () => {
   const [getItems, setItems] = useState<null | Array<MenuItem>>(null);
   const [getBaseContent, setBaseContent] = useState<null |React.ReactNode>(null);
   const [getBaseTitle, setBaseTitle] = useState<null | string>(null);
+  const navigate = useNavigate();
   const accessStatus = authenticationVerify('/login');
   const perfisNamePermissions: { [key: string]: string[] } = perfisObject();
   const perfisNames = Object.keys(perfisNamePermissions);
   const perfilName = localStorage.getItem('perfilName');
   const permissions = perfisNamePermissions[perfilName];
-  // console.log(perfisNamePermissions)
   const user = itemUser();
   const capacita = itemCapacita(setBaseContent, setBaseTitle, permissions);
   const items = user.concat(capacita);
-  const navigate = useNavigate();
   
   useEffect(() => {
     if (!perfisNames.includes(perfilName) && perfisNames[0] !== 'null') {
       navigate('/perfil')
     } else {
       setItems(items)
+      // console.log(items)
+      // console.log(getItems)
     }
-  }, [perfisNamePermissions, perfilName, perfisNames, permissions, user, capacita, items])
+  }, [perfisNamePermissions])
 
   if (accessStatus === 200 && perfisNames.includes(perfilName)) {
     return (
