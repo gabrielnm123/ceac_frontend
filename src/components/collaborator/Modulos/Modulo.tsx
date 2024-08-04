@@ -17,7 +17,7 @@ const Modulos: React.FC = () => {
   const perfisNames = Object.keys(perfisNamePermissions);
   const perfilName = localStorage.getItem('perfilName');
   const permissions = perfisNamePermissions[perfilName];
-  const user = itemUser();
+  const user = itemUser(setBaseContent, setBaseTitle);
 
   useEffect(() => {
     if (!perfisNames.includes(perfilName) && perfisNames[0] !== 'null') {
@@ -33,7 +33,7 @@ const Modulos: React.FC = () => {
     }
   }, [permissions]);
   
-  if (accessStatus === 200 && perfisNames.includes(perfilName) && getItems) {
+  if (accessStatus === 200 && perfisNames.includes(perfilName)) {
     return (
       <Base
         content={getBaseContent}

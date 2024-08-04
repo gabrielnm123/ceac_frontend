@@ -5,8 +5,8 @@ import {
   FormOutlined
 } from '@ant-design/icons';
 import getMenuItem from './getMenuItem';
-import SearchClient from '../Modulos/SearchClient';
-import CreateClient from '../Modulos/CreateClient';
+import SearchClient from '../Modulos/Capacita/SearchClient';
+import CreateClient from '../Modulos/Capacita/CreateClient';
 import type MenuItem from '../types/MenuItem';
 
 const itemCapacita = (

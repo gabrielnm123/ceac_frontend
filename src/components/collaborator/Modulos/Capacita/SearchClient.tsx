@@ -10,9 +10,9 @@ import {
   message
 } from 'antd';
 import MaskedInput from 'antd-mask-input';
-import '../css/SearchClient.css'
-import axiosInstance from "../../../services/axiosInstance";
-import authenticationVerify from "../../../services/authenticationVerify";
+import '../../css/SearchClient.css'
+import axiosInstance from "../../../../services/axiosInstance";
+import authenticationVerify from "../../../../services/authenticationVerify";
 
 const { Option } = Select
 
