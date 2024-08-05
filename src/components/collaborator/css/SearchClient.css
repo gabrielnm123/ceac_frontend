@@ -1,3 +1,8 @@
+.search-client {
+  display: flex;
+  flex-direction: column;
+}
+
 .form-search-client {
   display: flex;
   flex-direction: column;
@@ -16,15 +21,23 @@
 .form-search-client-select{
   min-width: 200px;
 }
+
 .form-search-client-select-genero{
   min-width: 100px;
 }
+
 .form-search-client-masked-input-cpf{
   max-width: 120px;
 }
+
 .form-search-client-select-escolaridade{
   min-width: 160px;
 }
+
 .form-search-client-select-uf{
   min-width: 170px;
 }
+
+/* .table-search-client {
+  margin-top: 100px;
+} */

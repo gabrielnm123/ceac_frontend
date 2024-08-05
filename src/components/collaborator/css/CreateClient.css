@@ -1,0 +1,12 @@
+.create-client {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.form-create-client {
+  width: 100%;
+  max-width: 800px;
+}
