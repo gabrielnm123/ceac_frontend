@@ -5,8 +5,8 @@ import {
   FormOutlined
 } from '@ant-design/icons';
 import getMenuItem from './getMenuItem';
-import SearchClient from '../Modulos/Capacita/SearchClient';
-import CreateClient from '../Modulos/Capacita/CreateClient';
+import SearchFicha from '../Modulos/Capacita/SearchFicha';
+import CreateFicha from '../Modulos/Capacita/CreateFicha';
 import type MenuItem from '../types/MenuItem';
 
 const itemCapacita = (
@@ -14,36 +14,36 @@ const itemCapacita = (
   setBaseTitle: React.Dispatch<React.SetStateAction<string>>,
   permissions: string[]
 ): MenuItem[] => {
-  const buscarCliente = () => {
-    setBaseContent(<SearchClient />);
-    setBaseTitle('Buscar Ficha do Cliente');
+  const buscarFicha = () => {
+    setBaseContent(<SearchFicha />);
+    setBaseTitle('Buscar Ficha de Inscrição de Capacitação');
   };
   
-  const criarCliente = () => {
-    setBaseContent(<CreateClient />);
-    setBaseTitle('Criar Ficha do Cliente');
+  const criarFicha = () => {
+    setBaseContent(<CreateFicha />);
+    setBaseTitle('Criar Ficha de Inscrição de Capacitação');
   };
   
   const permissionArray: MenuItem[] = [];
   
   if (permissions.includes('SUPER USUÁRIO')) {
     permissionArray.push(
-      getMenuItem('Buscar Cliente', 'capacita_buscarCliente', <SearchOutlined />, undefined, buscarCliente)
+      getMenuItem('Buscar Ficha', 'capacita_buscarFicha', <SearchOutlined />, undefined, buscarFicha)
     );
     permissionArray.push(
-      getMenuItem('Criar Cliente', 'capacita_criarCliente', <FormOutlined />, undefined, criarCliente)
+      getMenuItem('Criar Ficha', 'capacita_criarFicha', <FormOutlined />, undefined, criarFicha)
     );
   } else {
-    if (permissions.includes('capacita_buscarCliente')) {
+    if (permissions.includes('capacita_buscarFicha')) {
       permissionArray.push(
-        getMenuItem('Buscar Cliente', 'capacita_buscarCliente', <SearchOutlined />, undefined, buscarCliente)
+        getMenuItem('Buscar Ficha', 'capacita_buscarFicha', <SearchOutlined />, undefined, buscarFicha)
       );
-      setBaseContent(<SearchClient />);
-      setBaseTitle('Buscar Ficha do Cliente');
+      setBaseContent(<SearchFicha />);
+      setBaseTitle('Buscar Ficha de Inscrição de Capacitação');
     }
-    if (permissions.includes('capacita_criarCliente')) {
+    if (permissions.includes('capacita_criarFicha')) {
       permissionArray.push(
-        getMenuItem('Criar Cliente', 'capacita_criarCliente', <FormOutlined />, undefined, criarCliente)
+        getMenuItem('Criar Ficha', 'capacita_criarFicha', <FormOutlined />, undefined, criarFicha)
       );
     }
   }

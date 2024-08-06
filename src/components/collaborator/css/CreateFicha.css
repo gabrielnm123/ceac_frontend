@@ -1,4 +1,4 @@
-.create-client {
+.create-ficha {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -6,7 +6,7 @@
   padding: 20px;
 }
 
-.form-create-client {
+.form-create-ficha {
   width: 100%;
   max-width: 800px;
 }

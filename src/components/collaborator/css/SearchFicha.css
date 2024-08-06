@@ -1,43 +1,43 @@
-.search-client {
+.search-ficha {
   display: flex;
   flex-direction: column;
 }
 
-.form-search-client {
+.form-search-ficha {
   display: flex;
   flex-direction: column;
 }
 
-.form-search-client-minus-button {
+.form-search-ficha-minus-button {
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
 }
 
-.form-search-client-button {
+.form-search-ficha-button {
   align-self: center;
 }
 
-.form-search-client-select{
+.form-search-ficha-select{
   min-width: 200px;
 }
 
-.form-search-client-select-genero{
+.form-search-ficha-select-genero{
   min-width: 100px;
 }
 
-.form-search-client-masked-input-cpf{
+.form-search-ficha-masked-input-cpf{
   max-width: 120px;
 }
 
-.form-search-client-select-escolaridade{
+.form-search-ficha-select-escolaridade{
   min-width: 160px;
 }
 
-.form-search-client-select-uf{
+.form-search-ficha-select-uf{
   min-width: 170px;
 }
 
-/* .table-search-client {
+/* .table-search-ficha {
   margin-top: 100px;
 } */

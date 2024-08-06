@@ -3,27 +3,26 @@ import { Form, Input, Button, Select, DatePicker, Checkbox, Typography, message 
 import MaskedInput from 'antd-mask-input';
 import axiosInstance from "../../../../services/axiosInstance";
 import authenticationVerify from "../../../../services/authenticationVerify";
-import '../../css/CreateClient.css';
+import '../../css/CreateFicha.css';
 
 const { Option } = Select;
 const { Title } = Typography;
 
-const CreateClient: React.FC = () => {
+const CreateFicha: React.FC = () => {
   authenticationVerify('/login');
 
   const onFinish = async (values: any) => {
     try {
-      const response = await axiosInstance.post('capacita/clientes/', values);
-      message.success('Cliente criado com sucesso!');
+      const response = await axiosInstance.post('capacita/fichas/', values);
+      message.success('Ficha criado com sucesso!');
     } catch (error) {
-      message.error('Erro ao criar cliente, tente novamente.');
+      message.error('Erro ao criar ficha, tente novamente.');
     }
   };
 
   return (
-    <div className="create-client">
-      <Form className="form-create-client" onFinish={onFinish} layout="vertical">
-        <Title level={2}>Ficha de Inscrição de Capacitação</Title>
+    <div className="create-ficha">
+      <Form className="form-create-ficha" onFinish={onFinish} layout="vertical">
         <Form.Item label="Nome Completo" name="nome_completo" rules={[{ required: true, message: 'Por favor, insira o nome completo' }]}>
           <Input />
         </Form.Item>
@@ -131,7 +130,7 @@ const CreateClient: React.FC = () => {
             <Option value="outro">Outro</Option>
           </Select>
         </Form.Item>
-        <Title level={3}>Dados Pessoa Jurídica</Title>
+        <Title level={2}>Dados Pessoa Jurídica</Title>
         <Form.Item label="Nome Fantasia" name="nome_fantasia">
           <Input />
         </Form.Item>
@@ -170,7 +169,7 @@ const CreateClient: React.FC = () => {
             <Option value="responsavel">Responsável</Option>
           </Select>
         </Form.Item>
-        <Title level={3}>Módulos de Capacitação</Title>
+        <Title level={2}>Módulos de Capacitação</Title>
         <Form.Item name="modulo_marketing" valuePropName="checked">
           <Checkbox>Marketing (Como dominar o mercado digital)</Checkbox>
         </Form.Item>
@@ -183,7 +182,7 @@ const CreateClient: React.FC = () => {
         <Form.Item name="modulo_outros" valuePropName="checked">
           <Checkbox>Outros</Checkbox>
         </Form.Item>
-        <Title level={3}>Declarações e Autorizações</Title>
+        <Title level={2}>Declarações e Autorizações</Title>
         <Form.Item name="responsabilizacao" valuePropName="checked">
           <Checkbox>Declaro estar CIENTE de que sou plenamente responsável pela veracidade das informações aqui prestadas...</Checkbox>
         </Form.Item>
@@ -212,4 +211,4 @@ const CreateClient: React.FC = () => {
   );
 }
 
-export default CreateClient;
+export default CreateFicha;
