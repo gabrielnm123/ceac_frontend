@@ -18,26 +18,38 @@
   align-self: center;
 }
 
-.form-search-ficha-select{
-  min-width: 200px;
-}
-
 .form-search-ficha-select-genero{
-  min-width: 100px;
+  min-width: 115px;
 }
 
-.form-search-ficha-masked-input-cpf{
-  max-width: 120px;
+.form-search-ficha-cpf{
+  max-width: 160px;
 }
 
 .form-search-ficha-select-escolaridade{
-  min-width: 160px;
+  min-width: 185px;
 }
 
 .form-search-ficha-select-uf{
-  min-width: 170px;
+  min-width: 200px;
 }
 
-/* .table-search-ficha {
-  margin-top: 100px;
-} */
+.form-search-ficha-select-atividade {
+  min-width: 200px;
+}
+
+.form-search-ficha-email {
+  min-width: 200px;
+}
+
+.form-search-ficha-contato {
+  max-width: 200px;
+}
+
+.table-search-ficha {
+  margin-top: 20px;
+}
+
+.form-search-ficha-nascimento {
+  max-width: 260px;
+}
