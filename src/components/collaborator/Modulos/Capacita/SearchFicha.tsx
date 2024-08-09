@@ -112,7 +112,6 @@ const SearchFicha: React.FC = () => {
   };
 
   const columns = [
-    { title: 'NIS', dataIndex: 'nis', key: 'nis' },
     { title: 'Nome', dataIndex: 'nome_completo', key: 'nome_completo' },
     { title: 'CPF', dataIndex: 'cpf', key: 'cpf', render: (cpf: string) => cpf ? cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : '' },
     { title: 'Data de Nascimento', dataIndex: 'data_nascimento', key: 'data_nascimento', render: (text: string) => text ? moment(text).format('DD/MM/YYYY') : '' },
@@ -129,9 +128,6 @@ const SearchFicha: React.FC = () => {
     <div className="search-ficha">
       <Form form={form} className="form-search-ficha" onFinish={onFinish}>
         <div className="form-search-ficha-minus-button">
-          <Form.Item label="NIS" name="nis" className="form-search-ficha-nis">
-            <Input />
-          </Form.Item>
           <Form.Item label="Nome" name="nome" className="form-search-ficha-nome">
             <Input onChange={(e) => form.setFieldsValue({ nome: e.target.value.toUpperCase() })} />
           </Form.Item>

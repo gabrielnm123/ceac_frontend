@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Form, Input, Button, Select, DatePicker, Checkbox, Typography, message } from 'antd';
 import MaskedInput from 'antd-mask-input';
+import axios from 'axios';
 import axiosInstance from "../../../../services/axiosInstance";
 import authenticationVerify from "../../../../services/authenticationVerify";
 import '../../css/CreateFicha.css';
@@ -10,163 +11,273 @@ const { Title } = Typography;
 
 const CreateFicha: React.FC = () => {
   authenticationVerify('/login');
+  const [form] = Form.useForm();
+  const [atividades, setAtividades] = useState<{ [key: number]: string }>({});
+
+  useEffect(() => {
+    const fetchAtividades = async () => {
+      try {
+        const response = await axiosInstance.get('capacita/atividades/');
+        const atividadeMap = response.data.reduce((map: { [key: number]: string }, atividade: any) => {
+          map[atividade.id] = atividade.atividade.toUpperCase();
+          return map;
+        }, {});
+        setAtividades(atividadeMap);
+      } catch (error) {
+        message.error('Erro ao carregar atividades, tente novamente.');
+      }
+    };
+    fetchAtividades();
+  }, []);
+
+  // Funções utilitárias para validação de CPF e CNPJ
+  const isValidCPF = (cpf: string) => {
+    cpf = cpf.replace(/[^\d]+/g, '');
+    if (cpf.length !== 11 || /(\d)\1{10}/.test(cpf)) return false;
+    let soma = 0;
+    for (let i = 0; i < 9; i++) soma += parseInt(cpf.charAt(i)) * (10 - i);
+    let resto = 11 - (soma % 11);
+    if (resto === 10 || resto === 11) resto = 0;
+    if (resto !== parseInt(cpf.charAt(9))) return false;
+    soma = 0;
+    for (let i = 0; i < 10; i++) soma += parseInt(cpf.charAt(i)) * (11 - i);
+    resto = 11 - (soma % 11);
+    if (resto === 10 || resto === 11) resto = 0;
+    return resto === parseInt(cpf.charAt(10));
+  };
+
+  const isValidCNPJ = (cnpj: string) => {
+    cnpj = cnpj.replace(/[^\d]+/g, '');
+    if (cnpj.length !== 14 || /(\d)\1{13}/.test(cnpj)) return false;
+    let tamanho = cnpj.length - 2;
+    let numeros = cnpj.substring(0, tamanho);
+    let digitos = cnpj.substring(tamanho);
+    let soma = 0;
+    let pos = tamanho - 7;
+    for (let i = tamanho; i >= 1; i--) {
+      soma += parseInt(numeros.charAt(tamanho - i)) * pos--;
+      if (pos < 2) pos = 9;
+    }
+    let resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+    if (resultado !== parseInt(digitos.charAt(0))) return false;
+    tamanho = tamanho + 1;
+    numeros = cnpj.substring(0, tamanho);
+    soma = 0;
+    pos = tamanho - 7;
+    for (let i = tamanho; i >= 1; i--) {
+      soma += parseInt(numeros.charAt(tamanho - i)) * pos--;
+      if (pos < 2) pos = 9;
+    }
+    resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+    return resultado === parseInt(digitos.charAt(1));
+  };
+
+  // Função para preencher automaticamente o endereço com base no CEP
+  const fetchAddressByCEP = async (cep: string) => {
+    try {
+      const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
+      if (response.data.erro) {
+        throw new Error('CEP não encontrado');
+      }
+      return response.data;
+    } catch (error) {
+      message.error('Erro ao buscar o endereço. Verifique o CEP.');
+      return null;
+    }
+  };
 
   const onFinish = async (values: any) => {
+    if (!isValidCPF(values.cpf)) {
+      message.error('CPF inválido');
+      return;
+    }
+
+    if (values.cnpj && !isValidCNPJ(values.cnpj)) {
+      message.error('CNPJ inválido');
+      return;
+    }
+
     try {
       const response = await axiosInstance.post('capacita/fichas/', values);
-      message.success('Ficha criado com sucesso!');
+      message.success('Ficha criada com sucesso!');
     } catch (error) {
-      message.error('Erro ao criar ficha, tente novamente.');
+      if (error.response && error.response.data) {
+        const errorMsgs = Object.values(error.response.data).flat().join(', ');
+        message.error(`Erro na criação da ficha: ${errorMsgs}`);
+      } else {
+        message.error('Erro ao criar ficha, tente novamente.');
+      }
+    }
+  };
+
+  const handleCEPBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
+    const cep = e.target.value.replace(/\D/g, '');
+    if (cep.length === 8) {
+      const addressData = await fetchAddressByCEP(cep);
+      if (addressData) {
+        form.setFieldsValue({
+          endereco: addressData.logradouro.toUpperCase(),
+          bairro: addressData.bairro.toUpperCase(),
+          uf: addressData.uf,
+        });
+      }
     }
   };
 
   return (
     <div className="create-ficha">
-      <Form className="form-create-ficha" onFinish={onFinish} layout="vertical">
+      <Form className="form-create-ficha" onFinish={onFinish} layout="vertical" form={form}>
         <Form.Item label="Nome Completo" name="nome_completo" rules={[{ required: true, message: 'Por favor, insira o nome completo' }]}>
-          <Input />
+          <Input onChange={(e) => form.setFieldsValue({ nome_completo: e.target.value.toUpperCase() })} />
         </Form.Item>
         <Form.Item label="CPF" name="cpf" rules={[{ required: true, message: 'Por favor, insira o CPF' }]}>
           <MaskedInput mask="000.000.000-00" />
         </Form.Item>
         <Form.Item label="Gênero" name="genero" rules={[{ required: true, message: 'Por favor, selecione o gênero' }]}>
           <Select>
-            <Option value="M">Masculino</Option>
-            <Option value="F">Feminino</Option>
+            <Option value="M">MASCULINO</Option>
+            <Option value="F">FEMININO</Option>
           </Select>
         </Form.Item>
         <Form.Item label="Data de Nascimento" name="data_nascimento" rules={[{ required: true, message: 'Por favor, selecione a data de nascimento' }]}>
-          <DatePicker format="DD/MM/YYYY" />
+          <DatePicker format="YYYY-MM-DD" />
         </Form.Item>
         <Form.Item label="Escolaridade" name="escolaridade" rules={[{ required: true, message: 'Por favor, selecione a escolaridade' }]}>
           <Select>
-            <Option value="fundamental">Ensino Fundamental</Option>
-            <Option value="medio">Ensino Médio</Option>
-            <Option value="graduacao">Graduação</Option>
-            <Option value="pos_graduacao">Pós-Graduação</Option>
+            <Option value="FUNDAMENTAL">ENSINO FUNDAMENTAL</Option>
+            <Option value="MEDIO">ENSINO MÉDIO</Option>
+            <Option value="GRADUACAO">GRADUAÇÃO</Option>
+            <Option value="POS_GRADUACAO">PÓS-GRADUAÇÃO</Option>
           </Select>
         </Form.Item>
-        <Form.Item label="Atividade" name="atividade" rules={[{ required: true, message: 'Por favor, insira a atividade' }]}>
-          <Input />
-        </Form.Item>
-        <Form.Item label="Endereço Residencial" name="endereco" rules={[{ required: true, message: 'Por favor, insira o endereço' }]}>
-          <Input />
-        </Form.Item>
-        <Form.Item label="Complemento" name="complemento">
-          <Input />
-        </Form.Item>
-        <Form.Item label="Bairro" name="bairro" rules={[{ required: true, message: 'Por favor, insira o bairro' }]}>
-          <Input />
+        <Form.Item label="Atividade" name="atividade" rules={[{ required: true, message: 'Por favor, selecione a atividade' }]}>
+          <Select>
+            {Object.entries(atividades).map(([id, atividade]) => (
+              <Option key={id} value={id}>{atividade}</Option>
+            ))}
+          </Select>
         </Form.Item>
         <Form.Item label="CEP" name="cep" rules={[{ required: true, message: 'Por favor, insira o CEP' }]}>
-          <MaskedInput mask="00000-000" />
+          <MaskedInput mask="00000-000" onBlur={handleCEPBlur} />
+        </Form.Item>
+        <Form.Item label="Endereço Residencial" name="endereco" rules={[{ required: true, message: 'Por favor, insira o endereço' }]}>
+          <Input onChange={(e) => form.setFieldsValue({ endereco: e.target.value.toUpperCase() })} />
+        </Form.Item>
+        <Form.Item label="Complemento" name="complemento">
+          <Input onChange={(e) => form.setFieldsValue({ complemento: e.target.value.toUpperCase() })} />
+        </Form.Item>
+        <Form.Item label="Bairro" name="bairro" rules={[{ required: true, message: 'Por favor, insira o bairro' }]}>
+          <Input onChange={(e) => form.setFieldsValue({ bairro: e.target.value.toUpperCase() })} />
         </Form.Item>
         <Form.Item label="UF" name="uf" rules={[{ required: true, message: 'Por favor, selecione o estado' }]}>
           <Select>
-            <Option value="AC">Acre</Option>
-            <Option value="AL">Alagoas</Option>
-            <Option value="AP">Amapá</Option>
-            <Option value="AM">Amazonas</Option>
-            <Option value="BA">Bahia</Option>
-            <Option value="CE">Ceará</Option>
-            <Option value="DF">Distrito Federal</Option>
-            <Option value="ES">Espírito Santo</Option>
-            <Option value="GO">Goiás</Option>
-            <Option value="MA">Maranhão</Option>
-            <Option value="MT">Mato Grosso</Option>
-            <Option value="MS">Mato Grosso do Sul</Option>
-            <Option value="MG">Minas Gerais</Option>
-            <Option value="PA">Pará</Option>
-            <Option value="PB">Paraíba</Option>
-            <Option value="PR">Paraná</Option>
-            <Option value="PE">Pernambuco</Option>
-            <Option value="PI">Piauí</Option>
-            <Option value="RJ">Rio de Janeiro</Option>
-            <Option value="RN">Rio Grande do Norte</Option>
-            <Option value="RS">Rio Grande do Sul</Option>
-            <Option value="RO">Rondônia</Option>
-            <Option value="RR">Roraima</Option>
-            <Option value="SC">Santa Catarina</Option>
-            <Option value="SP">São Paulo</Option>
-            <Option value="SE">Sergipe</Option>
-            <Option value="TO">Tocantins</Option>
+            <Option value="AC">ACRE</Option>
+            <Option value="AL">ALAGOAS</Option>
+            <Option value="AP">AMAPÁ</Option>
+            <Option value="AM">AMAZONAS</Option>
+            <Option value="BA">BAHIA</Option>
+            <Option value="CE">CEARÁ</Option>
+            <Option value="DF">DISTRITO FEDERAL</Option>
+            <Option value="ES">ESPÍRITO SANTO</Option>
+            <Option value="GO">GOIÁS</Option>
+            <Option value="MA">MARANHÃO</Option>
+            <Option value="MT">MATO GROSSO</Option>
+            <Option value="MS">MATO GROSSO DO SUL</Option>
+            <Option value="MG">MINAS GERAIS</Option>
+            <Option value="PA">PARÁ</Option>
+            <Option value="PB">PARAÍBA</Option>
+            <Option value="PR">PARANÁ</Option>
+            <Option value="PE">PERNAMBUCO</Option>
+            <Option value="PI">PIAUÍ</Option>
+            <Option value="RJ">RIO DE JANEIRO</Option>
+            <Option value="RN">RIO GRANDE DO NORTE</Option>
+            <Option value="RS">RIO GRANDE DO SUL</Option>
+            <Option value="RO">RONDÔNIA</Option>
+            <Option value="RR">RORAIMA</Option>
+            <Option value="SC">SANTA CATARINA</Option>
+            <Option value="SP">SÃO PAULO</Option>
+            <Option value="SE">SERGIPE</Option>
+            <Option value="TO">TOCANTINS</Option>
           </Select>
         </Form.Item>
-        <Form.Item label="Contato" name="contato" rules={[{ required: true, message: 'Por favor, insira o contato' }]}>
-          <MaskedInput mask="(00) 0.0000-0000" />
+        <Form.Item label="Celular" name="celular" rules={[{ required: true, message: 'Por favor, insira o número de celular' }]}>
+          <MaskedInput mask="(00) 0 0000-0000" />
+        </Form.Item>
+        <Form.Item label="Telefone Fixo" name="fixo">
+          <MaskedInput mask="(00) 0000-0000" />
         </Form.Item>
         <Form.Item label="E-mail" name="email" rules={[{ required: true, message: 'Por favor, insira o e-mail' }, { type: 'email', message: 'Por favor, insira um e-mail válido' }]}>
-          <Input />
+          <Input onChange={(e) => form.setFieldsValue({ email: e.target.value.toLowerCase() })} />
         </Form.Item>
         <Form.Item label="Interesse em ter negócio" name="interesse_ter_negocio" rules={[{ required: true, message: 'Por favor, selecione' }]}>
           <Select>
-            <Option value="s">Sim</Option>
-            <Option value="n">Não</Option>
+            <Option value="S">SIM</Option>
+            <Option value="N">NÃO</Option>
           </Select>
         </Form.Item>
         <Form.Item label="Preferência de Aula" name="preferencia_aula" rules={[{ required: true, message: 'Por favor, selecione' }]}>
           <Select>
-            <Option value="online">Online</Option>
-            <Option value="presencial">Presencial</Option>
+            <Option value="ONLINE">ONLINE</Option>
+            <Option value="PRESENCIAL">PRESENCIAL</Option>
           </Select>
         </Form.Item>
         <Form.Item label="Meio de Comunicação para Aula" name="meio_comunicacao_aula" rules={[{ required: true, message: 'Por favor, selecione' }]}>
           <Select>
-            <Option value="whatsapp">WhatsApp</Option>
-            <Option value="email">Email</Option>
+            <Option value="WHATSAPP">WHATSAPP</Option>
+            <Option value="EMAIL">EMAIL</Option>
           </Select>
         </Form.Item>
         <Form.Item label="Condições de Assistir Aulas Online" name="assistir_online" rules={[{ required: true, message: 'Por favor, selecione' }]}>
           <Select>
-            <Option value="s">Sim</Option>
-            <Option value="n">Não</Option>
+            <Option value="S">SIM</Option>
+            <Option value="N">NÃO</Option>
           </Select>
         </Form.Item>
-        <Form.Item label="Por onde assistiria as aulas online" name="if_true_assistir_casa">
+        <Form.Item label="Por onde assistiria as aulas online" name="if_true_assistir_casa" rules={[{ required: true, message: 'Por favor, selecione' }]}>
           <Select>
-            <Option value="computador">Computador</Option>
-            <Option value="celular">Celular</Option>
-            <Option value="tablet">Tablet</Option>
-            <Option value="outro">Outro</Option>
+            <Option value="COMPUTADOR">COMPUTADOR</Option>
+            <Option value="CELULAR">CELULAR</Option>
+            <Option value="TABLET">TABLET</Option>
+            <Option value="OUTRO">OUTRO</Option>
           </Select>
         </Form.Item>
         <Title level={2}>Dados Pessoa Jurídica</Title>
         <Form.Item label="Nome Fantasia" name="nome_fantasia">
-          <Input />
+          <Input onChange={(e) => form.setFieldsValue({ nome_fantasia: e.target.value.toUpperCase() })} />
         </Form.Item>
         <Form.Item label="CNPJ" name="cnpj">
           <MaskedInput mask="00.000.000/0000-00" />
         </Form.Item>
         <Form.Item label="Situação da Empresa" name="situacao_empresa">
           <Select>
-            <Option value="ativa">Ativa</Option>
-            <Option value="n_ativa">Não Ativa</Option>
+            <Option value="ATIVA">ATIVA</Option>
+            <Option value="N_ATIVA">NÃO ATIVA</Option>
           </Select>
         </Form.Item>
         <Form.Item label="Porte da Empresa" name="porte_empresa">
           <Select>
-            <Option value="MEI">Microempreendedor Individual (MEI)</Option>
-            <Option value="ME">Microempresa (ME)</Option>
+            <Option value="MEI">MICROEMPREENDEDOR INDIVIDUAL (MEI)</Option>
+            <Option value="ME">MICROEMPRESA (ME)</Option>
           </Select>
         </Form.Item>
         <Form.Item label="Data de Abertura" name="data_abertura">
-          <DatePicker format="DD/MM/YYYY" />
+          <DatePicker format="YYYY-MM-DD" />
         </Form.Item>
         <Form.Item label="CNAE Principal" name="cnae_principal">
-          <Input />
+          <Input onChange={(e) => form.setFieldsValue({ cnae_principal: e.target.value.toUpperCase() })} />
         </Form.Item>
         <Form.Item label="Setor" name="setor">
           <Select>
-            <Option value="comercio">Comércio</Option>
-            <Option value="servico">Serviço</Option>
-            <Option value="agronegocios">Agronegócios</Option>
-            <Option value="industria">Indústria</Option>
+            <Option value="COMERCIO">COMÉRCIO</Option>
+            <Option value="SERVICO">SERVIÇO</Option>
+            <Option value="AGRONEGOCIOS">AGRONEGÓCIOS</Option>
+            <Option value="INDUSTRIA">INDÚSTRIA</Option>
           </Select>
         </Form.Item>
         <Form.Item label="Tipo de Vínculo" name="tipo_vinculo">
           <Select>
-            <Option value="representante">Representante</Option>
-            <Option value="responsavel">Responsável</Option>
+            <Option value="REPRESENTANTE">REPRESENTANTE</Option>
+            <Option value="RESPONSAVEL">RESPONSÁVEL</Option>
           </Select>
         </Form.Item>
         <Title level={2}>Módulos de Capacitação</Title>
@@ -184,22 +295,22 @@ const CreateFicha: React.FC = () => {
         </Form.Item>
         <Title level={2}>Declarações e Autorizações</Title>
         <Form.Item name="responsabilizacao" valuePropName="checked">
-          <Checkbox>Declaro estar CIENTE de que sou plenamente responsável pela veracidade das informações aqui prestadas...</Checkbox>
+          <Checkbox>Declaro estar CIENTE de que sou plenamente responsável pela veracidade das informações aqui prestadas, vez que serão comprovadas no início da capacitação, e de que a falsidade das informações acima implicará sanções cabíveis de natureza civil, administrativa e criminal.</Checkbox>
         </Form.Item>
         <Form.Item name="manejo_dados" valuePropName="checked">
-          <Checkbox>Declaro estar CIENTE de que, em razão da parceria com o SEBRAE...</Checkbox>
+          <Checkbox>Declaro estar CIENTE de que, em razão da parceria com o SEBRAE, a responsabilidade pelo manejo dos dados supra solicitados é compartilhada entre o SEBRAE e a Coordenadoria de Empreendedorismo e Sustentabilidade de Negócios (COESNE), na Secretaria Municipal do Desenvolvimento Econômico (SDE), caso seja verificada a necessidade de alterações.</Checkbox>
         </Form.Item>
         <Form.Item name="armazenamento_dados" valuePropName="checked">
-          <Checkbox>DECLARO estar CIENTE quanto ao armazenamento dos meus dados...</Checkbox>
+          <Checkbox>Declaro estar CIENTE quanto ao armazenamento dos meus dados no banco de cadastro da COESNE e pelo SEBRAE, para a formulação futura de políticas públicas com foco em públicos específicos, e para que eu seja informado(a) sobre a execução de novos projetos pela COESNE, respeitada a confidencialidade dos dados, que somente serão tratados por colaboradores formalmente autorizados no âmbito da SDE.</Checkbox>
         </Form.Item>
         <Form.Item name="autorizacao" valuePropName="checked">
-          <Checkbox>AUTORIZO ao SEBRAE o armazenamento e a utilização dos meus dados...</Checkbox>
+          <Checkbox>Autorizo ao SEBRAE o armazenamento e a utilização dos meus dados com a finalidade de oferecer produtos e serviços do seu interesse, realizar pesquisas relacionadas ao seu atendimento, realizar comunicações oficiais pelo SEBRAE ou por nossos prestadores de serviços por meio de diversos canais de comunicação e enriquecer o seu cadastro a partir de base de dados controladas pelo SEBRAE.</Checkbox>
         </Form.Item>
-        <Form.Item name="comunicacao" rules={[{ required: true, message: 'Por favor, selecione' }]}>
+        <Form.Item name="comunicacao" valuePropName="checked">
           <Checkbox.Group>
-            <Checkbox value="s">Sim, eu concordo.</Checkbox>
-            <Checkbox value="n">Não, eu não concordo.</Checkbox>
-          </Checkbox.Group>
+            <Checkbox value="S">Sim, eu concordo.</Checkbox>
+            <Checkbox value="N">Não, eu não concordo.</Checkbox>
+            </Checkbox.Group>
         </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit">
@@ -209,6 +320,6 @@ const CreateFicha: React.FC = () => {
       </Form>
     </div>
   );
-}
+};
 
 export default CreateFicha;
