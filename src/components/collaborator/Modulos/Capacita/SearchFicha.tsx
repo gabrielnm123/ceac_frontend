@@ -8,10 +8,10 @@ import moment from 'moment';
 
 const { Option } = Select;
 
-interface Atividade {
-  id: number;
-  atividade: string;
-}
+// interface Atividade {
+//   id: number;
+//   atividade: string;
+// }
 
 const escolaridadeMap: { [key: string]: string } = {
   'FUNDAMENTAL': 'ENSINO FUNDAMENTAL',
@@ -25,40 +25,50 @@ const generoMap: { [key: string]: string } = {
   'F': 'FEMININO'
 };
 
+const atividadeMap: { [key: string]: string } = {
+  'ARTESANATO': 'ARTESANATO',
+  'AGRICULTURA_URBANA': 'AGRICULTURA URBANA',
+  'COMERCIO': 'COMÉRCIO',
+  'ESTETICA_E_BELEZA': 'ESTÉTICA E BELEZA',
+  'GASTRONOMIA': 'GASTRONOMIA',
+  'INDUSTRIA': 'INDÚSTRIA',
+  'SERVICO': 'SERVIÇO'
+}
+
 const SearchFicha: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [data, setData] = useState<any[]>([]);
-  const [atividades, setAtividades] = useState<{ [key: number]: string }>({});
+  // const [atividades, setAtividades] = useState<{ [key: number]: string }>({});
   const [form] = Form.useForm();
 
   authenticationVerify('/login');
 
   useEffect(() => {
-    const fetchAtividades = async () => {
-      try {
-        const response = await axiosInstance.get('capacita/atividades/');
-        const atividadeMap = response.data.reduce((map: { [key: number]: string }, atividade: Atividade) => {
-          map[atividade.id] = atividade.atividade.toUpperCase();
-          return map;
-        }, {});
-        setAtividades(atividadeMap);
-      } catch (error) {
-        message.error('Erro ao carregar atividades, tente novamente.');
-      }
-    };
+    // const fetchAtividades = async () => {
+    //   try {
+    //     const response = await axiosInstance.get('capacita/atividades/');
+    //     const atividadeMap = response.data.reduce((map: { [key: number]: string }, atividade: Atividade) => {
+    //       map[atividade.id] = atividade.atividade.toUpperCase();
+    //       return map;
+    //     }, {});
+    //     setAtividades(atividadeMap);
+    //   } catch (error) {
+    //     message.error('Erro ao carregar atividades, tente novamente.');
+    //   }
+    // };
 
     const fetchFichas = async () => {
       try {
         const response = await axiosInstance.get('capacita/fichas/');
-        const fichas = response.data.map((ficha: any) => ({
-          ...ficha,
-          atividade: atividades[parseInt(ficha.atividade)] || ficha.atividade,
-        }));
-        setData(fichas);
+        // const fichas = response.data.map((ficha: any) => ({
+        //   ...ficha,
+        //   atividade: atividades[parseInt(ficha.atividade)] || ficha.atividade,
+        // }));
+        setData(response.data);
       } catch {}
     }
 
-    fetchAtividades();
+    // fetchAtividades();
     fetchFichas();
   }, []);
 
@@ -79,9 +89,9 @@ const SearchFicha: React.FC = () => {
       values.fixo = values.fixo.replace(/\D/g, '');
     }
 
-    if (values.atividade) {
-      values.atividade = atividades[parseInt(values.atividade)];
-    }
+    // if (values.atividade) {
+    //   values.atividade = atividades[parseInt(values.atividade)];
+    // }
 
     const cleanedValues = Object.fromEntries(
       Object.entries(values).filter(([_, v]) => v != null && v !== "")
@@ -90,11 +100,11 @@ const SearchFicha: React.FC = () => {
     setLoading(true);
     try {
       const response = await axiosInstance.get('capacita/fichas/', { params: cleanedValues });
-      const fichas = response.data.map((ficha: any) => ({
-        ...ficha,
-        atividade: atividades[parseInt(ficha.atividade)] || ficha.atividade,
-      }));
-      setData(fichas);
+      // const fichas = response.data.map((ficha: any) => ({
+      //   ...ficha,
+      //   atividade: atividades[parseInt(ficha.atividade)] || ficha.atividade,
+      // }));
+      setData(response.data);
       if (response.data.length === 0) {
         message.info('Nenhuma ficha encontrada.');
       } else {
@@ -118,7 +128,7 @@ const SearchFicha: React.FC = () => {
     { title: 'Gênero', dataIndex: 'genero', key: 'genero', render: (genero: string) => generoMap[genero] || genero },
     { title: 'Escolaridade', dataIndex: 'escolaridade', key: 'escolaridade', render: (escolaridade: string) => escolaridadeMap[escolaridade] || escolaridade },
     { title: 'UF', dataIndex: 'uf', key: 'uf' },
-    { title: 'Atividade', dataIndex: 'atividade', key: 'atividade', render: (atividade: string) => atividades[parseInt(atividade)] || atividade },
+    { title: 'Atividade', dataIndex: 'atividade', key: 'atividade', render: (atividade: string) => atividadeMap[atividade] || atividade },
     { title: 'Email', dataIndex: 'email', key: 'email' },
     { title: 'Celular', dataIndex: 'celular', key: 'celular', render: (celular: string) => celular ? celular.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3') : '' },
     { title: 'Fixo', dataIndex: 'fixo', key: 'fixo', render: (fixo: string) => fixo ? fixo.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3') : '' },
@@ -184,9 +194,13 @@ const SearchFicha: React.FC = () => {
           </Form.Item>
           <Form.Item label="Atividade" name="atividade" className="form-search-ficha-atividade">
             <Select allowClear showSearch className="form-search-ficha-select-atividade">
-              {Object.entries(atividades).map(([id, atividade]) => (
-                <Option key={id} value={id}>{atividade}</Option>
-              ))}
+              <Option value="ARTESANATO">ARTESANATO</Option>
+              <Option value="AGRICULTURA_URBANA">AGRICULTURA URBANA</Option>
+              <Option value="COMERCIO">COMÉRCIO</Option>
+              <Option value="ESTETICA_E_BELEZA">ESTÉTICA E BELEZA</Option>
+              <Option value="GASTRONOMIA">GASTRONOMIA</Option>
+              <Option value="INDUSTRIA">INDÚSTRIA</Option>
+              <Option value="SERVICO">SERVIÇO</Option>
             </Select>
           </Form.Item>
           <Form.Item label="Email" name="email" className="form-search-ficha-email">
