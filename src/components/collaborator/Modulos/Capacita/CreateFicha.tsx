@@ -12,29 +12,29 @@ const { Title } = Typography;
 const CreateFicha: React.FC = () => {
   authenticationVerify('/login');
   const [form] = Form.useForm();
-  const [atividades, setAtividades] = useState<{ [key: number]: string }>({});
+  // const [atividades, setAtividades] = useState<{ [key: number]: string }>({});
   const [isOnline, setIsOnline] = useState<boolean>(false);
   const [isPJRequired, setIsPJRequired] = useState<boolean>(false); // Estado para controlar obrigatoriedade de PJ
 
-  useEffect(() => {
-    const fetchAtividades = async () => {
-      try {
-        const response = await axiosInstance.get('capacita/atividades/');
-        const atividadeMap = response.data.reduce((map: { [key: number]: string }, atividade: any) => {
-          map[atividade.id] = atividade.atividade.toUpperCase();
-          return map;
-        }, {});
-        setAtividades(atividadeMap);
-      } catch (error) {
-        message.error('Erro ao carregar atividades, tente novamente.');
-      }
-    };
-    fetchAtividades();
-  }, []);
+  // useEffect(() => {
+  //   const fetchAtividades = async () => {
+  //     try {
+  //       const response = await axiosInstance.get('capacita/atividades/');
+  //       const atividadeMap = response.data.reduce((map: { [key: number]: string }, atividade: any) => {
+  //         map[atividade.id] = atividade.atividade.toUpperCase();
+  //         return map;
+  //       }, {});
+  //       setAtividades(atividadeMap);
+  //     } catch (error) {
+  //       message.error('Erro ao carregar atividades, tente novamente.');
+  //     }
+  //   };
+  //   fetchAtividades();
+  // }, []);
 
   useEffect(() => {
     form.setFieldsValue({ if_true_assistir_casa: undefined });
-  }, [isOnline, form]);
+  }, [form.getFieldValue('if_true_assistir_casa')]);
 
   const handlePJFieldChange = () => {
     const pjFields = ['nome_fantasia', 'cnpj', 'situacao_empresa', 'porte_empresa', 'data_abertura', 'cnae_principal', 'setor', 'tipo_vinculo'];
@@ -163,8 +163,6 @@ const CreateFicha: React.FC = () => {
         values.comunicacao = values.comunicacao === 'Sim, eu concordo.' ? 'S' : 'N';
     }
 
-    console.log(values);
-  
     try {
       const response = await axiosInstance.post('capacita/fichas/', values);
       message.success('Ficha criada com sucesso!');
@@ -206,6 +204,7 @@ const CreateFicha: React.FC = () => {
         <Form.Item
           label="CPF"
           name="cpf"
+          validateTrigger="onBlur"
           rules={[
             { required: true, message: 'Por favor, insira o CPF' },
             {
@@ -262,10 +261,14 @@ const CreateFicha: React.FC = () => {
           rules={[{ required: true, message: 'Por favor, selecione a atividade' }]}
         >
           <Select>
-            {Object.entries(atividades).map(([id, atividade]) => (
-              <Option key={id} value={id}>{atividade}</Option>
-            ))}
-          </Select>
+            <Option value="ARTESANATO">ARTESANATO</Option>
+            <Option value="AGRICULTURA_URBANA">AGRICULTURA URBANA</Option>
+            <Option value="COMERCIO">COMÉRCIO</Option>
+            <Option value="ESTETICA_E_BELEZA">ESTÉTICA E BELEZA</Option>
+            <Option value="GASTRONOMIA">GASTRONOMIA</Option>
+            <Option value="INDUSTRIA">INDÚSTRIA</Option>
+            <Option value="SERVICO">SERVIÇO</Option>
+        </Select>
         </Form.Item>
 
         <Form.Item
