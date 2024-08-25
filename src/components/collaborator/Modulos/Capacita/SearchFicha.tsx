@@ -5,13 +5,9 @@ import axiosInstance from "../../../../services/axiosInstance";
 import authenticationVerify from "../../../../services/authenticationVerify";
 import '../../css/SearchFicha.css';
 import moment from 'moment';
+import modulosAprendizagem from "../../types/modulosAprendizagens";
 
 const { Option } = Select;
-
-// interface Atividade {
-//   id: number;
-//   atividade: string;
-// }
 
 const escolaridadeMap: { [key: string]: string } = {
   'FUNDAMENTAL': 'ENSINO FUNDAMENTAL',
@@ -38,24 +34,41 @@ const atividadeMap: { [key: string]: string } = {
 const SearchFicha: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [data, setData] = useState<any[]>([]);
-  // const [atividades, setAtividades] = useState<{ [key: number]: string }>({});
+  const [getModulosAprendizagem, setModulosAprendizagem] = useState<[] | Array<Object>>([]);
+  const [getColumns, setColumns] = useState<Array<null> | Array<Object>>([])
   const [form] = Form.useForm();
-
+  
   authenticationVerify('/login');
-
+  
   useEffect(() => {
-    // const fetchAtividades = async () => {
-    //   try {
-    //     const response = await axiosInstance.get('capacita/atividades/');
-    //     const atividadeMap = response.data.reduce((map: { [key: number]: string }, atividade: Atividade) => {
-    //       map[atividade.id] = atividade.atividade.toUpperCase();
-    //       return map;
-    //     }, {});
-    //     setAtividades(atividadeMap);
-    //   } catch (error) {
-    //     message.error('Erro ao carregar atividades, tente novamente.');
-    //   }
-    // };
+    const fetchModulosAprendizagem = async () => {
+      try {
+        const response = await axiosInstance.get('capacita/modulos_aprendizagem/');
+        setModulosAprendizagem(response.data);
+        const columns = [
+          { title: 'Nome', dataIndex: 'nome_completo', key: 'nome_completo' },
+          {title: 'Módulos de Aprendizagem', dataIndex:'modulos_aprendizagem', key:'modulos_aprendizagem', render: (id: number) => response.data.map(
+            (modulo: modulosAprendizagem) => {
+              if (modulo.id === id) {
+                return modulo.nome
+              }
+            }
+          )},
+          { title: 'CPF', dataIndex: 'cpf', key: 'cpf', render: (cpf: string) => cpf ? cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : '' },
+          { title: 'Data de Nascimento', dataIndex: 'data_nascimento', key: 'data_nascimento', render: (text: string) => text ? moment(text).format('DD/MM/YYYY') : '' },
+          { title: 'Gênero', dataIndex: 'genero', key: 'genero', render: (genero: string) => generoMap[genero] || genero },
+          { title: 'Escolaridade', dataIndex: 'escolaridade', key: 'escolaridade', render: (escolaridade: string) => escolaridadeMap[escolaridade] || escolaridade },
+          { title: 'UF', dataIndex: 'uf', key: 'uf' },
+          { title: 'Atividade', dataIndex: 'atividade', key: 'atividade', render: (atividade: string) => atividadeMap[atividade] || atividade },
+          { title: 'Email', dataIndex: 'email', key: 'email' },
+          { title: 'Celular', dataIndex: 'celular', key: 'celular', render: (celular: string) => celular ? celular.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3') : '' },
+          { title: 'Fixo', dataIndex: 'fixo', key: 'fixo', render: (fixo: string) => fixo ? fixo.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3') : '' },
+        ];
+        setColumns(columns);
+      } catch (error) {
+        message.error('Erro ao carregar os módulos de aprendizagem, tente novamente.');
+      }
+    };
 
     const fetchFichas = async () => {
       try {
@@ -64,11 +77,12 @@ const SearchFicha: React.FC = () => {
         //   ...ficha,
         //   atividade: atividades[parseInt(ficha.atividade)] || ficha.atividade,
         // }));
+        // console.log(response.data)
         setData(response.data);
       } catch {}
     }
 
-    // fetchAtividades();
+    fetchModulosAprendizagem();
     fetchFichas();
   }, []);
 
@@ -121,39 +135,34 @@ const SearchFicha: React.FC = () => {
     form.resetFields();
   };
 
-  const columns = [
-    { title: 'Nome', dataIndex: 'nome_completo', key: 'nome_completo' },
-    { title: 'CPF', dataIndex: 'cpf', key: 'cpf', render: (cpf: string) => cpf ? cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : '' },
-    { title: 'Data de Nascimento', dataIndex: 'data_nascimento', key: 'data_nascimento', render: (text: string) => text ? moment(text).format('DD/MM/YYYY') : '' },
-    { title: 'Gênero', dataIndex: 'genero', key: 'genero', render: (genero: string) => generoMap[genero] || genero },
-    { title: 'Escolaridade', dataIndex: 'escolaridade', key: 'escolaridade', render: (escolaridade: string) => escolaridadeMap[escolaridade] || escolaridade },
-    { title: 'UF', dataIndex: 'uf', key: 'uf' },
-    { title: 'Atividade', dataIndex: 'atividade', key: 'atividade', render: (atividade: string) => atividadeMap[atividade] || atividade },
-    { title: 'Email', dataIndex: 'email', key: 'email' },
-    { title: 'Celular', dataIndex: 'celular', key: 'celular', render: (celular: string) => celular ? celular.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3') : '' },
-    { title: 'Fixo', dataIndex: 'fixo', key: 'fixo', render: (fixo: string) => fixo ? fixo.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3') : '' },
-  ];
 
   return (
     <div className="search-ficha">
       <Form form={form} className="form-search-ficha" onFinish={onFinish}>
         <div className="form-search-ficha-minus-button">
-          <Form.Item label="Nome" name="nome" className="form-search-ficha-nome">
-            <Input onChange={(e) => form.setFieldsValue({ nome: e.target.value.toUpperCase() })} />
+          <Form.Item label="Nome" name="nome" className="form-search-ficha-nome form-search-ficha-form-item">
+            <Input onChange={(e) => form.setFieldsValue({ nome: e.target.value.toUpperCase() })} allowClear/>
           </Form.Item>
-          <Form.Item label="CPF" name="cpf" className="form-search-ficha-cpf">
-            <MaskedInput mask="000.000.000-00" />
+          <Form.Item label="Modulos de Aprendizagem" name='modulos_aprendizagem' className="form-search-ficha-modulos-aprendizagem form-search-ficha-form-item">
+            <Select allowClear showSearch className="form-search-ficha-select-modulos-aprendizagem" options={getModulosAprendizagem.map(
+              (modulo: modulosAprendizagem) => {
+                return {value: modulo.id, label:modulo.nome}
+              }
+            )}/>
           </Form.Item>
-          <Form.Item label="Data de Nascimento" name="data_nascimento" className="form-search-ficha-nascimento">
-            <DatePicker format="DD/MM/YYYY" />
+          <Form.Item label="CPF" name="cpf" className="form-search-ficha-cpf form-search-ficha-form-item">
+            <MaskedInput mask="000.000.000-00" allowClear/>
           </Form.Item>
-          <Form.Item label="Gênero" name="genero" className="form-search-ficha-genero">
+          <Form.Item label="Data de Nascimento" name="data_nascimento" className="form-search-ficha-nascimento form-search-ficha-form-item">
+            <DatePicker format="DD/MM/YYYY" allowClear/>
+          </Form.Item>
+          <Form.Item label="Gênero" name="genero" className="form-search-ficha-genero form-search-ficha-form-item">
             <Select allowClear showSearch className="form-search-ficha-select-genero">
               <Option value="M">MASCULINO</Option>
               <Option value="F">FEMININO</Option>
             </Select>
           </Form.Item>
-          <Form.Item label="Escolaridade" name="escolaridade" className="form-search-ficha-escolaridade">
+          <Form.Item label="Escolaridade" name="escolaridade" className="form-search-ficha-escolaridade form-search-ficha-form-item">
             <Select allowClear showSearch className="form-search-ficha-select-escolaridade">
               <Option value="FUNDAMENTAL">ENSINO FUNDAMENTAL</Option>
               <Option value="MEDIO">ENSINO MÉDIO</Option>
@@ -161,7 +170,7 @@ const SearchFicha: React.FC = () => {
               <Option value="POS_GRADUACAO">PÓS-GRADUAÇÃO</Option>
             </Select>
           </Form.Item>
-          <Form.Item label="UF" name="uf" className="form-search-ficha-uf">
+          <Form.Item label="UF" name="uf" className="form-search-ficha-uf form-search-ficha-form-item">
             <Select allowClear showSearch className="form-search-ficha-select-uf">
               <Option value="AC">ACRE</Option>
               <Option value="AL">ALAGOAS</Option>
@@ -192,7 +201,7 @@ const SearchFicha: React.FC = () => {
               <Option value="TO">TOCANTINS</Option>
             </Select>
           </Form.Item>
-          <Form.Item label="Atividade" name="atividade" className="form-search-ficha-atividade">
+          <Form.Item label="Atividade" name="atividade" className="form-search-ficha-atividade form-search-ficha-form-item">
             <Select allowClear showSearch className="form-search-ficha-select-atividade">
               <Option value="ARTESANATO">ARTESANATO</Option>
               <Option value="AGRICULTURA_URBANA">AGRICULTURA URBANA</Option>
@@ -203,17 +212,17 @@ const SearchFicha: React.FC = () => {
               <Option value="SERVICO">SERVIÇO</Option>
             </Select>
           </Form.Item>
-          <Form.Item label="Email" name="email" className="form-search-ficha-email">
-            <Input />
+          <Form.Item label="Email" name="email" className="form-search-ficha-email form-search-ficha-form-item">
+            <Input type="email" allowClear/>
           </Form.Item>
-          <Form.Item label="Celular" name="celular" className="form-search-ficha-celular">
-            <MaskedInput mask="(00) 0.0000-0000" />
+          <Form.Item label="Celular" name="celular" className="form-search-ficha-celular form-search-ficha-form-item">
+            <MaskedInput mask="(00) 0.0000-0000" allowClear/>
           </Form.Item>
-          <Form.Item label="Fixo" name="fixo" className="form-search-ficha-fixo">
-            <MaskedInput mask="(00) 0000-0000" />
+          <Form.Item label="Fixo" name="fixo" className="form-search-ficha-fixo form-search-ficha-form-item">
+            <MaskedInput mask="(00) 0000-0000" allowClear/>
           </Form.Item>
         </div>
-        <Form.Item className="form-search-ficha-button">
+        <Form.Item className="form-search-ficha-button form-search-ficha-form-item">
           <Button type="primary" htmlType="submit" loading={loading}>
             Buscar
           </Button>
@@ -224,10 +233,10 @@ const SearchFicha: React.FC = () => {
       </Form>
       <div className="table-search-ficha">
         <Table
-          columns={columns}
+          columns={getColumns}
           dataSource={data}
           rowKey="id"
-          pagination={{ pageSize: 10 }} // Número de fichas por página
+          pagination={{ pageSize: 10 }}
         />
       </div>
     </div>

@@ -1,13 +1,13 @@
 import React from 'react';
-import type MenuItem from '../types/MenuItem';
+import type menuItem from '../types/menuItem';
 
 function getMenuItem(
   label: React.ReactNode,
   key: React.Key,
   icon?: React.ReactNode,
-  children?: MenuItem[],
+  children?: menuItem[],
   onClick?: () => void,
-): MenuItem {
+): menuItem {
   return {
     key,
     icon,

@@ -5,10 +5,10 @@ import { useNavigate } from "react-router-dom";
 import Base from "../Base";
 import itemUser from "../menuItems/itemUser";
 import itemCapacita from "../menuItems/itemCapacita";
-import type MenuItem from "../types/MenuItem";
+import type menuItem from "../types/menuItem";
 
 const Modulos: React.FC = () => {
-  const [getItems, setItems] = useState<null | Array<MenuItem>>(null);
+  const [getItems, setItems] = useState<null | Array<menuItem>>(null);
   const [getBaseContent, setBaseContent] = useState<null | React.ReactNode>(null);
   const [getBaseTitle, setBaseTitle] = useState<null | string>(null);
   const navigate = useNavigate();

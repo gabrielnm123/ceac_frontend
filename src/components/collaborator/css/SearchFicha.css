@@ -18,6 +18,14 @@
   align-self: center;
 }
 
+.form-search-ficha-form-item{
+  margin: 5px;
+}
+
+.form-search-ficha-select-modulos-aprendizagem{
+  min-width: 232px;
+}
+
 .form-search-ficha-select-genero{
   min-width: 115px;
 }

@@ -4,7 +4,7 @@ import authenticationVerify from "../../services/authenticationVerify";
 import perfisObject from "../../services/perfisObject";
 import './css/Perfil.css';
 
-const Perfis: React.FC = () => {
+const Perfil: React.FC = () => {
   const accessStatus = authenticationVerify('/login');
   const perfisNamePermissions: {[key: string]: Array<string>} = perfisObject();
   const perfisNames = Object.keys(perfisNamePermissions);
@@ -28,4 +28,4 @@ const Perfis: React.FC = () => {
   }
 };
 
-export default Perfis;
+export default Perfil;

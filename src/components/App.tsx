@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
 import Base from './collaborator/Base';
 import Login from './collaborator/Login';
@@ -10,6 +10,9 @@ import moment from 'moment';
 import 'moment/locale/pt-br';
 
 const App: React.FC = () => {
+  const [getBaseContent, setBaseContent] = useState<JSX.Element>(<Perfil />);
+  const [getBaseTitle, setBaseTitle] = useState<string>('Perfil');
+
   useEffect(() => {
     document.documentElement.lang = 'pt-BR';
     moment.locale('pt-br');
@@ -25,7 +28,7 @@ const App: React.FC = () => {
     <BrowserRouter basename="/colaborador">
       <Routes>
         <Route path='/login' element={<Base content={<Login />} title='Autenticação' />} />
-        <Route path='/perfil' element={<Base content={<Perfil />} title='Perfil' menuItem={itemUser()} />} />
+        <Route path='/perfil' element={<Base content={getBaseContent} title={getBaseTitle} menuItem={itemUser(setBaseContent, setBaseTitle)} />} />
         <Route path={`/${localStorage.getItem('perfilName')}`} element={<Modulo /> } />
         <Route path="*" element={<Navigate to="/perfil" />} />
       </Routes>

@@ -1,10 +1,10 @@
-import MenuItem from "./MenuItem";
+import MenuItem from "./menuItem";
 import React = require("react");
 
-type BaseProps = {
+type baseProps = {
   content: React.ReactNode;
   title?: string;
   menuItem?: Array<MenuItem>;
 };
 
-export default BaseProps;
+export default baseProps;
