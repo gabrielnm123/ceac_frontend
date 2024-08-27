@@ -28,24 +28,24 @@ const itemCapacita = (
   
   if (permissions.includes('SUPER USUÁRIO')) {
     permissionArray.push(
-      getMenuItem('Buscar Ficha', 'capacita_buscarFicha', <SearchOutlined />, undefined, buscarFicha)
+      getMenuItem('Buscar Ficha', 'buscarFicha', <SearchOutlined />, undefined, buscarFicha)
     );
     permissionArray.push(
-      getMenuItem('Criar Ficha', 'capacita_criarFicha', <FormOutlined />, undefined, criarFicha)
+      getMenuItem('Criar Ficha', 'criarFicha', <FormOutlined />, undefined, criarFicha)
     );
     setBaseContent(<SearchFicha />);
     setBaseTitle('Buscar Ficha de Inscrição de Capacitação');
   } else {
-    if (permissions.includes('capacita_buscarFicha')) {
+    if (permissions.includes('buscarFicha')) {
       permissionArray.push(
-        getMenuItem('Buscar Ficha', 'capacita_buscarFicha', <SearchOutlined />, undefined, buscarFicha)
+        getMenuItem('Buscar Ficha', 'buscarFicha', <SearchOutlined />, undefined, buscarFicha)
       );
       setBaseContent(<SearchFicha />);
       setBaseTitle('Buscar Ficha de Inscrição de Capacitação');
     }
-    if (permissions.includes('capacita_criarFicha')) {
+    if (permissions.includes('criarFicha')) {
       permissionArray.push(
-        getMenuItem('Criar Ficha', 'capacita_criarFicha', <FormOutlined />, undefined, criarFicha)
+        getMenuItem('Criar Ficha', 'criarFicha', <FormOutlined />, undefined, criarFicha)
       );
     }
   }

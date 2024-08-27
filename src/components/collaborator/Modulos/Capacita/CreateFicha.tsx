@@ -16,25 +16,14 @@ const CreateFicha: React.FC = () => {
   const [isOnline, setIsOnline] = useState<boolean>(false);
   const [isPJRequired, setIsPJRequired] = useState<boolean>(false); // Estado para controlar obrigatoriedade de PJ
 
-  // useEffect(() => {
-  //   const fetchAtividades = async () => {
-  //     try {
-  //       const response = await axiosInstance.get('capacita/atividades/');
-  //       const atividadeMap = response.data.reduce((map: { [key: number]: string }, atividade: any) => {
-  //         map[atividade.id] = atividade.atividade.toUpperCase();
-  //         return map;
-  //       }, {});
-  //       setAtividades(atividadeMap);
-  //     } catch (error) {
-  //       message.error('Erro ao carregar atividades, tente novamente.');
-  //     }
-  //   };
-  //   fetchAtividades();
-  // }, []);
-
   useEffect(() => {
     form.setFieldsValue({ if_true_assistir_casa: undefined });
   }, [form.getFieldValue('if_true_assistir_casa')]);
+
+  axiosInstance.get('capacita/modulos_aprendizagem/')
+    .then(response =>  {
+      response
+    })
 
   const handlePJFieldChange = () => {
     const pjFields = ['nome_fantasia', 'cnpj', 'situacao_empresa', 'porte_empresa', 'data_abertura', 'cnae_principal', 'setor', 'tipo_vinculo'];
@@ -580,7 +569,8 @@ const CreateFicha: React.FC = () => {
         </Form.Item>
 
         <Title level={2}>Módulos de Capacitação</Title>
-        <Form.Item name="modulo_marketing" valuePropName="checked">
+
+        {/* <Form.Item name="modulo_marketing" valuePropName="checked">
           <Checkbox>Marketing (Como dominar o mercado digital)</Checkbox>
         </Form.Item>
         <Form.Item name="modulo_financeiro" valuePropName="checked">
@@ -591,7 +581,7 @@ const CreateFicha: React.FC = () => {
         </Form.Item>
         <Form.Item name="modulo_outros" valuePropName="checked">
           <Checkbox>Outros</Checkbox>
-        </Form.Item>
+        </Form.Item> */}
         <Title level={2}>Declarações e Autorizações</Title>
         <Form.Item name="responsabilizacao" valuePropName="checked">
           <Checkbox>Declaro estar CIENTE de que sou plenamente responsável pela veracidade das informações aqui prestadas, vez que serão comprovadas no início da capacitação, e de que a falsidade das informações acima implicará sanções cabíveis de natureza civil, administrativa e criminal.</Checkbox>

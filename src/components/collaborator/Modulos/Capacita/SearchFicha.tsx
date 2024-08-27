@@ -47,7 +47,7 @@ const SearchFicha: React.FC = () => {
         setModulosAprendizagem(response.data);
         const columns = [
           { title: 'Nome', dataIndex: 'nome_completo', key: 'nome_completo' },
-          {title: 'Módulos de Aprendizagem', dataIndex:'modulos_aprendizagem', key:'modulos_aprendizagem', render: (id: number) => response.data.map(
+          {title: 'Módulo de Aprendizagem', dataIndex:'modulo_aprendizagem', key:'modulo_aprendizagem', render: (id: number) => response.data.map(
             (modulo: modulosAprendizagem) => {
               if (modulo.id === id) {
                 return modulo.nome
@@ -143,7 +143,7 @@ const SearchFicha: React.FC = () => {
           <Form.Item label="Nome" name="nome" className="form-search-ficha-nome form-search-ficha-form-item">
             <Input onChange={(e) => form.setFieldsValue({ nome: e.target.value.toUpperCase() })} allowClear/>
           </Form.Item>
-          <Form.Item label="Modulos de Aprendizagem" name='modulos_aprendizagem' className="form-search-ficha-modulos-aprendizagem form-search-ficha-form-item">
+          <Form.Item label="Módulo de Aprendizagem" name='modulo_aprendizagem' className="form-search-ficha-modulos-aprendizagem form-search-ficha-form-item">
             <Select allowClear showSearch className="form-search-ficha-select-modulos-aprendizagem" options={getModulosAprendizagem.map(
               (modulo: modulosAprendizagem) => {
                 return {value: modulo.id, label:modulo.nome}
