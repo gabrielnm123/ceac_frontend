@@ -1,6 +1,6 @@
-type modulosAprendizagem = {
+type modulosCapacita = {
   id: number;
   nome: string;
 }
 
-export default modulosAprendizagem
+export default modulosCapacita

@@ -5,6 +5,7 @@ import axios from 'axios';
 import axiosInstance from "../../../../services/axiosInstance";
 import authenticationVerify from "../../../../services/authenticationVerify";
 import '../../css/CreateFicha.css';
+import modulosCapacita from "../../types/modulosAprendizagens";
 
 const { Option } = Select;
 const { Title } = Typography;
@@ -15,14 +16,18 @@ const CreateFicha: React.FC = () => {
   // const [atividades, setAtividades] = useState<{ [key: number]: string }>({});
   const [isOnline, setIsOnline] = useState<boolean>(false);
   const [isPJRequired, setIsPJRequired] = useState<boolean>(false); // Estado para controlar obrigatoriedade de PJ
+  const [getModulosCapacita, setModulosCapacita] = useState<Array<Object> | []>([])
 
   useEffect(() => {
     form.setFieldsValue({ if_true_assistir_casa: undefined });
   }, [form.getFieldValue('if_true_assistir_casa')]);
 
-  axiosInstance.get('capacita/modulos_aprendizagem/')
+  axiosInstance.get('capacita/modulos_capacita/')
     .then(response =>  {
-      response
+      setModulosCapacita(response.data)
+    })
+    .catch(error => {
+      message.error('Erro ao atualizar os Módulos de Aprendizagem, atualize a página')
     })
 
   const handlePJFieldChange = () => {
@@ -73,19 +78,19 @@ const CreateFicha: React.FC = () => {
   };
 
   const isValidCNAE = (cnae: string) => {
-    return /^\d{7}$/.test(cnae);
+    return /^\d{7}$/.test(cnae.replace(/\D/g, ''));
   };
 
   const isValidCelular = (celular: string) => {
-    return /^\d{11}$/.test(celular);
+    return /^\d{11}$/.test(celular.replace(/\D/g, ''));
   };
 
   const isValidFixo = (fixo: string) => {
-    return /^\d{10}$/.test(fixo);
+    return /^\d{10}$/.test(fixo.replace(/\D/g, ''));
   };
 
   const isValidCEP = (cep: string) => {
-    return /^\d{8}$/.test(cep);
+    return /^\d{8}$/.test(cep.replace(/\D/g, ''));
   };
 
   const fetchAddressByCEP = async (cep: string) => {
@@ -569,19 +574,11 @@ const CreateFicha: React.FC = () => {
         </Form.Item>
 
         <Title level={2}>Módulos de Capacitação</Title>
-
-        {/* <Form.Item name="modulo_marketing" valuePropName="checked">
-          <Checkbox>Marketing (Como dominar o mercado digital)</Checkbox>
+        <Form.Item label="Selecione um Módulo" name="modulo_capacita" rules={[{required: true, message: "Selecione um Módulo"}]}>
+          <Select allowClear showSearch options={getModulosCapacita.map((modulo: modulosCapacita) => {
+            return {value: modulo.id, label: modulo.nome}
+          })}/>
         </Form.Item>
-        <Form.Item name="modulo_financeiro" valuePropName="checked">
-          <Checkbox>Financeiro (Domine o fluxo de caixa de sua empresa)</Checkbox>
-        </Form.Item>
-        <Form.Item name="modulo_planejamento" valuePropName="checked">
-          <Checkbox>Planejamento (Modelo de negócio que funciona, aprenda a fazer o seu)</Checkbox>
-        </Form.Item>
-        <Form.Item name="modulo_outros" valuePropName="checked">
-          <Checkbox>Outros</Checkbox>
-        </Form.Item> */}
         <Title level={2}>Declarações e Autorizações</Title>
         <Form.Item name="responsabilizacao" valuePropName="checked">
           <Checkbox>Declaro estar CIENTE de que sou plenamente responsável pela veracidade das informações aqui prestadas, vez que serão comprovadas no início da capacitação, e de que a falsidade das informações acima implicará sanções cabíveis de natureza civil, administrativa e criminal.</Checkbox>

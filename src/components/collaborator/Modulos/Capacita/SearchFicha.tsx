@@ -5,7 +5,7 @@ import axiosInstance from "../../../../services/axiosInstance";
 import authenticationVerify from "../../../../services/authenticationVerify";
 import '../../css/SearchFicha.css';
 import moment from 'moment';
-import modulosAprendizagem from "../../types/modulosAprendizagens";
+import modulosCapacita from "../../types/modulosAprendizagens";
 
 const { Option } = Select;
 
@@ -34,21 +34,21 @@ const atividadeMap: { [key: string]: string } = {
 const SearchFicha: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [data, setData] = useState<any[]>([]);
-  const [getModulosAprendizagem, setModulosAprendizagem] = useState<[] | Array<Object>>([]);
+  const [getModulosCapacita, setModulosCapacita] = useState<[] | Array<Object>>([]);
   const [getColumns, setColumns] = useState<Array<null> | Array<Object>>([])
   const [form] = Form.useForm();
   
   authenticationVerify('/login');
   
   useEffect(() => {
-    const fetchModulosAprendizagem = async () => {
+    const fetchModulosCapacita = async () => {
       try {
-        const response = await axiosInstance.get('capacita/modulos_aprendizagem/');
-        setModulosAprendizagem(response.data);
+        const response = await axiosInstance.get('capacita/modulos_capacita/');
+        setModulosCapacita(response.data);
         const columns = [
           { title: 'Nome', dataIndex: 'nome_completo', key: 'nome_completo' },
-          {title: 'Módulo de Aprendizagem', dataIndex:'modulo_aprendizagem', key:'modulo_aprendizagem', render: (id: number) => response.data.map(
-            (modulo: modulosAprendizagem) => {
+          {title: 'Módulo de Aprendizagem', dataIndex:'modulo_capacita', key:'modulo_capacita', render: (id: number) => response.data.map(
+            (modulo: modulosCapacita) => {
               if (modulo.id === id) {
                 return modulo.nome
               }
@@ -82,7 +82,7 @@ const SearchFicha: React.FC = () => {
       } catch {}
     }
 
-    fetchModulosAprendizagem();
+    fetchModulosCapacita();
     fetchFichas();
   }, []);
 
@@ -143,9 +143,9 @@ const SearchFicha: React.FC = () => {
           <Form.Item label="Nome" name="nome" className="form-search-ficha-nome form-search-ficha-form-item">
             <Input onChange={(e) => form.setFieldsValue({ nome: e.target.value.toUpperCase() })} allowClear/>
           </Form.Item>
-          <Form.Item label="Módulo de Aprendizagem" name='modulo_aprendizagem' className="form-search-ficha-modulos-aprendizagem form-search-ficha-form-item">
-            <Select allowClear showSearch className="form-search-ficha-select-modulos-aprendizagem" options={getModulosAprendizagem.map(
-              (modulo: modulosAprendizagem) => {
+          <Form.Item label="Módulo de Capacitação" name='modulo_capacita' className="form-search-ficha-modulos-capacita form-search-ficha-form-item">
+            <Select allowClear showSearch className="form-search-ficha-select-modulos-capacita" options={getModulosCapacita.map(
+              (modulo: modulosCapacita) => {
                 return {value: modulo.id, label:modulo.nome}
               }
             )}/>
