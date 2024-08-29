@@ -5,7 +5,7 @@ import axios from 'axios';
 import axiosInstance from "../../../../services/axiosInstance";
 import authenticationVerify from "../../../../services/authenticationVerify";
 import '../../css/CreateFicha.css';
-import modulosCapacita from "../../types/modulosAprendizagens";
+import modulosCapacitaType from "../../types/modulosCapacita";
 
 const { Option } = Select;
 const { Title } = Typography;
@@ -13,9 +13,8 @@ const { Title } = Typography;
 const CreateFicha: React.FC = () => {
   authenticationVerify('/login');
   const [form] = Form.useForm();
-  // const [atividades, setAtividades] = useState<{ [key: number]: string }>({});
   const [isOnline, setIsOnline] = useState<boolean>(false);
-  const [isPJRequired, setIsPJRequired] = useState<boolean>(false); // Estado para controlar obrigatoriedade de PJ
+  const [isPJRequired, setIsPJRequired] = useState<boolean>(false);
   const [getModulosCapacita, setModulosCapacita] = useState<Array<Object> | []>([])
 
   useEffect(() => {
@@ -575,7 +574,7 @@ const CreateFicha: React.FC = () => {
 
         <Title level={2}>Módulos de Capacitação</Title>
         <Form.Item label="Selecione um Módulo" name="modulo_capacita" rules={[{required: true, message: "Selecione um Módulo"}]}>
-          <Select allowClear showSearch options={getModulosCapacita.map((modulo: modulosCapacita) => {
+          <Select allowClear showSearch options={getModulosCapacita.map((modulo: modulosCapacitaType) => {
             return {value: modulo.id, label: modulo.nome}
           })}/>
         </Form.Item>

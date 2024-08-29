@@ -5,7 +5,7 @@ import axiosInstance from "../../../../services/axiosInstance";
 import authenticationVerify from "../../../../services/authenticationVerify";
 import '../../css/SearchFicha.css';
 import moment from 'moment';
-import modulosCapacita from "../../types/modulosAprendizagens";
+import modulosCapacitaType from "../../types/modulosCapacita";
 
 const { Option } = Select;
 
@@ -48,7 +48,7 @@ const SearchFicha: React.FC = () => {
         const columns = [
           { title: 'Nome', dataIndex: 'nome_completo', key: 'nome_completo' },
           {title: 'Módulo de Aprendizagem', dataIndex:'modulo_capacita', key:'modulo_capacita', render: (id: number) => response.data.map(
-            (modulo: modulosCapacita) => {
+            (modulo: modulosCapacitaType) => {
               if (modulo.id === id) {
                 return modulo.nome
               }
@@ -145,7 +145,7 @@ const SearchFicha: React.FC = () => {
           </Form.Item>
           <Form.Item label="Módulo de Capacitação" name='modulo_capacita' className="form-search-ficha-modulos-capacita form-search-ficha-form-item">
             <Select allowClear showSearch className="form-search-ficha-select-modulos-capacita" options={getModulosCapacita.map(
-              (modulo: modulosCapacita) => {
+              (modulo: modulosCapacitaType) => {
                 return {value: modulo.id, label:modulo.nome}
               }
             )}/>

@@ -2,9 +2,9 @@ import React from 'react';
 import './css/Base.css'
 import Logo from '../img/ceac.png'
 import { Layout, Menu, theme, Typography } from 'antd';
-import type baseProps from './types/baseProps';
+import type basePropsType from './types/baseProps';
 
-const Base: React.FC<baseProps> = (props) => {
+const Base: React.FC<basePropsType> = (props) => {
   const { Title } = Typography;
   const { Header, Content, Footer } = Layout;
 
