@@ -11,12 +11,14 @@ const { Option } = Select;
 const { Title } = Typography;
 
 const CreateFicha: React.FC = () => {
-  authenticationVerify('/login');
   const [form] = Form.useForm();
   const [isOnline, setIsOnline] = useState<boolean>(false);
   const [isPJRequired, setIsPJRequired] = useState<boolean>(false);
   const [getModulosCapacita, setModulosCapacita] = useState<Array<Object> | []>([])
-
+  var [getCounter, setCounter] = useState<number>(0)
+  
+  authenticationVerify('/login', getCounter);
+    
   useEffect(() => {
     form.setFieldsValue({ if_true_assistir_casa: undefined });
   }, [form.getFieldValue('if_true_assistir_casa')]);
@@ -106,6 +108,7 @@ const CreateFicha: React.FC = () => {
   };
 
   const onFinish = async (values: any) => {
+    setCounter(getCounter + 1);
     if (values.data_nascimento) values.data_nascimento = values.data_nascimento.format('YYYY-MM-DD');
     if (values.data_abertura) values.data_abertura = values.data_abertura.format('YYYY-MM-DD');
   

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, message, Typography } from 'antd';
 import axiosInstance from '../../../../services/axiosInstance';
+import authenticationVerify from '../../../../services/authenticationVerify';
 
 interface FormValues {
   email: string;
@@ -14,9 +15,12 @@ interface FormValues {
 const { Text } = Typography;
 
 const ChangeRegistration: React.FC = () => {
-  const [loading, setLoading] = useState(false);
-  const [passwordMessage, setPasswordMessage] = useState('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [passwordMessage, setPasswordMessage] = useState<string>('');
   const [form] = Form.useForm();
+  const [getCounter, setCounter] = useState<number>(0);
+
+  authenticationVerify('/login', getCounter);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -61,6 +65,7 @@ const ChangeRegistration: React.FC = () => {
   };
 
   const onFinish = async (values: FormValues) => {
+    setCounter(getCounter + 1);
     if (values.password && values.password !== values.confirmPassword) {
       message.error('As senhas não coincidem!');
       return;
@@ -148,8 +153,8 @@ const ChangeRegistration: React.FC = () => {
             form.validateFields(['password']);
           }}
         />
-        {passwordMessage && <Text type="danger">{passwordMessage}</Text>}
       </Form.Item>
+      {passwordMessage && <Text type="danger">{passwordMessage}</Text>} 
       <Form.Item
         label="Confirme a Nova Senha"
         name="confirmPassword"

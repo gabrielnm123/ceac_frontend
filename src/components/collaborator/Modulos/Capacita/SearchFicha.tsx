@@ -31,14 +31,17 @@ const atividadeMap: { [key: string]: string } = {
   'SERVICO': 'SERVIÇO'
 }
 
+
+
 const SearchFicha: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [data, setData] = useState<any[]>([]);
   const [getModulosCapacita, setModulosCapacita] = useState<[] | Array<Object>>([]);
   const [getColumns, setColumns] = useState<Array<null> | Array<Object>>([])
   const [form] = Form.useForm();
+  const [getCounter, setCounter] = useState<number>(0)
   
-  authenticationVerify('/login');
+  authenticationVerify('/login', getCounter);
   
   useEffect(() => {
     const fetchModulosCapacita = async () => {
@@ -73,11 +76,6 @@ const SearchFicha: React.FC = () => {
     const fetchFichas = async () => {
       try {
         const response = await axiosInstance.get('capacita/fichas/');
-        // const fichas = response.data.map((ficha: any) => ({
-        //   ...ficha,
-        //   atividade: atividades[parseInt(ficha.atividade)] || ficha.atividade,
-        // }));
-        // console.log(response.data)
         setData(response.data);
       } catch {}
     }
@@ -87,6 +85,7 @@ const SearchFicha: React.FC = () => {
   }, []);
 
   const onFinish = async (values: any) => {
+    setCounter(getCounter + 1);
     if (values.data_nascimento) {
       values.data_nascimento = values.data_nascimento.format('YYYY-MM-DD');
     }
@@ -103,10 +102,6 @@ const SearchFicha: React.FC = () => {
       values.fixo = values.fixo.replace(/\D/g, '');
     }
 
-    // if (values.atividade) {
-    //   values.atividade = atividades[parseInt(values.atividade)];
-    // }
-
     const cleanedValues = Object.fromEntries(
       Object.entries(values).filter(([_, v]) => v != null && v !== "")
     );
@@ -114,10 +109,6 @@ const SearchFicha: React.FC = () => {
     setLoading(true);
     try {
       const response = await axiosInstance.get('capacita/fichas/', { params: cleanedValues });
-      // const fichas = response.data.map((ficha: any) => ({
-      //   ...ficha,
-      //   atividade: atividades[parseInt(ficha.atividade)] || ficha.atividade,
-      // }));
       setData(response.data);
       if (response.data.length === 0) {
         message.info('Nenhuma ficha encontrada.');
