@@ -7,7 +7,6 @@ import {
   LockOutlined
 } from '@ant-design/icons';
 import getMenuItem from './getMenuItem';
-import ChangePassword from '../Modulos/User/ChangePassword';
 import ChangeRegistration from '../Modulos/User/ChangeRegistration';
 
 const itemUser = (
@@ -24,18 +23,12 @@ const itemUser = (
 
   const changeRegistration = () => {
     setBaseContent(<ChangeRegistration />);
-    setBaseTitle('Alterar Cadastro');
-  }
-  
-  const changePassword = () => {
-    setBaseContent(<ChangePassword />);
-    setBaseTitle('Alterar Senha');
+    setBaseTitle('Altere seu Cadastro');
   }
 
   return [
     getMenuItem('Operador', 'operador', <UserOutlined />, [
       getMenuItem('Alterar Cadastro', 'changeRegistration', <EditOutlined />, undefined, changeRegistration),
-      getMenuItem('Alterar Senha', 'changePassword', <LockOutlined />, undefined, changePassword),
       getMenuItem(<a href='/colaborador/perfil'>Alterar Perfil</a>, 'perfil', <IdcardOutlined />, undefined),
       getMenuItem(<a href='/colaborador/login'>Sair</a>, 'sair', <LogoutOutlined />, undefined, logout),
     ])
