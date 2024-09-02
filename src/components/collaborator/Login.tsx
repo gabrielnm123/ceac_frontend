@@ -3,13 +3,18 @@ import { useNavigate } from 'react-router-dom';
 import { Form, Input, Button, message } from 'antd';
 import './css/Login.css'
 import axiosInstance from "../../services/axiosInstance";
+import authenticationVerify from "../../services/authenticationVerify";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
+  const isAuthenticated = authenticationVerify('/login', 0);
 
   useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/perfil');
+    }
     document.title = 'Autenticação';
-  }, [])
+  }, [isAuthenticated])
 
   const onFinish = async (values: object) => {
     try {
