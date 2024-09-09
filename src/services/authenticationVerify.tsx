@@ -1,14 +1,15 @@
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "./axiosInstance";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
-const authenticationVerify = (path: string, counter: number): boolean => {
+const authenticationVerify = (path: string, counter: number, setIsAuthenticated: React.Dispatch<boolean>) => {
   const navigate = useNavigate();
-  const [getIsAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  console.log('função')
 
   useEffect(() => {
     axiosInstance.post('token/verify/', {token: localStorage.getItem('access')})
       .then(() => {
+        console.log('useEffect')
         setIsAuthenticated(true);
       })
       .catch(() => {
@@ -28,8 +29,6 @@ const authenticationVerify = (path: string, counter: number): boolean => {
           })
       });
   }, [counter]);
-
-  return getIsAuthenticated;
 }
 
 export default authenticationVerify;

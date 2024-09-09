@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useState } from "react";
 import { Form, Anchor } from 'antd';
 import authenticationVerify from "../../services/authenticationVerify";
 import perfisObject from "../../services/perfisObject";
@@ -7,14 +7,15 @@ import './css/Perfil.css';
 const Perfil: React.FC = () => {
   const perfisNamePermissions: {[key: string]: Array<string>} = perfisObject();
   const perfisNames = Object.keys(perfisNamePermissions);
+  const [getIsAuthenticated, setIsAuthenticated] = useState<boolean>(false)
 
-  authenticationVerify('/login', 0);
+  authenticationVerify('/login', 0, setIsAuthenticated);
   
   const selectPerfil = (event: React.MouseEvent<HTMLElement>, link: { title: React.ReactNode }) => {
     localStorage.setItem('perfilName', link.title as string);
   };
 
-  if (perfisNames[0] !== 'null') {
+  if (perfisNames[0] !== 'null' && getIsAuthenticated) {
     return (
       <Form className="form-perfil">
         <Anchor onClick={selectPerfil} items={

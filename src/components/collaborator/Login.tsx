@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { Form, Input, Button, message } from 'antd';
 import './css/Login.css'
@@ -7,14 +7,16 @@ import authenticationVerify from "../../services/authenticationVerify";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-  const isAuthenticated = authenticationVerify('/login', 0);
+  const [getIsAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+
+  authenticationVerify('/login', 0, setIsAuthenticated);
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (getIsAuthenticated) {
       navigate('/perfil');
     }
     document.title = 'Autenticação';
-  }, [isAuthenticated])
+  }, [getIsAuthenticated])
 
   const onFinish = async (values: object) => {
     try {
@@ -45,7 +47,7 @@ const Login: React.FC = () => {
     message.error('Um erro ocorreu, tente novamente!')
     console.log(errorInfo) 
   };
-
+  
   return (
     <Form
       className="form-login"
