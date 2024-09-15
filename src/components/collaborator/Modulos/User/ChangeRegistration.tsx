@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, message, Typography } from 'antd';
 import axiosInstance from '../../../../services/axiosInstance';
-import authenticationVerify from '../../../../services/authenticationVerify';
+import useAuthenticationVerify from '../../../../services/useAuthenticationVerify';
 
 interface FormValues {
   email: string;
@@ -19,8 +19,9 @@ const ChangeRegistration: React.FC = () => {
   const [passwordMessage, setPasswordMessage] = useState<string>('');
   const [form] = Form.useForm();
   const [getCounter, setCounter] = useState<number>(0);
+  const [getIsAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
-  authenticationVerify('/login', getCounter);
+  useAuthenticationVerify('/login', getCounter, setIsAuthenticated);
 
   useEffect(() => {
     const fetchUserData = async () => {

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Form, Input, Button, Select, DatePicker, Table, message, Modal } from 'antd';
 import MaskedInput from 'antd-mask-input';
 import axiosInstance from "../../../../services/axiosInstance";
-import authenticationVerify from "../../../../services/authenticationVerify";
+import useAuthenticationVerify from "../../../../services/useAuthenticationVerify";
 import '../../css/SearchFicha.css';
 import moment from 'moment';
 import modulosCapacitaType from "../../types/modulosCapacita";
@@ -42,7 +42,7 @@ const SearchFicha: React.FC = () => {
   const [getSelectedFicha, setSelectedFicha] = useState<any>(null);
   const [getIsAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
-  authenticationVerify('/login', getCounter, setIsAuthenticated);
+  useAuthenticationVerify('/login', getCounter, setIsAuthenticated);
 
   useEffect(() => {
     const fetchModulosCapacita = async () => {
@@ -115,7 +115,7 @@ const SearchFicha: React.FC = () => {
   const handleOpenFicha = async (id: number) => {
     const counter = getCounter + 1
     setCounter(counter);
-    console.log(getIsAuthenticated, getCounter, counter)
+    console.log(getIsAuthenticated)
     if (getIsAuthenticated) {
       try {
         setLoading(true);
@@ -136,23 +136,23 @@ const SearchFicha: React.FC = () => {
       if (values.data_nascimento) {
         values.data_nascimento = values.data_nascimento.format('YYYY-MM-DD');
       }
-  
+
       if (values.cpf) {
         values.cpf = values.cpf.replace(/\D/g, '');
       }
-  
+
       if (values.celular) {
         values.celular = values.celular.replace(/\D/g, '');
       }
-  
+
       if (values.fixo) {
         values.fixo = values.fixo.replace(/\D/g, '');
       }
-  
+
       const cleanedValues = Object.fromEntries(
         Object.entries(values).filter(([_, v]) => v != null && v !== "")
       );
-  
+
       setLoading(true);
       try {
         const response = await axiosInstance.get('capacita/fichas/', { params: cleanedValues });
@@ -266,12 +266,12 @@ const SearchFicha: React.FC = () => {
               <Button type="primary" htmlType="submit" loading={getLoading}>
                 Buscar
               </Button>
-              <Button style={{ marginLeft: '10px' }} onClick={onReset}>
+              <Button className="limpar-button" onClick={onReset}>
                 Limpar
               </Button>
             </Form.Item>
           </Form>
-  
+
           <div className="table-search-ficha">
             <Table
               columns={getColumns}
@@ -281,7 +281,7 @@ const SearchFicha: React.FC = () => {
             />
           </div>
         </div>
-  
+
         <Modal
           title="Ficha Completa"
           visible={getVisible}

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Form, Anchor } from 'antd';
-import authenticationVerify from "../../services/authenticationVerify";
+import useAuthenticationVerify from "../../services/useAuthenticationVerify";
 import perfisObject from "../../services/perfisObject";
 import './css/Perfil.css';
 
@@ -9,7 +9,7 @@ const Perfil: React.FC = () => {
   const perfisNames = Object.keys(perfisNamePermissions);
   const [getIsAuthenticated, setIsAuthenticated] = useState<boolean>(false)
 
-  authenticationVerify('/login', 0, setIsAuthenticated);
+  useAuthenticationVerify('/login', 0, setIsAuthenticated);
   
   const selectPerfil = (event: React.MouseEvent<HTMLElement>, link: { title: React.ReactNode }) => {
     localStorage.setItem('perfilName', link.title as string);

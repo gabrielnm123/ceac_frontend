@@ -1,16 +1,16 @@
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "./axiosInstance";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 
-const authenticationVerify = (path: string, counter: number, setIsAuthenticated: React.Dispatch<boolean>) => {
+const useTestAuthen = (path: string, counter: number, callback: Function) => {
   const navigate = useNavigate();
   console.log('função')
 
   useEffect(() => {
     axiosInstance.post('token/verify/', {token: localStorage.getItem('access')})
       .then(() => {
-        console.log('useEffect')
-        setIsAuthenticated(true);
+        console.log('passou para axiosInstance')
+        callback
       })
       .catch(() => {
         axiosInstance.post('token/refresh/', {refresh: localStorage.getItem('refresh')})
@@ -22,7 +22,7 @@ const authenticationVerify = (path: string, counter: number, setIsAuthenticated:
             }
             localStorage.setItem('access', access);
             localStorage.setItem('headers', JSON.stringify(headers));
-            setIsAuthenticated(true);
+            callback
           })
           .catch(() => {
             navigate(path);
@@ -31,4 +31,4 @@ const authenticationVerify = (path: string, counter: number, setIsAuthenticated:
   }, [counter]);
 }
 
-export default authenticationVerify;
+export default useTestAuthen;

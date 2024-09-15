@@ -22,7 +22,7 @@
   margin: 5px;
 }
 
-.form-search-ficha-select-modulos-aprendizagem{
+.form-search-ficha-select-modulos-capacita{
   min-width: 232px;
 }
 
@@ -61,3 +61,8 @@
 .form-search-ficha-nascimento {
   max-width: 260px;
 }
+
+.limpar-button {
+  margin-left: 10px;
+}
+

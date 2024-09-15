@@ -4,7 +4,6 @@ import {
   LogoutOutlined,
   IdcardOutlined,
   EditOutlined,
-  LockOutlined
 } from '@ant-design/icons';
 import getMenuItem from './getMenuItem';
 import ChangeRegistration from '../Modulos/User/ChangeRegistration';

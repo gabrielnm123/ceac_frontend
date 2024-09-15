@@ -3,13 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { Form, Input, Button, message } from 'antd';
 import './css/Login.css'
 import axiosInstance from "../../services/axiosInstance";
-import authenticationVerify from "../../services/authenticationVerify";
+import useAuthenticationVerify from "../../services/useAuthenticationVerify";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const [getIsAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
-  authenticationVerify('/login', 0, setIsAuthenticated);
+  useAuthenticationVerify('/login', 0, setIsAuthenticated);
 
   useEffect(() => {
     if (getIsAuthenticated) {

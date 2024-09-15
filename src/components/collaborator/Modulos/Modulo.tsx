@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Base from "../Base";
 import itemUser from "../menuItems/itemUser";
 import itemCapacita from "../menuItems/itemCapacita";
+import itemTest from "../menuItems/itemTest";
 import type menuItem from "../types/menuItem";
 
 const Modulos: React.FC = () => {
@@ -16,6 +17,7 @@ const Modulos: React.FC = () => {
   const perfilName = localStorage.getItem('perfilName');
   const permissions = perfisNamePermissions[perfilName];
   const user = itemUser(setBaseContent, setBaseTitle);
+  const teste = itemTest(setBaseContent, setBaseTitle)
   
   useEffect(() => {
     if (!perfisNames.includes(perfilName) && perfisNames[0] !== 'null') {
@@ -26,7 +28,7 @@ const Modulos: React.FC = () => {
   useEffect(() => {
     if (permissions) {
       const capacita = itemCapacita(setBaseContent, setBaseTitle, permissions);
-      const items = user.concat(capacita);
+      const items = user.concat(capacita).concat(teste); // quando entrar em produção devo retirar esse componente de teste
       setItems(items);
     }
   }, [permissions]);

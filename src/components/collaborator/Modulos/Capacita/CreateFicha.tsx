@@ -3,7 +3,7 @@ import { Form, Input, Button, Select, DatePicker, Checkbox, Typography, message 
 import MaskedInput from 'antd-mask-input';
 import axios from 'axios';
 import axiosInstance from "../../../../services/axiosInstance";
-import authenticationVerify from "../../../../services/authenticationVerify";
+import useAuthenticationVerify from "../../../../services/useAuthenticationVerify";
 import '../../css/CreateFicha.css';
 import modulosCapacitaType from "../../types/modulosCapacita";
 
@@ -17,15 +17,15 @@ const CreateFicha: React.FC = () => {
   const [getModulosCapacita, setModulosCapacita] = useState<Array<Object> | []>([])
   const [getCounter, setCounter] = useState<number>(0)
   const [getIsAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  
-  authenticationVerify('/login', getCounter, setIsAuthenticated);
-    
+
+  useAuthenticationVerify('/login', getCounter, setIsAuthenticated);
+
   useEffect(() => {
     form.setFieldsValue({ if_true_assistir_casa: undefined });
   }, [form.getFieldValue('if_true_assistir_casa')]);
 
   axiosInstance.get('capacita/modulos_capacita/')
-    .then(response =>  {
+    .then(response => {
       setModulosCapacita(response.data)
     })
     .catch(error => {
@@ -112,19 +112,19 @@ const CreateFicha: React.FC = () => {
     setCounter(getCounter + 1);
     if (values.data_nascimento) values.data_nascimento = values.data_nascimento.format('YYYY-MM-DD');
     if (values.data_abertura) values.data_abertura = values.data_abertura.format('YYYY-MM-DD');
-  
+
     values.cpf = values.cpf.replace(/\D/g, '');
     values.celular = values.celular.replace(/\D/g, '');
     if (values.cnpj) values.cnpj = values.cnpj.replace(/\D/g, '');
     if (values.fixo) values.fixo = values.fixo.replace(/\D/g, '');
     values.cep = values.cep.replace(/\D/g, '');
     if (values.cnae_principal) values.cnae_principal = values.cnae_principal.replace(/\D/g, '');
-  
+
     if (!isValidCPF(values.cpf)) {
       message.error('CPF inválido');
       return;
     }
-  
+
     if (values.cnpj && !isValidCNPJ(values.cnpj)) {
       message.error('CNPJ inválido');
       return;
@@ -149,7 +149,7 @@ const CreateFicha: React.FC = () => {
       message.error('CEP deve conter exatamente 8 dígitos');
       return;
     }
-  
+
     Object.keys(values).forEach(key => {
       if (values[key] === undefined || values[key] === '' || values[key] === null) {
         delete values[key];
@@ -157,7 +157,7 @@ const CreateFicha: React.FC = () => {
     });
 
     if (values.comunicacao) {
-        values.comunicacao = values.comunicacao === 'Sim, eu concordo.' ? 'S' : 'N';
+      values.comunicacao = values.comunicacao === 'Sim, eu concordo.' ? 'S' : 'N';
     }
 
     try {
@@ -198,7 +198,7 @@ const CreateFicha: React.FC = () => {
           >
             <Input onChange={(e) => form.setFieldsValue({ nome_completo: e.target.value.toUpperCase() })} />
           </Form.Item>
-  
+
           <Form.Item
             label="CPF"
             name="cpf"
@@ -220,7 +220,7 @@ const CreateFicha: React.FC = () => {
           >
             <MaskedInput mask="000.000.000-00" />
           </Form.Item>
-  
+
           <Form.Item
             label="Gênero"
             name="genero"
@@ -231,7 +231,7 @@ const CreateFicha: React.FC = () => {
               <Option value="F">FEMININO</Option>
             </Select>
           </Form.Item>
-  
+
           <Form.Item
             label="Data de Nascimento"
             name="data_nascimento"
@@ -239,7 +239,7 @@ const CreateFicha: React.FC = () => {
           >
             <DatePicker format="YYYY-MM-DD" />
           </Form.Item>
-  
+
           <Form.Item
             label="Escolaridade"
             name="escolaridade"
@@ -252,7 +252,7 @@ const CreateFicha: React.FC = () => {
               <Option value="POS_GRADUACAO">PÓS-GRADUAÇÃO</Option>
             </Select>
           </Form.Item>
-  
+
           <Form.Item
             label="Atividade"
             name="atividade"
@@ -266,9 +266,9 @@ const CreateFicha: React.FC = () => {
               <Option value="GASTRONOMIA">GASTRONOMIA</Option>
               <Option value="INDUSTRIA">INDÚSTRIA</Option>
               <Option value="SERVICO">SERVIÇO</Option>
-          </Select>
+            </Select>
           </Form.Item>
-  
+
           <Form.Item
             label="CEP"
             name="cep"
@@ -289,7 +289,7 @@ const CreateFicha: React.FC = () => {
           >
             <MaskedInput mask="00000-000" onBlur={handleCEPBlur} />
           </Form.Item>
-  
+
           <Form.Item
             label="Endereço Residencial"
             name="endereco"
@@ -297,11 +297,11 @@ const CreateFicha: React.FC = () => {
           >
             <Input onChange={(e) => form.setFieldsValue({ endereco: e.target.value.toUpperCase() })} />
           </Form.Item>
-  
+
           <Form.Item label="Complemento" name="complemento">
             <Input onChange={(e) => form.setFieldsValue({ complemento: e.target.value.toUpperCase() })} />
           </Form.Item>
-  
+
           <Form.Item
             label="Bairro"
             name="bairro"
@@ -309,7 +309,7 @@ const CreateFicha: React.FC = () => {
           >
             <Input onChange={(e) => form.setFieldsValue({ bairro: e.target.value.toUpperCase() })} />
           </Form.Item>
-  
+
           <Form.Item
             label="UF"
             name="uf"
@@ -345,7 +345,7 @@ const CreateFicha: React.FC = () => {
               <Option value="TO">TOCANTINS</Option>
             </Select>
           </Form.Item>
-  
+
           <Form.Item
             label="Celular"
             name="celular"
@@ -366,7 +366,7 @@ const CreateFicha: React.FC = () => {
           >
             <MaskedInput mask="(00) 0 0000-0000" />
           </Form.Item>
-  
+
           <Form.Item
             label="Telefone Fixo"
             name="fixo"
@@ -386,7 +386,7 @@ const CreateFicha: React.FC = () => {
           >
             <MaskedInput mask="(00) 0000-0000" />
           </Form.Item>
-  
+
           <Form.Item
             label="E-mail"
             name="email"
@@ -397,7 +397,7 @@ const CreateFicha: React.FC = () => {
           >
             <Input onChange={(e) => form.setFieldsValue({ email: e.target.value.toLowerCase() })} />
           </Form.Item>
-  
+
           <Form.Item
             label="Interesse em ter negócio"
             name="interesse_ter_negocio"
@@ -408,7 +408,7 @@ const CreateFicha: React.FC = () => {
               <Option value="N">NÃO</Option>
             </Select>
           </Form.Item>
-  
+
           <Form.Item
             label="Preferência de Aula"
             name="preferencia_aula"
@@ -419,7 +419,7 @@ const CreateFicha: React.FC = () => {
               <Option value="PRESENCIAL">PRESENCIAL</Option>
             </Select>
           </Form.Item>
-  
+
           <Form.Item
             label="Meio de Comunicação para Aula"
             name="meio_comunicacao_aula"
@@ -430,7 +430,7 @@ const CreateFicha: React.FC = () => {
               <Option value="EMAIL">EMAIL</Option>
             </Select>
           </Form.Item>
-  
+
           <Form.Item
             label="Condições de Assistir Aulas Online"
             name="assistir_online"
@@ -443,7 +443,7 @@ const CreateFicha: React.FC = () => {
               <Option value="N">NÃO</Option>
             </Select>
           </Form.Item>
-  
+
           <Form.Item
             label="Por onde assistiria as aulas online"
             name="if_true_assistir_casa"
@@ -461,19 +461,19 @@ const CreateFicha: React.FC = () => {
               <Option value="OUTRO">OUTRO</Option>
             </Select>
           </Form.Item>
-  
+
           <Title level={2}>Dados Pessoa Jurídica</Title>
-          <Form.Item 
-            label="Nome Fantasia" 
-            name="nome_fantasia" 
+          <Form.Item
+            label="Nome Fantasia"
+            name="nome_fantasia"
             rules={[{ required: isPJRequired, message: 'Por favor, insira o nome fantasia' }]}
           >
             <Input onChange={handlePJFieldChange} />
           </Form.Item>
-  
-          <Form.Item 
-            label="CNPJ" 
-            name="cnpj" 
+
+          <Form.Item
+            label="CNPJ"
+            name="cnpj"
             rules={[
               { required: isPJRequired, message: 'Por favor, insira o CNPJ' },
               {
@@ -491,10 +491,10 @@ const CreateFicha: React.FC = () => {
           >
             <MaskedInput mask="00.000.000/0000-00" onChange={handlePJFieldChange} />
           </Form.Item>
-  
-          <Form.Item 
-            label="Situação da Empresa" 
-            name="situacao_empresa" 
+
+          <Form.Item
+            label="Situação da Empresa"
+            name="situacao_empresa"
             rules={[{ required: isPJRequired, message: 'Por favor, selecione a situação da empresa' }]}
           >
             <Select onChange={handlePJFieldChange}>
@@ -502,10 +502,10 @@ const CreateFicha: React.FC = () => {
               <Option value="N_ATIVA">NÃO ATIVA</Option>
             </Select>
           </Form.Item>
-  
-          <Form.Item 
-            label="Porte da Empresa" 
-            name="porte_empresa" 
+
+          <Form.Item
+            label="Porte da Empresa"
+            name="porte_empresa"
             rules={[{ required: isPJRequired, message: 'Por favor, selecione o porte da empresa' }]}
           >
             <Select onChange={handlePJFieldChange}>
@@ -513,10 +513,10 @@ const CreateFicha: React.FC = () => {
               <Option value="ME">MICROEMPRESA (ME)</Option>
             </Select>
           </Form.Item>
-  
-          <Form.Item 
-            label="Data de Abertura" 
-            name="data_abertura" 
+
+          <Form.Item
+            label="Data de Abertura"
+            name="data_abertura"
             rules={[
               { required: isPJRequired, message: 'Por favor, selecione a data de abertura' },
               {
@@ -531,10 +531,10 @@ const CreateFicha: React.FC = () => {
           >
             <DatePicker format="YYYY-MM-DD" onChange={handlePJFieldChange} />
           </Form.Item>
-  
-          <Form.Item 
-            label="CNAE Principal" 
-            name="cnae_principal" 
+
+          <Form.Item
+            label="CNAE Principal"
+            name="cnae_principal"
             rules={[
               { required: isPJRequired, message: 'Por favor, insira o CNAE Principal' },
               {
@@ -552,10 +552,10 @@ const CreateFicha: React.FC = () => {
           >
             <Input onChange={handlePJFieldChange} />
           </Form.Item>
-  
-          <Form.Item 
-            label="Setor" 
-            name="setor" 
+
+          <Form.Item
+            label="Setor"
+            name="setor"
             rules={[{ required: isPJRequired, message: 'Por favor, selecione o setor' }]}
           >
             <Select onChange={handlePJFieldChange}>
@@ -565,10 +565,10 @@ const CreateFicha: React.FC = () => {
               <Option value="INDUSTRIA">INDÚSTRIA</Option>
             </Select>
           </Form.Item>
-  
-          <Form.Item 
-            label="Tipo de Vínculo" 
-            name="tipo_vinculo" 
+
+          <Form.Item
+            label="Tipo de Vínculo"
+            name="tipo_vinculo"
             rules={[{ required: isPJRequired, message: 'Por favor, selecione o tipo de vínculo' }]}
           >
             <Select onChange={handlePJFieldChange}>
@@ -576,31 +576,11 @@ const CreateFicha: React.FC = () => {
               <Option value="RESPONSAVEL">RESPONSÁVEL</Option>
             </Select>
           </Form.Item>
-  
           <Title level={2}>Módulos de Capacitação</Title>
-          <Form.Item label="Selecione um Módulo" name="modulo_capacita" rules={[{required: true, message: "Selecione um Módulo"}]}>
+          <Form.Item label="Selecione um Módulo" name="modulo_capacita" rules={[{ required: true, message: "Selecione um Módulo" }]}>
             <Select allowClear showSearch options={getModulosCapacita.map((modulo: modulosCapacitaType) => {
-              return {value: modulo.id, label: modulo.nome}
-            })}/>
-          </Form.Item>
-          <Title level={2}>Declarações e Autorizações</Title>
-          <Form.Item name="responsabilizacao" valuePropName="checked">
-            <Checkbox>Declaro estar CIENTE de que sou plenamente responsável pela veracidade das informações aqui prestadas, vez que serão comprovadas no início da capacitação, e de que a falsidade das informações acima implicará sanções cabíveis de natureza civil, administrativa e criminal.</Checkbox>
-          </Form.Item>
-          <Form.Item name="manejo_dados" valuePropName="checked">
-            <Checkbox>Declaro estar CIENTE de que, em razão da parceria com o SEBRAE, a responsabilidade pelo manejo dos dados supra solicitados é compartilhada entre o SEBRAE e a Coordenadoria de Empreendedorismo e Sustentabilidade de Negócios (COESNE), na Secretaria Municipal do Desenvolvimento Econômico (SDE), caso seja verificada a necessidade de alterações.</Checkbox>
-          </Form.Item>
-          <Form.Item name="armazenamento_dados" valuePropName="checked">
-            <Checkbox>Declaro estar CIENTE quanto ao armazenamento dos meus dados no banco de cadastro da COESNE e pelo SEBRAE, para a formulação futura de políticas públicas com foco em públicos específicos, e para que eu seja informado(a) sobre a execução de novos projetos pela COESNE, respeitada a confidencialidade dos dados, que somente serão tratados por colaboradores formalmente autorizados no âmbito da SDE.</Checkbox>
-          </Form.Item>
-          <Form.Item name="autorizacao" valuePropName="checked">
-            <Checkbox>Autorizo ao SEBRAE o armazenamento e a utilização dos meus dados com a finalidade de oferecer produtos e serviços do seu interesse, realizar pesquisas relacionadas ao seu atendimento, realizar comunicações oficiais pelo SEBRAE ou por nossos prestadores de serviços por meio de diversos canais de comunicação e enriquecer o seu cadastro a partir de base de dados controladas pelo SEBRAE.</Checkbox>
-          </Form.Item>
-          <Form.Item name="comunicacao" valuePropName="checked">
-            <Checkbox.Group>
-              <Checkbox value="S">Sim, eu concordo.</Checkbox>
-              <Checkbox value="N">Não, eu não concordo.</Checkbox>
-            </Checkbox.Group>
+              return { value: modulo.id, label: modulo.nome }
+            })} />
           </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit">
