@@ -15,10 +15,10 @@ const CreateFicha: React.FC = () => {
   const [isOnline, setIsOnline] = useState<boolean>(false);
   const [isPJRequired, setIsPJRequired] = useState<boolean>(false);
   const [getModulosCapacita, setModulosCapacita] = useState<Array<Object> | []>([])
-  const [getCounter, setCounter] = useState<number>(0)
-  const [getIsAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [getTriggerAuth, setTriggerAuth] = useState<boolean>(true);
 
-  useAuthenticationVerify('/login', getCounter, setIsAuthenticated);
+  useAuthenticationVerify('/login', getTriggerAuth);
+
 
   useEffect(() => {
     form.setFieldsValue({ if_true_assistir_casa: undefined });
@@ -109,7 +109,7 @@ const CreateFicha: React.FC = () => {
   };
 
   const onFinish = async (values: any) => {
-    setCounter(getCounter + 1);
+    setTriggerAuth((prevTriggerAuth) => !prevTriggerAuth);
     if (values.data_nascimento) values.data_nascimento = values.data_nascimento.format('YYYY-MM-DD');
     if (values.data_abertura) values.data_abertura = values.data_abertura.format('YYYY-MM-DD');
 
@@ -187,410 +187,408 @@ const CreateFicha: React.FC = () => {
     }
   };
 
-  if (getIsAuthenticated) {
-    return (
-      <div className="create-ficha">
-        <Form className="form-create-ficha" onFinish={onFinish} layout="vertical" form={form}>
-          <Form.Item
-            label="Nome Completo"
-            name="nome_completo"
-            rules={[{ required: true, message: 'Por favor, insira o nome completo' }]}
-          >
-            <Input onChange={(e) => form.setFieldsValue({ nome_completo: e.target.value.toUpperCase() })} />
-          </Form.Item>
+  return (
+    <div className="create-ficha">
+      <Form className="form-create-ficha" onFinish={onFinish} layout="vertical" form={form}>
+        <Form.Item
+          label="Nome Completo"
+          name="nome_completo"
+          rules={[{ required: true, message: 'Por favor, insira o nome completo' }]}
+        >
+          <Input onChange={(e) => form.setFieldsValue({ nome_completo: e.target.value.toUpperCase() })} />
+        </Form.Item>
 
-          <Form.Item
-            label="CPF"
-            name="cpf"
-            validateTrigger="onBlur"
-            rules={[
-              { required: true, message: 'Por favor, insira o CPF' },
-              {
-                validator: (_, value) => {
-                  if (value && value.replace(/\D/g, '').length !== 11) {
-                    return Promise.reject(new Error('O CPF deve conter exatamente 11 dígitos numéricos'));
-                  }
-                  if (value && !isValidCPF(value)) {
-                    return Promise.reject(new Error('CPF inválido'));
-                  }
-                  return Promise.resolve();
-                },
+        <Form.Item
+          label="CPF"
+          name="cpf"
+          validateTrigger="onBlur"
+          rules={[
+            { required: true, message: 'Por favor, insira o CPF' },
+            {
+              validator: (_, value) => {
+                if (value && value.replace(/\D/g, '').length !== 11) {
+                  return Promise.reject(new Error('O CPF deve conter exatamente 11 dígitos numéricos'));
+                }
+                if (value && !isValidCPF(value)) {
+                  return Promise.reject(new Error('CPF inválido'));
+                }
+                return Promise.resolve();
               },
-            ]}
-          >
-            <MaskedInput mask="000.000.000-00" />
-          </Form.Item>
+            },
+          ]}
+        >
+          <MaskedInput mask="000.000.000-00" />
+        </Form.Item>
 
-          <Form.Item
-            label="Gênero"
-            name="genero"
-            rules={[{ required: true, message: 'Por favor, selecione o gênero' }]}
-          >
-            <Select>
-              <Option value="M">MASCULINO</Option>
-              <Option value="F">FEMININO</Option>
-            </Select>
-          </Form.Item>
+        <Form.Item
+          label="Gênero"
+          name="genero"
+          rules={[{ required: true, message: 'Por favor, selecione o gênero' }]}
+        >
+          <Select>
+            <Option value="M">MASCULINO</Option>
+            <Option value="F">FEMININO</Option>
+          </Select>
+        </Form.Item>
 
-          <Form.Item
-            label="Data de Nascimento"
-            name="data_nascimento"
-            rules={[{ required: true, message: 'Por favor, selecione a data de nascimento' }]}
-          >
-            <DatePicker format="YYYY-MM-DD" />
-          </Form.Item>
+        <Form.Item
+          label="Data de Nascimento"
+          name="data_nascimento"
+          rules={[{ required: true, message: 'Por favor, selecione a data de nascimento' }]}
+        >
+          <DatePicker format="YYYY-MM-DD" />
+        </Form.Item>
 
-          <Form.Item
-            label="Escolaridade"
-            name="escolaridade"
-            rules={[{ required: true, message: 'Por favor, selecione a escolaridade' }]}
-          >
-            <Select>
-              <Option value="FUNDAMENTAL">ENSINO FUNDAMENTAL</Option>
-              <Option value="MEDIO">ENSINO MÉDIO</Option>
-              <Option value="GRADUACAO">GRADUAÇÃO</Option>
-              <Option value="POS_GRADUACAO">PÓS-GRADUAÇÃO</Option>
-            </Select>
-          </Form.Item>
+        <Form.Item
+          label="Escolaridade"
+          name="escolaridade"
+          rules={[{ required: true, message: 'Por favor, selecione a escolaridade' }]}
+        >
+          <Select>
+            <Option value="FUNDAMENTAL">ENSINO FUNDAMENTAL</Option>
+            <Option value="MEDIO">ENSINO MÉDIO</Option>
+            <Option value="GRADUACAO">GRADUAÇÃO</Option>
+            <Option value="POS_GRADUACAO">PÓS-GRADUAÇÃO</Option>
+          </Select>
+        </Form.Item>
 
-          <Form.Item
-            label="Atividade"
-            name="atividade"
-            rules={[{ required: true, message: 'Por favor, selecione a atividade' }]}
-          >
-            <Select>
-              <Option value="ARTESANATO">ARTESANATO</Option>
-              <Option value="AGRICULTURA_URBANA">AGRICULTURA URBANA</Option>
-              <Option value="COMERCIO">COMÉRCIO</Option>
-              <Option value="ESTETICA_E_BELEZA">ESTÉTICA E BELEZA</Option>
-              <Option value="GASTRONOMIA">GASTRONOMIA</Option>
-              <Option value="INDUSTRIA">INDÚSTRIA</Option>
-              <Option value="SERVICO">SERVIÇO</Option>
-            </Select>
-          </Form.Item>
+        <Form.Item
+          label="Atividade"
+          name="atividade"
+          rules={[{ required: true, message: 'Por favor, selecione a atividade' }]}
+        >
+          <Select>
+            <Option value="ARTESANATO">ARTESANATO</Option>
+            <Option value="AGRICULTURA_URBANA">AGRICULTURA URBANA</Option>
+            <Option value="COMERCIO">COMÉRCIO</Option>
+            <Option value="ESTETICA_E_BELEZA">ESTÉTICA E BELEZA</Option>
+            <Option value="GASTRONOMIA">GASTRONOMIA</Option>
+            <Option value="INDUSTRIA">INDÚSTRIA</Option>
+            <Option value="SERVICO">SERVIÇO</Option>
+          </Select>
+        </Form.Item>
 
-          <Form.Item
-            label="CEP"
-            name="cep"
-            rules={[
-              { required: true, message: 'Por favor, insira o CEP' },
-              {
-                validator: (_, value) => {
-                  if (value && value.replace(/\D/g, '').length !== 8) {
-                    return Promise.reject(new Error('O CEP deve conter exatamente 8 dígitos numéricos'));
-                  }
-                  if (value && !isValidCEP(value)) {
-                    return Promise.reject(new Error('CEP inválido'));
-                  }
-                  return Promise.resolve();
-                },
+        <Form.Item
+          label="CEP"
+          name="cep"
+          rules={[
+            { required: true, message: 'Por favor, insira o CEP' },
+            {
+              validator: (_, value) => {
+                if (value && value.replace(/\D/g, '').length !== 8) {
+                  return Promise.reject(new Error('O CEP deve conter exatamente 8 dígitos numéricos'));
+                }
+                if (value && !isValidCEP(value)) {
+                  return Promise.reject(new Error('CEP inválido'));
+                }
+                return Promise.resolve();
               },
-            ]}
-          >
-            <MaskedInput mask="00000-000" onBlur={handleCEPBlur} />
-          </Form.Item>
+            },
+          ]}
+        >
+          <MaskedInput mask="00000-000" onBlur={handleCEPBlur} />
+        </Form.Item>
 
-          <Form.Item
-            label="Endereço Residencial"
-            name="endereco"
-            rules={[{ required: true, message: 'Por favor, insira o endereço' }]}
-          >
-            <Input onChange={(e) => form.setFieldsValue({ endereco: e.target.value.toUpperCase() })} />
-          </Form.Item>
+        <Form.Item
+          label="Endereço Residencial"
+          name="endereco"
+          rules={[{ required: true, message: 'Por favor, insira o endereço' }]}
+        >
+          <Input onChange={(e) => form.setFieldsValue({ endereco: e.target.value.toUpperCase() })} />
+        </Form.Item>
 
-          <Form.Item label="Complemento" name="complemento">
-            <Input onChange={(e) => form.setFieldsValue({ complemento: e.target.value.toUpperCase() })} />
-          </Form.Item>
+        <Form.Item label="Complemento" name="complemento">
+          <Input onChange={(e) => form.setFieldsValue({ complemento: e.target.value.toUpperCase() })} />
+        </Form.Item>
 
-          <Form.Item
-            label="Bairro"
-            name="bairro"
-            rules={[{ required: true, message: 'Por favor, insira o bairro' }]}
-          >
-            <Input onChange={(e) => form.setFieldsValue({ bairro: e.target.value.toUpperCase() })} />
-          </Form.Item>
+        <Form.Item
+          label="Bairro"
+          name="bairro"
+          rules={[{ required: true, message: 'Por favor, insira o bairro' }]}
+        >
+          <Input onChange={(e) => form.setFieldsValue({ bairro: e.target.value.toUpperCase() })} />
+        </Form.Item>
 
-          <Form.Item
-            label="UF"
-            name="uf"
-            rules={[{ required: true, message: 'Por favor, selecione o estado' }]}
-          >
-            <Select>
-              <Option value="AC">ACRE</Option>
-              <Option value="AL">ALAGOAS</Option>
-              <Option value="AP">AMAPÁ</Option>
-              <Option value="AM">AMAZONAS</Option>
-              <Option value="BA">BAHIA</Option>
-              <Option value="CE">CEARÁ</Option>
-              <Option value="DF">DISTRITO FEDERAL</Option>
-              <Option value="ES">ESPÍRITO SANTO</Option>
-              <Option value="GO">GOIÁS</Option>
-              <Option value="MA">MARANHÃO</Option>
-              <Option value="MT">MATO GROSSO</Option>
-              <Option value="MS">MATO GROSSO DO SUL</Option>
-              <Option value="MG">MINAS GERAIS</Option>
-              <Option value="PA">PARÁ</Option>
-              <Option value="PB">PARAÍBA</Option>
-              <Option value="PR">PARANÁ</Option>
-              <Option value="PE">PERNAMBUCO</Option>
-              <Option value="PI">PIAUÍ</Option>
-              <Option value="RJ">RIO DE JANEIRO</Option>
-              <Option value="RN">RIO GRANDE DO NORTE</Option>
-              <Option value="RS">RIO GRANDE DO SUL</Option>
-              <Option value="RO">RONDÔNIA</Option>
-              <Option value="RR">RORAIMA</Option>
-              <Option value="SC">SANTA CATARINA</Option>
-              <Option value="SP">SÃO PAULO</Option>
-              <Option value="SE">SERGIPE</Option>
-              <Option value="TO">TOCANTINS</Option>
-            </Select>
-          </Form.Item>
+        <Form.Item
+          label="UF"
+          name="uf"
+          rules={[{ required: true, message: 'Por favor, selecione o estado' }]}
+        >
+          <Select>
+            <Option value="AC">ACRE</Option>
+            <Option value="AL">ALAGOAS</Option>
+            <Option value="AP">AMAPÁ</Option>
+            <Option value="AM">AMAZONAS</Option>
+            <Option value="BA">BAHIA</Option>
+            <Option value="CE">CEARÁ</Option>
+            <Option value="DF">DISTRITO FEDERAL</Option>
+            <Option value="ES">ESPÍRITO SANTO</Option>
+            <Option value="GO">GOIÁS</Option>
+            <Option value="MA">MARANHÃO</Option>
+            <Option value="MT">MATO GROSSO</Option>
+            <Option value="MS">MATO GROSSO DO SUL</Option>
+            <Option value="MG">MINAS GERAIS</Option>
+            <Option value="PA">PARÁ</Option>
+            <Option value="PB">PARAÍBA</Option>
+            <Option value="PR">PARANÁ</Option>
+            <Option value="PE">PERNAMBUCO</Option>
+            <Option value="PI">PIAUÍ</Option>
+            <Option value="RJ">RIO DE JANEIRO</Option>
+            <Option value="RN">RIO GRANDE DO NORTE</Option>
+            <Option value="RS">RIO GRANDE DO SUL</Option>
+            <Option value="RO">RONDÔNIA</Option>
+            <Option value="RR">RORAIMA</Option>
+            <Option value="SC">SANTA CATARINA</Option>
+            <Option value="SP">SÃO PAULO</Option>
+            <Option value="SE">SERGIPE</Option>
+            <Option value="TO">TOCANTINS</Option>
+          </Select>
+        </Form.Item>
 
-          <Form.Item
-            label="Celular"
-            name="celular"
-            rules={[
-              { required: true, message: 'Por favor, insira o número de celular' },
-              {
-                validator: (_, value) => {
-                  if (value && value.replace(/\D/g, '').length !== 11) {
-                    return Promise.reject(new Error('O celular deve conter exatamente 11 dígitos numéricos'));
-                  }
-                  if (value && !isValidCelular(value)) {
-                    return Promise.reject(new Error('Celular inválido'));
-                  }
-                  return Promise.resolve();
-                },
+        <Form.Item
+          label="Celular"
+          name="celular"
+          rules={[
+            { required: true, message: 'Por favor, insira o número de celular' },
+            {
+              validator: (_, value) => {
+                if (value && value.replace(/\D/g, '').length !== 11) {
+                  return Promise.reject(new Error('O celular deve conter exatamente 11 dígitos numéricos'));
+                }
+                if (value && !isValidCelular(value)) {
+                  return Promise.reject(new Error('Celular inválido'));
+                }
+                return Promise.resolve();
               },
-            ]}
-          >
-            <MaskedInput mask="(00) 0 0000-0000" />
-          </Form.Item>
+            },
+          ]}
+        >
+          <MaskedInput mask="(00) 0 0000-0000" />
+        </Form.Item>
 
-          <Form.Item
-            label="Telefone Fixo"
-            name="fixo"
-            rules={[
-              {
-                validator: (_, value) => {
-                  if (value && value.replace(/\D/g, '').length !== 10) {
-                    return Promise.reject(new Error('O telefone fixo deve conter exatamente 10 dígitos numéricos'));
-                  }
-                  if (value && !isValidFixo(value)) {
-                    return Promise.reject(new Error('Telefone fixo inválido'));
-                  }
-                  return Promise.resolve();
-                },
+        <Form.Item
+          label="Telefone Fixo"
+          name="fixo"
+          rules={[
+            {
+              validator: (_, value) => {
+                if (value && value.replace(/\D/g, '').length !== 10) {
+                  return Promise.reject(new Error('O telefone fixo deve conter exatamente 10 dígitos numéricos'));
+                }
+                if (value && !isValidFixo(value)) {
+                  return Promise.reject(new Error('Telefone fixo inválido'));
+                }
+                return Promise.resolve();
               },
-            ]}
-          >
-            <MaskedInput mask="(00) 0000-0000" />
-          </Form.Item>
+            },
+          ]}
+        >
+          <MaskedInput mask="(00) 0000-0000" />
+        </Form.Item>
 
-          <Form.Item
-            label="E-mail"
-            name="email"
-            rules={[
-              { required: true, message: 'Por favor, insira o e-mail' },
-              { type: 'email', message: 'Por favor, insira um e-mail válido' },
-            ]}
-          >
-            <Input onChange={(e) => form.setFieldsValue({ email: e.target.value.toLowerCase() })} />
-          </Form.Item>
+        <Form.Item
+          label="E-mail"
+          name="email"
+          rules={[
+            { required: true, message: 'Por favor, insira o e-mail' },
+            { type: 'email', message: 'Por favor, insira um e-mail válido' },
+          ]}
+        >
+          <Input onChange={(e) => form.setFieldsValue({ email: e.target.value.toLowerCase() })} />
+        </Form.Item>
 
-          <Form.Item
-            label="Interesse em ter negócio"
-            name="interesse_ter_negocio"
-            rules={[{ required: true, message: 'Por favor, selecione' }]}
-          >
-            <Select>
-              <Option value="S">SIM</Option>
-              <Option value="N">NÃO</Option>
-            </Select>
-          </Form.Item>
+        <Form.Item
+          label="Interesse em ter negócio"
+          name="interesse_ter_negocio"
+          rules={[{ required: true, message: 'Por favor, selecione' }]}
+        >
+          <Select>
+            <Option value="S">SIM</Option>
+            <Option value="N">NÃO</Option>
+          </Select>
+        </Form.Item>
 
-          <Form.Item
-            label="Preferência de Aula"
-            name="preferencia_aula"
-            rules={[{ required: true, message: 'Por favor, selecione' }]}
-          >
-            <Select>
-              <Option value="ONLINE">ONLINE</Option>
-              <Option value="PRESENCIAL">PRESENCIAL</Option>
-            </Select>
-          </Form.Item>
+        <Form.Item
+          label="Preferência de Aula"
+          name="preferencia_aula"
+          rules={[{ required: true, message: 'Por favor, selecione' }]}
+        >
+          <Select>
+            <Option value="ONLINE">ONLINE</Option>
+            <Option value="PRESENCIAL">PRESENCIAL</Option>
+          </Select>
+        </Form.Item>
 
-          <Form.Item
-            label="Meio de Comunicação para Aula"
-            name="meio_comunicacao_aula"
-            rules={[{ required: true, message: 'Por favor, selecione' }]}
-          >
-            <Select>
-              <Option value="WHATSAPP">WHATSAPP</Option>
-              <Option value="EMAIL">EMAIL</Option>
-            </Select>
-          </Form.Item>
+        <Form.Item
+          label="Meio de Comunicação para Aula"
+          name="meio_comunicacao_aula"
+          rules={[{ required: true, message: 'Por favor, selecione' }]}
+        >
+          <Select>
+            <Option value="WHATSAPP">WHATSAPP</Option>
+            <Option value="EMAIL">EMAIL</Option>
+          </Select>
+        </Form.Item>
 
-          <Form.Item
-            label="Condições de Assistir Aulas Online"
-            name="assistir_online"
-            rules={[{ required: true, message: 'Por favor, selecione' }]}
+        <Form.Item
+          label="Condições de Assistir Aulas Online"
+          name="assistir_online"
+          rules={[{ required: true, message: 'Por favor, selecione' }]}
+        >
+          <Select
+            onChange={(value) => setIsOnline(value === 'S')}
           >
-            <Select
-              onChange={(value) => setIsOnline(value === 'S')}
-            >
-              <Option value="S">SIM</Option>
-              <Option value="N">NÃO</Option>
-            </Select>
-          </Form.Item>
+            <Option value="S">SIM</Option>
+            <Option value="N">NÃO</Option>
+          </Select>
+        </Form.Item>
 
-          <Form.Item
-            label="Por onde assistiria as aulas online"
-            name="if_true_assistir_casa"
-            rules={[
-              {
-                required: isOnline,
-                message: 'Por favor, selecione por onde assistiria as aulas online',
+        <Form.Item
+          label="Por onde assistiria as aulas online"
+          name="if_true_assistir_casa"
+          rules={[
+            {
+              required: isOnline,
+              message: 'Por favor, selecione por onde assistiria as aulas online',
+            },
+          ]}
+        >
+          <Select disabled={!isOnline}>
+            <Option value="COMPUTADOR">COMPUTADOR</Option>
+            <Option value="CELULAR">CELULAR</Option>
+            <Option value="TABLET">TABLET</Option>
+            <Option value="OUTRO">OUTRO</Option>
+          </Select>
+        </Form.Item>
+
+        <Title level={2}>Dados Pessoa Jurídica</Title>
+        <Form.Item
+          label="Nome Fantasia"
+          name="nome_fantasia"
+          rules={[{ required: isPJRequired, message: 'Por favor, insira o nome fantasia' }]}
+        >
+          <Input onChange={handlePJFieldChange} />
+        </Form.Item>
+
+        <Form.Item
+          label="CNPJ"
+          name="cnpj"
+          rules={[
+            { required: isPJRequired, message: 'Por favor, insira o CNPJ' },
+            {
+              validator: (_, value) => {
+                if (value && value.replace(/\D/g, '').length !== 14) {
+                  return Promise.reject(new Error('O CNPJ deve conter exatamente 14 dígitos numéricos'));
+                }
+                if (value && !isValidCNPJ(value)) {
+                  return Promise.reject(new Error('CNPJ inválido'));
+                }
+                return Promise.resolve();
               },
-            ]}
-          >
-            <Select disabled={!isOnline}>
-              <Option value="COMPUTADOR">COMPUTADOR</Option>
-              <Option value="CELULAR">CELULAR</Option>
-              <Option value="TABLET">TABLET</Option>
-              <Option value="OUTRO">OUTRO</Option>
-            </Select>
-          </Form.Item>
+            },
+          ]}
+        >
+          <MaskedInput mask="00.000.000/0000-00" onChange={handlePJFieldChange} />
+        </Form.Item>
 
-          <Title level={2}>Dados Pessoa Jurídica</Title>
-          <Form.Item
-            label="Nome Fantasia"
-            name="nome_fantasia"
-            rules={[{ required: isPJRequired, message: 'Por favor, insira o nome fantasia' }]}
-          >
-            <Input onChange={handlePJFieldChange} />
-          </Form.Item>
+        <Form.Item
+          label="Situação da Empresa"
+          name="situacao_empresa"
+          rules={[{ required: isPJRequired, message: 'Por favor, selecione a situação da empresa' }]}
+        >
+          <Select onChange={handlePJFieldChange}>
+            <Option value="ATIVA">ATIVA</Option>
+            <Option value="N_ATIVA">NÃO ATIVA</Option>
+          </Select>
+        </Form.Item>
 
-          <Form.Item
-            label="CNPJ"
-            name="cnpj"
-            rules={[
-              { required: isPJRequired, message: 'Por favor, insira o CNPJ' },
-              {
-                validator: (_, value) => {
-                  if (value && value.replace(/\D/g, '').length !== 14) {
-                    return Promise.reject(new Error('O CNPJ deve conter exatamente 14 dígitos numéricos'));
-                  }
-                  if (value && !isValidCNPJ(value)) {
-                    return Promise.reject(new Error('CNPJ inválido'));
-                  }
-                  return Promise.resolve();
-                },
+        <Form.Item
+          label="Porte da Empresa"
+          name="porte_empresa"
+          rules={[{ required: isPJRequired, message: 'Por favor, selecione o porte da empresa' }]}
+        >
+          <Select onChange={handlePJFieldChange}>
+            <Option value="MEI">MICROEMPREENDEDOR INDIVIDUAL (MEI)</Option>
+            <Option value="ME">MICROEMPRESA (ME)</Option>
+          </Select>
+        </Form.Item>
+
+        <Form.Item
+          label="Data de Abertura"
+          name="data_abertura"
+          rules={[
+            { required: isPJRequired, message: 'Por favor, selecione a data de abertura' },
+            {
+              validator: (_, value) => {
+                if (value && value.replace(/\D/g, '').length !== 10) {
+                  return Promise.reject(new Error('A data de abertura deve conter exatamente 10 dígitos numéricos'));
+                }
+                return Promise.resolve();
               },
-            ]}
-          >
-            <MaskedInput mask="00.000.000/0000-00" onChange={handlePJFieldChange} />
-          </Form.Item>
+            },
+          ]}
+        >
+          <DatePicker format="YYYY-MM-DD" onChange={handlePJFieldChange} />
+        </Form.Item>
 
-          <Form.Item
-            label="Situação da Empresa"
-            name="situacao_empresa"
-            rules={[{ required: isPJRequired, message: 'Por favor, selecione a situação da empresa' }]}
-          >
-            <Select onChange={handlePJFieldChange}>
-              <Option value="ATIVA">ATIVA</Option>
-              <Option value="N_ATIVA">NÃO ATIVA</Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            label="Porte da Empresa"
-            name="porte_empresa"
-            rules={[{ required: isPJRequired, message: 'Por favor, selecione o porte da empresa' }]}
-          >
-            <Select onChange={handlePJFieldChange}>
-              <Option value="MEI">MICROEMPREENDEDOR INDIVIDUAL (MEI)</Option>
-              <Option value="ME">MICROEMPRESA (ME)</Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            label="Data de Abertura"
-            name="data_abertura"
-            rules={[
-              { required: isPJRequired, message: 'Por favor, selecione a data de abertura' },
-              {
-                validator: (_, value) => {
-                  if (value && value.replace(/\D/g, '').length !== 10) {
-                    return Promise.reject(new Error('A data de abertura deve conter exatamente 10 dígitos numéricos'));
-                  }
-                  return Promise.resolve();
-                },
+        <Form.Item
+          label="CNAE Principal"
+          name="cnae_principal"
+          rules={[
+            { required: isPJRequired, message: 'Por favor, insira o CNAE Principal' },
+            {
+              validator: (_, value) => {
+                if (value && value.replace(/\D/g, '').length !== 7) {
+                  return Promise.reject(new Error('O CNAE deve conter exatamente 7 dígitos numéricos'));
+                }
+                if (value && !isValidCNAE(value)) {
+                  return Promise.reject(new Error('CNAE inválido'));
+                }
+                return Promise.resolve();
               },
-            ]}
-          >
-            <DatePicker format="YYYY-MM-DD" onChange={handlePJFieldChange} />
-          </Form.Item>
+            },
+          ]}
+        >
+          <Input onChange={handlePJFieldChange} />
+        </Form.Item>
 
-          <Form.Item
-            label="CNAE Principal"
-            name="cnae_principal"
-            rules={[
-              { required: isPJRequired, message: 'Por favor, insira o CNAE Principal' },
-              {
-                validator: (_, value) => {
-                  if (value && value.replace(/\D/g, '').length !== 7) {
-                    return Promise.reject(new Error('O CNAE deve conter exatamente 7 dígitos numéricos'));
-                  }
-                  if (value && !isValidCNAE(value)) {
-                    return Promise.reject(new Error('CNAE inválido'));
-                  }
-                  return Promise.resolve();
-                },
-              },
-            ]}
-          >
-            <Input onChange={handlePJFieldChange} />
-          </Form.Item>
+        <Form.Item
+          label="Setor"
+          name="setor"
+          rules={[{ required: isPJRequired, message: 'Por favor, selecione o setor' }]}
+        >
+          <Select onChange={handlePJFieldChange}>
+            <Option value="COMERCIO">COMÉRCIO</Option>
+            <Option value="SERVICO">SERVIÇO</Option>
+            <Option value="AGRONEGOCIOS">AGRONEGÓCIOS</Option>
+            <Option value="INDUSTRIA">INDÚSTRIA</Option>
+          </Select>
+        </Form.Item>
 
-          <Form.Item
-            label="Setor"
-            name="setor"
-            rules={[{ required: isPJRequired, message: 'Por favor, selecione o setor' }]}
-          >
-            <Select onChange={handlePJFieldChange}>
-              <Option value="COMERCIO">COMÉRCIO</Option>
-              <Option value="SERVICO">SERVIÇO</Option>
-              <Option value="AGRONEGOCIOS">AGRONEGÓCIOS</Option>
-              <Option value="INDUSTRIA">INDÚSTRIA</Option>
-            </Select>
-          </Form.Item>
-
-          <Form.Item
-            label="Tipo de Vínculo"
-            name="tipo_vinculo"
-            rules={[{ required: isPJRequired, message: 'Por favor, selecione o tipo de vínculo' }]}
-          >
-            <Select onChange={handlePJFieldChange}>
-              <Option value="REPRESENTANTE">REPRESENTANTE</Option>
-              <Option value="RESPONSAVEL">RESPONSÁVEL</Option>
-            </Select>
-          </Form.Item>
-          <Title level={2}>Módulos de Capacitação</Title>
-          <Form.Item label="Selecione um Módulo" name="modulo_capacita" rules={[{ required: true, message: "Selecione um Módulo" }]}>
-            <Select allowClear showSearch options={getModulosCapacita.map((modulo: modulosCapacitaType) => {
-              return { value: modulo.id, label: modulo.nome }
-            })} />
-          </Form.Item>
-          <Form.Item>
-            <Button type="primary" htmlType="submit">
-              Criar
-            </Button>
-          </Form.Item>
-        </Form>
-      </div>
-    );
-  }
+        <Form.Item
+          label="Tipo de Vínculo"
+          name="tipo_vinculo"
+          rules={[{ required: isPJRequired, message: 'Por favor, selecione o tipo de vínculo' }]}
+        >
+          <Select onChange={handlePJFieldChange}>
+            <Option value="REPRESENTANTE">REPRESENTANTE</Option>
+            <Option value="RESPONSAVEL">RESPONSÁVEL</Option>
+          </Select>
+        </Form.Item>
+        <Title level={2}>Módulos de Capacitação</Title>
+        <Form.Item label="Selecione um Módulo" name="modulo_capacita" rules={[{ required: true, message: "Selecione um Módulo" }]}>
+          <Select allowClear showSearch options={getModulosCapacita.map((modulo: modulosCapacitaType) => {
+            return { value: modulo.id, label: modulo.nome }
+          })} />
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType="submit">
+            Criar
+          </Button>
+        </Form.Item>
+      </Form>
+    </div>
+  );
 };
 
 export default CreateFicha;

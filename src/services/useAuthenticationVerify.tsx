@@ -1,20 +1,24 @@
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "./axiosInstance";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
-const useAuthenticationVerify = (path: string, counter: number, setIsAuthenticated: React.Dispatch<boolean>) => {
+const useAuthenticationVerify = (
+  path: string,
+  triggerAuth: boolean,
+  setIsAuthenticated?: React.Dispatch<React.SetStateAction<boolean>>
+) => {
   const navigate = useNavigate();
-  console.log('função')
+  setIsAuthenticated = setIsAuthenticated || (() => {});
 
   useEffect(() => {
-    axiosInstance.post('token/verify/', {token: localStorage.getItem('access')})
+    axiosInstance.post('token/verify/', { token: localStorage.getItem('access') })
       .then(() => {
-        console.log('useEffect')
-        setIsAuthenticated(true);
+        setIsAuthenticated(true)
       })
       .catch(() => {
-        axiosInstance.post('token/refresh/', {refresh: localStorage.getItem('refresh')})
+        axiosInstance.post('token/refresh/', { refresh: localStorage.getItem('refresh') })
           .then((response) => {
+            setIsAuthenticated(true)
             const access = response.data.access;
             const headers = {
               'Authorization': `Bearer ${access}`,
@@ -22,13 +26,12 @@ const useAuthenticationVerify = (path: string, counter: number, setIsAuthenticat
             }
             localStorage.setItem('access', access);
             localStorage.setItem('headers', JSON.stringify(headers));
-            setIsAuthenticated(true);
           })
           .catch(() => {
             navigate(path);
           })
       });
-  }, [counter]);
+  }, [triggerAuth]);
 }
 
 export default useAuthenticationVerify;

@@ -9,7 +9,7 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const [getIsAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
-  useAuthenticationVerify('/login', 0, setIsAuthenticated);
+  useAuthenticationVerify('/login', true, setIsAuthenticated);
 
   useEffect(() => {
     if (getIsAuthenticated) {

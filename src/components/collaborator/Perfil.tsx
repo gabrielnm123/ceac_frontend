@@ -7,15 +7,14 @@ import './css/Perfil.css';
 const Perfil: React.FC = () => {
   const perfisNamePermissions: {[key: string]: Array<string>} = perfisObject();
   const perfisNames = Object.keys(perfisNamePermissions);
-  const [getIsAuthenticated, setIsAuthenticated] = useState<boolean>(false)
 
-  useAuthenticationVerify('/login', 0, setIsAuthenticated);
+  useAuthenticationVerify('/login', true);
   
   const selectPerfil = (event: React.MouseEvent<HTMLElement>, link: { title: React.ReactNode }) => {
     localStorage.setItem('perfilName', link.title as string);
   };
 
-  if (perfisNames[0] !== 'null' && getIsAuthenticated) {
+  if (perfisNames[0] !== 'null') {
     return (
       <Form className="form-perfil">
         <Anchor onClick={selectPerfil} items={

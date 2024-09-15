@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "./axiosInstance";
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 
 const useTestAuthen = (path: string, counter: number, callback: Function) => {
   const navigate = useNavigate();
@@ -10,7 +10,7 @@ const useTestAuthen = (path: string, counter: number, callback: Function) => {
     axiosInstance.post('token/verify/', {token: localStorage.getItem('access')})
       .then(() => {
         console.log('passou para axiosInstance')
-        callback
+        callback()
       })
       .catch(() => {
         axiosInstance.post('token/refresh/', {refresh: localStorage.getItem('refresh')})
@@ -22,7 +22,7 @@ const useTestAuthen = (path: string, counter: number, callback: Function) => {
             }
             localStorage.setItem('access', access);
             localStorage.setItem('headers', JSON.stringify(headers));
-            callback
+            callback()
           })
           .catch(() => {
             navigate(path);

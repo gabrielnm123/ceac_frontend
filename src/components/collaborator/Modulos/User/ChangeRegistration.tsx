@@ -18,10 +18,9 @@ const ChangeRegistration: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [passwordMessage, setPasswordMessage] = useState<string>('');
   const [form] = Form.useForm();
-  const [getCounter, setCounter] = useState<number>(0);
-  const [getIsAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [getTriggerAuth, setTriggerAuth] = useState<boolean>(true);
 
-  useAuthenticationVerify('/login', getCounter, setIsAuthenticated);
+  useAuthenticationVerify('/login', getTriggerAuth);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -66,7 +65,7 @@ const ChangeRegistration: React.FC = () => {
   };
 
   const onFinish = async (values: FormValues) => {
-    setCounter(getCounter + 1);
+    setTriggerAuth((prevTriggerAuth) => !prevTriggerAuth);
     if (values.password && values.password !== values.confirmPassword) {
       message.error('As senhas não coincidem!');
       return;
