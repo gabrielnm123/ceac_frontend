@@ -8,7 +8,7 @@ const Perfil: React.FC = () => {
   const perfisNamePermissions: {[key: string]: Array<string>} = perfisObject();
   const perfisNames = Object.keys(perfisNamePermissions);
 
-  useAuthenticationVerify('/login', true);
+  useAuthenticationVerify('/login');
   
   const selectPerfil = (event: React.MouseEvent<HTMLElement>, link: { title: React.ReactNode }) => {
     localStorage.setItem('perfilName', link.title as string);

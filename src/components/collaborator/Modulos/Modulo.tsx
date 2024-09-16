@@ -6,6 +6,7 @@ import itemUser from "../menuItems/itemUser";
 import itemCapacita from "../menuItems/itemCapacita";
 import itemTest from "../menuItems/itemTest";
 import type menuItem from "../types/menuItem";
+import useAuthenticationVerify from "../../../services/useAuthenticationVerify";
 
 const Modulos: React.FC = () => {
   const [getItems, setItems] = useState<null | Array<menuItem>>(null);
@@ -19,6 +20,8 @@ const Modulos: React.FC = () => {
   const user = itemUser(setBaseContent, setBaseTitle);
   const teste = itemTest(setBaseContent, setBaseTitle)
   
+  useAuthenticationVerify('/login');
+
   useEffect(() => {
     if (!perfisNames.includes(perfilName) && perfisNames[0] !== 'null') {
       navigate('/perfil');

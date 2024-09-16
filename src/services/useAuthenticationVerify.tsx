@@ -4,10 +4,11 @@ import { useEffect, useState } from "react";
 
 const useAuthenticationVerify = (
   path: string,
-  triggerAuth: boolean,
+  triggerAuth?: boolean,
   setIsAuthenticated?: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   const navigate = useNavigate();
+  triggerAuth = triggerAuth || true
   setIsAuthenticated = setIsAuthenticated || (() => {});
 
   useEffect(() => {
