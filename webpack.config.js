@@ -53,4 +53,12 @@ module.exports = {
     port: 9000,
     historyApiFallback: true,
   },
+  cache: {
+    type: 'filesystem',
+  },
+  optimization: {
+    splitChunks: {
+      chunks: 'all',
+    },
+  },    
 };
