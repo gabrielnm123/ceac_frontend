@@ -1,14 +1,10 @@
 {
   "compilerOptions": {
-    "outDir": "./dist/",
-    "sourceMap": true,
-    "noImplicitAny": true,
-    "module": "commonjs",
-    "target": "es6",  // Atualize para es6 ou esnext
-    "jsx": "react-jsx",  // Use react-jsx para melhor performance e simplificação do JSX runtime
-    "esModuleInterop": true,
-    "skipLibCheck": true,  // Pula a checagem de tipos das bibliotecas, acelera o build
-    "forceConsistentCasingInFileNames": true,  // Força consistência de nomeação de arquivos
-    "strict": true  // Ativa todas as opções estritas para melhor qualidade de código
+    "noImplicitAny": true, // Proíbe o uso implícito do tipo 'any', exigindo tipos explícitos.
+    "jsx": "react-jsx", // Configura o processamento de JSX usando o novo runtime do React para melhor performance.
+    "esModuleInterop": true, // Habilita a interoperabilidade entre módulos CommonJS e ES6 para melhor compatibilidade.
+    "skipLibCheck": true, // Ignora a verificação de tipos em declarações de bibliotecas para acelerar o tempo de build.
+    "forceConsistentCasingInFileNames": true, // Exige consistência na capitalização dos nomes de arquivos para evitar erros em sistemas sensíveis a maiúsculas e minúsculas.
+    "strict": true // Ativa todas as verificações estritas de tipos para garantir a máxima segurança e qualidade do código.
   }
 }

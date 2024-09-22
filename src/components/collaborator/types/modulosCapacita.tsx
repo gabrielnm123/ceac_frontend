@@ -1,4 +1,4 @@
-type modulosCapacitaType = {
+type  modulosCapacitaType = {
   id: number;
   nome: string;
 }

@@ -5,7 +5,7 @@ import perfisObject from "../../services/perfisObject";
 import './css/Perfil.css';
 
 const Perfil: React.FC = () => {
-  const perfisNamePermissions: {[key: string]: Array<string>} = perfisObject();
+  const perfisNamePermissions = perfisObject();
   const perfisNames = Object.keys(perfisNamePermissions);
 
   useAuthenticationVerify('/login');

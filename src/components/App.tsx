@@ -6,16 +6,16 @@ import Perfil from './collaborator/Perfil';
 import Favicon from './img/ceac.ico'
 import Modulo from './collaborator/Modulos/Modulo';
 import itemUser from './collaborator/menuItems/itemUser';
-import moment from 'moment';
-import 'moment/locale/pt-br';
+import dayjs from 'dayjs';
+import 'dayjs/locale/pt-br';
 
 const App: React.FC = () => {
-  const [getBaseContent, setBaseContent] = useState<JSX.Element>(<Perfil />);
+  const [getBaseContent, setBaseContent] = useState<React.ReactNode>(<Perfil />);
   const [getBaseTitle, setBaseTitle] = useState<string>('Perfil');
 
   useEffect(() => {
     document.documentElement.lang = 'pt-BR';
-    moment.locale('pt-br');
+    dayjs.locale('pt-br');
     const favicon = document.createElement('link');
     favicon.type = 'image/x-icon';
     favicon.rel = 'icon';

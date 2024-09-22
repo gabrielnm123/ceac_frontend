@@ -12,9 +12,9 @@ const { Title } = Typography;
 
 const CreateFicha: React.FC = () => {
   const [form] = Form.useForm();
-  const [isOnline, setIsOnline] = useState<boolean>(false);
-  const [isPJRequired, setIsPJRequired] = useState<boolean>(false);
-  const [getModulosCapacita, setModulosCapacita] = useState<Array<Object> | []>([])
+  const [getIsOnline, setIsOnline] = useState<boolean>(false);
+  const [getIsPJRequired, setIsPJRequired] = useState<boolean>(false);
+  const [getModulosCapacita, setModulosCapacita] = useState<Array<modulosCapacitaType> | []>([])
   const [getTriggerAuth, setTriggerAuth] = useState<boolean>(true);
 
   useAuthenticationVerify('/login', getTriggerAuth);
@@ -22,7 +22,7 @@ const CreateFicha: React.FC = () => {
 
   useEffect(() => {
     form.setFieldsValue({ if_true_assistir_casa: undefined });
-  }, [form.getFieldValue('if_true_assistir_casa')]);
+  }, [getIsOnline]);
 
   axiosInstance.get('capacita/modulos_capacita/')
     .then(response => {
@@ -39,7 +39,7 @@ const CreateFicha: React.FC = () => {
   };
 
   const isValidCPF = (cpf: string) => {
-    cpf = cpf.replace(/[^\d]+/g, '');
+    cpf = cpf.replace(/\D/g, '');
     if (cpf.length !== 11 || /(\d)\1{10}/.test(cpf)) return false;
     let soma = 0;
     for (let i = 0; i < 9; i++) soma += parseInt(cpf.charAt(i)) * (10 - i);
@@ -54,7 +54,7 @@ const CreateFicha: React.FC = () => {
   };
 
   const isValidCNPJ = (cnpj: string) => {
-    cnpj = cnpj.replace(/[^\d]+/g, '');
+    cnpj = cnpj.replace(/\D/g, '');
     if (cnpj.length !== 14 || /(\d)\1{13}/.test(cnpj)) return false;
     let tamanho = cnpj.length - 2;
     let numeros = cnpj.substring(0, tamanho);
@@ -163,7 +163,7 @@ const CreateFicha: React.FC = () => {
     try {
       const response = await axiosInstance.post('capacita/fichas/', values);
       message.success('Ficha criada com sucesso!');
-    } catch (error) {
+    } catch (error: any) {
       if (error.response && error.response.data) {
         const errorMsgs = Object.values(error.response.data).flat().join(', ');
         message.error(`Erro na criação da ficha: ${errorMsgs}`);
@@ -448,12 +448,12 @@ const CreateFicha: React.FC = () => {
           name="if_true_assistir_casa"
           rules={[
             {
-              required: isOnline,
+              required: getIsOnline,
               message: 'Por favor, selecione por onde assistiria as aulas online',
             },
           ]}
         >
-          <Select disabled={!isOnline}>
+          <Select disabled={!getIsOnline}>
             <Option value="COMPUTADOR">COMPUTADOR</Option>
             <Option value="CELULAR">CELULAR</Option>
             <Option value="TABLET">TABLET</Option>
@@ -465,7 +465,7 @@ const CreateFicha: React.FC = () => {
         <Form.Item
           label="Nome Fantasia"
           name="nome_fantasia"
-          rules={[{ required: isPJRequired, message: 'Por favor, insira o nome fantasia' }]}
+          rules={[{ required: getIsPJRequired, message: 'Por favor, insira o nome fantasia' }]}
         >
           <Input onChange={handlePJFieldChange} />
         </Form.Item>
@@ -474,7 +474,7 @@ const CreateFicha: React.FC = () => {
           label="CNPJ"
           name="cnpj"
           rules={[
-            { required: isPJRequired, message: 'Por favor, insira o CNPJ' },
+            { required: getIsPJRequired, message: 'Por favor, insira o CNPJ' },
             {
               validator: (_, value) => {
                 if (value && value.replace(/\D/g, '').length !== 14) {
@@ -494,7 +494,7 @@ const CreateFicha: React.FC = () => {
         <Form.Item
           label="Situação da Empresa"
           name="situacao_empresa"
-          rules={[{ required: isPJRequired, message: 'Por favor, selecione a situação da empresa' }]}
+          rules={[{ required: getIsPJRequired, message: 'Por favor, selecione a situação da empresa' }]}
         >
           <Select onChange={handlePJFieldChange}>
             <Option value="ATIVA">ATIVA</Option>
@@ -505,7 +505,7 @@ const CreateFicha: React.FC = () => {
         <Form.Item
           label="Porte da Empresa"
           name="porte_empresa"
-          rules={[{ required: isPJRequired, message: 'Por favor, selecione o porte da empresa' }]}
+          rules={[{ required: getIsPJRequired, message: 'Por favor, selecione o porte da empresa' }]}
         >
           <Select onChange={handlePJFieldChange}>
             <Option value="MEI">MICROEMPREENDEDOR INDIVIDUAL (MEI)</Option>
@@ -517,7 +517,7 @@ const CreateFicha: React.FC = () => {
           label="Data de Abertura"
           name="data_abertura"
           rules={[
-            { required: isPJRequired, message: 'Por favor, selecione a data de abertura' },
+            { required: getIsPJRequired, message: 'Por favor, selecione a data de abertura' },
             {
               validator: (_, value) => {
                 if (value && value.replace(/\D/g, '').length !== 10) {
@@ -535,7 +535,7 @@ const CreateFicha: React.FC = () => {
           label="CNAE Principal"
           name="cnae_principal"
           rules={[
-            { required: isPJRequired, message: 'Por favor, insira o CNAE Principal' },
+            { required: getIsPJRequired, message: 'Por favor, insira o CNAE Principal' },
             {
               validator: (_, value) => {
                 if (value && value.replace(/\D/g, '').length !== 7) {
@@ -555,7 +555,7 @@ const CreateFicha: React.FC = () => {
         <Form.Item
           label="Setor"
           name="setor"
-          rules={[{ required: isPJRequired, message: 'Por favor, selecione o setor' }]}
+          rules={[{ required: getIsPJRequired, message: 'Por favor, selecione o setor' }]}
         >
           <Select onChange={handlePJFieldChange}>
             <Option value="COMERCIO">COMÉRCIO</Option>
@@ -568,7 +568,7 @@ const CreateFicha: React.FC = () => {
         <Form.Item
           label="Tipo de Vínculo"
           name="tipo_vinculo"
-          rules={[{ required: isPJRequired, message: 'Por favor, selecione o tipo de vínculo' }]}
+          rules={[{ required: getIsPJRequired, message: 'Por favor, selecione o tipo de vínculo' }]}
         >
           <Select onChange={handlePJFieldChange}>
             <Option value="REPRESENTANTE">REPRESENTANTE</Option>

@@ -15,8 +15,8 @@ interface FormValues {
 const { Text } = Typography;
 
 const ChangeRegistration: React.FC = () => {
-  const [loading, setLoading] = useState<boolean>(false);
-  const [passwordMessage, setPasswordMessage] = useState<string>('');
+  const [getLoading, setLoading] = useState<boolean>(false);
+  const [getPasswordMessage, setPasswordMessage] = useState<string>('');
   const [form] = Form.useForm();
   const [getTriggerAuth, setTriggerAuth] = useState<boolean>(true);
 
@@ -154,7 +154,7 @@ const ChangeRegistration: React.FC = () => {
           }}
         />
       </Form.Item>
-      {passwordMessage && <Text type="danger">{passwordMessage}</Text>} 
+      {getPasswordMessage && <Text type="danger">{getPasswordMessage}</Text>} 
       <Form.Item
         label="Confirme a Nova Senha"
         name="confirmPassword"
@@ -174,7 +174,7 @@ const ChangeRegistration: React.FC = () => {
         <Input.Password placeholder="Confirme a nova senha (se preenchida)" />
       </Form.Item>
       <Form.Item>
-        <Button type="primary" htmlType="submit" loading={loading}>
+        <Button type="primary" htmlType="submit" loading={getLoading}>
           Alterar Cadastro
         </Button>
       </Form.Item>

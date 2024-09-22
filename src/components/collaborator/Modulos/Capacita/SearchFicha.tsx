@@ -4,7 +4,7 @@ import MaskedInput from 'antd-mask-input';
 import axiosInstance from "../../../../services/axiosInstance";
 import useAuthenticationVerify from "../../../../services/useAuthenticationVerify";
 import '../../css/SearchFicha.css';
-import moment from 'moment';
+import dayjs from 'dayjs';
 import modulosCapacitaType from "../../types/modulosCapacita";
 
 const { Option } = Select;
@@ -35,7 +35,7 @@ const SearchFicha: React.FC = () => {
   const [getLoading, setLoading] = useState<boolean>(false);
   const [getData, setData] = useState<any[]>([]);
   const [getModulosCapacita, setModulosCapacita] = useState<modulosCapacitaType[]>([]);
-  const [getColumns, setColumns] = useState<Array<null> | Array<Object>>([]);
+  const [getColumns, setColumns] = useState<undefined | Array<Object>>(undefined);
   const [getForm] = Form.useForm();
   const [getVisible, setVisible] = useState<boolean>(false);
   const [getSelectedFicha, setSelectedFicha] = useState<any>(null);
@@ -72,7 +72,7 @@ const SearchFicha: React.FC = () => {
           },
           {
             title: 'Data de Nascimento', dataIndex: 'data_nascimento', key: 'data_nascimento', render: (text: string) =>
-              text ? moment(text).format('DD/MM/YYYY') : ''
+              text ? dayjs(text).format('DD/MM/YYYY') : ''
           },
           {
             title: 'Gênero', dataIndex: 'genero', key: 'genero', render: (genero: string) => generoMap[genero] || genero
@@ -276,7 +276,7 @@ const SearchFicha: React.FC = () => {
 
       <Modal
         title="Ficha Completa"
-        visible={getVisible}
+        open={getVisible}
         onCancel={() => setVisible(false)}
         footer={null}
       >
@@ -285,7 +285,7 @@ const SearchFicha: React.FC = () => {
             <p><strong>Nome:</strong> {getSelectedFicha.nome_completo || 'NÃO INFORMADO'}</p>
             <p><strong>CPF:</strong> {getSelectedFicha.cpf ? getSelectedFicha.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : 'NÃO INFORMADO'}</p>
             <p><strong>Gênero:</strong> {generoMap[getSelectedFicha.genero] || 'NÃO INFORMADO'}</p>
-            <p><strong>Data de Nascimento:</strong> {getSelectedFicha.data_nascimento ? moment(getSelectedFicha.data_nascimento).format('DD/MM/YYYY').toUpperCase() : 'NÃO INFORMADO'}</p>
+            <p><strong>Data de Nascimento:</strong> {getSelectedFicha.data_nascimento ? dayjs(getSelectedFicha.data_nascimento).format('DD/MM/YYYY').toUpperCase() : 'NÃO INFORMADO'}</p>
             <p><strong>Escolaridade:</strong> {escolaridadeMap[getSelectedFicha.escolaridade] || 'NÃO INFORMADO'}</p>
             <p><strong>Atividade:</strong> {atividadeMap[getSelectedFicha.atividade] || 'NÃO INFORMADO'}</p>
             <p><strong>Endereço:</strong> {getSelectedFicha.endereco || 'NÃO INFORMADO'}</p>
@@ -307,7 +307,7 @@ const SearchFicha: React.FC = () => {
             <p><strong>CNPJ:</strong> {getSelectedFicha.cnpj ? getSelectedFicha.cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5') : 'NÃO INFORMADO'}</p>
             <p><strong>Situação da Empresa:</strong> {getSelectedFicha.situacao_empresa === 'ATIVA' ? 'ATIVA' : 'NÃO ATIVA'}</p>
             <p><strong>Porte da Empresa:</strong> {getSelectedFicha.porte_empresa || 'NÃO INFORMADO'}</p>
-            <p><strong>Data de Abertura:</strong> {getSelectedFicha.data_abertura ? moment(getSelectedFicha.data_abertura).format('DD/MM/YYYY').toUpperCase() : 'NÃO INFORMADO'}</p>
+            <p><strong>Data de Abertura:</strong> {getSelectedFicha.data_abertura ? dayjs(getSelectedFicha.data_abertura).format('DD/MM/YYYY').toUpperCase() : 'NÃO INFORMADO'}</p>
             <p><strong>CNAE Principal:</strong> {getSelectedFicha.cnae_principal || 'NÃO INFORMADO'}</p>
             <p><strong>Setor:</strong> {getSelectedFicha.setor || 'NÃO INFORMADO'}</p>
             <p><strong>Tipo de Vínculo:</strong> {getSelectedFicha.tipo_vinculo || 'NÃO INFORMADO'}</p>

@@ -9,13 +9,13 @@ import type menuItem from "../types/menuItem";
 import useAuthenticationVerify from "../../../services/useAuthenticationVerify";
 
 const Modulos: React.FC = () => {
-  const [getItems, setItems] = useState<null | Array<menuItem>>(null);
+  const [getItems, setItems] = useState<Array<menuItem>>();
   const [getBaseContent, setBaseContent] = useState<null | React.ReactNode>(null);
-  const [getBaseTitle, setBaseTitle] = useState<null | string>(null);
+  const [getBaseTitle, setBaseTitle] = useState<string>(String);
   const navigate = useNavigate();
-  const perfisNamePermissions: { [key: string]: string[] } = perfisObject();
+  const perfisNamePermissions = perfisObject();
   const perfisNames = Object.keys(perfisNamePermissions);
-  const perfilName = localStorage.getItem('perfilName');
+  const perfilName = localStorage.getItem('perfilName')!;
   const permissions = perfisNamePermissions[perfilName];
   const user = itemUser(setBaseContent, setBaseTitle);
   const teste = itemTest(setBaseContent, setBaseTitle)
@@ -36,7 +36,7 @@ const Modulos: React.FC = () => {
     }
   }, [permissions]);
   
-  if (perfisNames.includes(perfilName)) {
+  if (perfisNames.includes(perfilName!)) {
     return (
       <Base
         content={getBaseContent}
