@@ -13,14 +13,14 @@ const useAuthenticationVerify = (
     axiosInstance.post('token/verify/', { token: localStorage.getItem('access') })
       .then(() => {
         if (setIsAuthenticated) {
-          setIsAuthenticated(true); // Verifica se setIsAuthenticated está definido antes de chamar
+          setIsAuthenticated(true);
         }
       })
       .catch(() => {
         axiosInstance.post('token/refresh/', { refresh: localStorage.getItem('refresh') })
           .then((response) => {
             if (setIsAuthenticated) {
-              setIsAuthenticated(true); // Verifica se setIsAuthenticated está definido antes de chamar
+              setIsAuthenticated(true);
             }
             const access = response.data.access;
             const headers = {

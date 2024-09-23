@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Form, Input, Button, Select, DatePicker, Table, message, Modal } from 'antd';
+import { Form, Input, Button, Select, DatePicker, Table, message, Modal, Descriptions } from 'antd';
 import MaskedInput from 'antd-mask-input';
 import axiosInstance from "../../../../services/axiosInstance";
 import useAuthenticationVerify from "../../../../services/useAuthenticationVerify";
@@ -124,6 +124,10 @@ const SearchFicha: React.FC = () => {
       setLoading(false);
     }
   };
+
+  const dowloadFicha = () => {
+    handleOpenFicha(getSelectedFicha.id);
+  }
 
   const onFinish = async (values: any) => {
     setTriggerAuth((prevTriggerAuth) => !prevTriggerAuth);
@@ -275,46 +279,68 @@ const SearchFicha: React.FC = () => {
       </div>
 
       <Modal
-        title="Ficha Completa"
-        open={getVisible}
-        onCancel={() => setVisible(false)}
-        footer={null}
-      >
-        {getSelectedFicha && (
-          <div>
-            <p><strong>Nome:</strong> {getSelectedFicha.nome_completo || 'NÃO INFORMADO'}</p>
-            <p><strong>CPF:</strong> {getSelectedFicha.cpf ? getSelectedFicha.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : 'NÃO INFORMADO'}</p>
-            <p><strong>Gênero:</strong> {generoMap[getSelectedFicha.genero] || 'NÃO INFORMADO'}</p>
-            <p><strong>Data de Nascimento:</strong> {getSelectedFicha.data_nascimento ? dayjs(getSelectedFicha.data_nascimento).format('DD/MM/YYYY').toUpperCase() : 'NÃO INFORMADO'}</p>
-            <p><strong>Escolaridade:</strong> {escolaridadeMap[getSelectedFicha.escolaridade] || 'NÃO INFORMADO'}</p>
-            <p><strong>Atividade:</strong> {atividadeMap[getSelectedFicha.atividade] || 'NÃO INFORMADO'}</p>
-            <p><strong>Endereço:</strong> {getSelectedFicha.endereco || 'NÃO INFORMADO'}</p>
-            <p><strong>Complemento:</strong> {getSelectedFicha.complemento || 'NÃO INFORMADO'}</p>
-            <p><strong>Bairro:</strong> {getSelectedFicha.bairro || 'NÃO INFORMADO'}</p>
-            <p><strong>CEP:</strong> {getSelectedFicha.cep ? getSelectedFicha.cep.replace(/(\d{5})(\d{3})/, '$1-$2') : 'NÃO INFORMADO'}</p>
-            <p><strong>UF:</strong> {getSelectedFicha.uf || 'NÃO INFORMADO'}</p>
-            <p><strong>Celular:</strong> {getSelectedFicha.celular ? getSelectedFicha.celular.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3') : 'NÃO INFORMADO'}</p>
-            <p><strong>Fixo:</strong> {getSelectedFicha.fixo ? getSelectedFicha.fixo.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3') : 'NÃO INFORMADO'}</p>
-            <p><strong>Email:</strong> {getSelectedFicha.email.toLowerCase()}</p>
-            <p><strong>Interesse em ter negócio:</strong> {getSelectedFicha.interesse_ter_negocio === 'S' ? 'SIM' : 'NÃO'}</p>
-            <p><strong>Preferência de Aula:</strong> {getSelectedFicha.preferencia_aula || 'NÃO INFORMADO'}</p>
-            <p><strong>Meio de Comunicação de Aula:</strong> {getSelectedFicha.meio_comunicacao_aula || 'NÃO INFORMADO'}</p>
-            <p><strong>Assistir Online:</strong> {getSelectedFicha.assistir_online === 'S' ? 'SIM' : 'NÃO'}</p>
-            {getSelectedFicha.assistir_online === 'S' && (
-              <p><strong>Se assistir em casa, como?</strong> {getSelectedFicha.if_true_assistir_casa || 'NÃO INFORMADO'}</p>
-            )}
-            <p><strong>Nome Fantasia:</strong> {getSelectedFicha.nome_fantasia || 'NÃO INFORMADO'}</p>
-            <p><strong>CNPJ:</strong> {getSelectedFicha.cnpj ? getSelectedFicha.cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5') : 'NÃO INFORMADO'}</p>
-            <p><strong>Situação da Empresa:</strong> {getSelectedFicha.situacao_empresa === 'ATIVA' ? 'ATIVA' : 'NÃO ATIVA'}</p>
-            <p><strong>Porte da Empresa:</strong> {getSelectedFicha.porte_empresa || 'NÃO INFORMADO'}</p>
-            <p><strong>Data de Abertura:</strong> {getSelectedFicha.data_abertura ? dayjs(getSelectedFicha.data_abertura).format('DD/MM/YYYY').toUpperCase() : 'NÃO INFORMADO'}</p>
-            <p><strong>CNAE Principal:</strong> {getSelectedFicha.cnae_principal || 'NÃO INFORMADO'}</p>
-            <p><strong>Setor:</strong> {getSelectedFicha.setor || 'NÃO INFORMADO'}</p>
-            <p><strong>Tipo de Vínculo:</strong> {getSelectedFicha.tipo_vinculo || 'NÃO INFORMADO'}</p>
-            <p><strong>Módulo de Capacitação:</strong> {getModulosCapacita.find((modulo: any) => modulo.id === getSelectedFicha.modulo_capacita)?.nome.split(": ").join(": ") || 'NÃO INFORMADO'}</p>
-          </div>
-        )}
-      </Modal>
+      open={getVisible}
+      onCancel={() => setVisible(false)}
+      footer={null}
+    >
+      {getSelectedFicha && (
+        <>
+        <Button className="dowload-ficha" onClick={dowloadFicha}>Baixar Ficha</Button>
+        <Descriptions bordered column={1} layout="horizontal">
+          <Descriptions.Item label="Nome">{getSelectedFicha.nome_completo || 'NÃO INFORMADO'}</Descriptions.Item>
+          <Descriptions.Item label="CPF">
+            {getSelectedFicha.cpf ? getSelectedFicha.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : 'NÃO INFORMADO'}
+          </Descriptions.Item>
+          <Descriptions.Item label="Gênero">{generoMap[getSelectedFicha.genero] || 'NÃO INFORMADO'}</Descriptions.Item>
+          <Descriptions.Item label="Data de Nascimento">
+            {getSelectedFicha.data_nascimento ? dayjs(getSelectedFicha.data_nascimento).format('DD/MM/YYYY').toUpperCase() : 'NÃO INFORMADO'}
+          </Descriptions.Item>
+          <Descriptions.Item label="Escolaridade">{escolaridadeMap[getSelectedFicha.escolaridade] || 'NÃO INFORMADO'}</Descriptions.Item>
+          <Descriptions.Item label="Atividade">{atividadeMap[getSelectedFicha.atividade] || 'NÃO INFORMADO'}</Descriptions.Item>
+          <Descriptions.Item label="Endereço">{getSelectedFicha.endereco || 'NÃO INFORMADO'}</Descriptions.Item>
+          <Descriptions.Item label="Complemento">{getSelectedFicha.complemento || 'NÃO INFORMADO'}</Descriptions.Item>
+          <Descriptions.Item label="Bairro">{getSelectedFicha.bairro || 'NÃO INFORMADO'}</Descriptions.Item>
+          <Descriptions.Item label="CEP">
+            {getSelectedFicha.cep ? getSelectedFicha.cep.replace(/(\d{5})(\d{3})/, '$1-$2') : 'NÃO INFORMADO'}
+          </Descriptions.Item>
+          <Descriptions.Item label="UF">{getSelectedFicha.uf || 'NÃO INFORMADO'}</Descriptions.Item>
+          <Descriptions.Item label="Celular">
+            {getSelectedFicha.celular ? getSelectedFicha.celular.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3') : 'NÃO INFORMADO'}
+          </Descriptions.Item>
+          <Descriptions.Item label="Fixo">
+            {getSelectedFicha.fixo ? getSelectedFicha.fixo.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3') : 'NÃO INFORMADO'}
+          </Descriptions.Item>
+          <Descriptions.Item label="Email">{getSelectedFicha.email.toLowerCase()}</Descriptions.Item>
+          <Descriptions.Item label="Interesse em ter negócio">
+            {getSelectedFicha.interesse_ter_negocio === 'S' ? 'SIM' : 'NÃO'}
+          </Descriptions.Item>
+          <Descriptions.Item label="Preferência de Aula">{getSelectedFicha.preferencia_aula || 'NÃO INFORMADO'}</Descriptions.Item>
+          <Descriptions.Item label="Meio de Comunicação de Aula">{getSelectedFicha.meio_comunicacao_aula || 'NÃO INFORMADO'}</Descriptions.Item>
+          <Descriptions.Item label="Assistir Online">{getSelectedFicha.assistir_online === 'S' ? 'SIM' : 'NÃO'}</Descriptions.Item>
+          {getSelectedFicha.assistir_online === 'S' && (
+            <Descriptions.Item label="Se assistir em casa, como?">{getSelectedFicha.if_true_assistir_casa || 'NÃO INFORMADO'}</Descriptions.Item>
+          )}
+          <Descriptions.Item label="Nome Fantasia">{getSelectedFicha.nome_fantasia || 'NÃO INFORMADO'}</Descriptions.Item>
+          <Descriptions.Item label="CNPJ">
+            {getSelectedFicha.cnpj ? getSelectedFicha.cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5') : 'NÃO INFORMADO'}
+          </Descriptions.Item>
+          <Descriptions.Item label="Situação da Empresa">
+            {getSelectedFicha.situacao_empresa === 'ATIVA' ? 'ATIVA' : 'NÃO ATIVA'}
+          </Descriptions.Item>
+          <Descriptions.Item label="Porte da Empresa">{getSelectedFicha.porte_empresa || 'NÃO INFORMADO'}</Descriptions.Item>
+          <Descriptions.Item label="Data de Abertura">
+            {getSelectedFicha.data_abertura ? dayjs(getSelectedFicha.data_abertura).format('DD/MM/YYYY').toUpperCase() : 'NÃO INFORMADO'}
+          </Descriptions.Item>
+          <Descriptions.Item label="CNAE Principal">{getSelectedFicha.cnae_principal || 'NÃO INFORMADO'}</Descriptions.Item>
+          <Descriptions.Item label="Setor">{getSelectedFicha.setor || 'NÃO INFORMADO'}</Descriptions.Item>
+          <Descriptions.Item label="Tipo de Vínculo">{getSelectedFicha.tipo_vinculo || 'NÃO INFORMADO'}</Descriptions.Item>
+          <Descriptions.Item label="Módulo de Capacitação">
+            {getModulosCapacita.find((modulo) => modulo.id === getSelectedFicha.modulo_capacita)?.nome.split(": ").join(": ") || 'NÃO INFORMADO'}
+          </Descriptions.Item>
+        </Descriptions>
+        </>
+      )}
+    </Modal>
     </>
   );
 }
