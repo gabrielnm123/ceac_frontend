@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "./axiosInstance";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 const useAuthenticationVerify = (
   path: string,
@@ -8,31 +8,33 @@ const useAuthenticationVerify = (
   setIsAuthenticated?: React.Dispatch<React.SetStateAction<boolean>>
 ) => {
   const navigate = useNavigate();
-  triggerAuth = triggerAuth || true
-  setIsAuthenticated = setIsAuthenticated || (() => {});
 
   useEffect(() => {
     axiosInstance.post('token/verify/', { token: localStorage.getItem('access') })
       .then(() => {
-        setIsAuthenticated(true)
+        if (setIsAuthenticated) {
+          setIsAuthenticated(true); // Verifica se setIsAuthenticated está definido antes de chamar
+        }
       })
       .catch(() => {
         axiosInstance.post('token/refresh/', { refresh: localStorage.getItem('refresh') })
           .then((response) => {
-            setIsAuthenticated(true)
+            if (setIsAuthenticated) {
+              setIsAuthenticated(true); // Verifica se setIsAuthenticated está definido antes de chamar
+            }
             const access = response.data.access;
             const headers = {
               'Authorization': `Bearer ${access}`,
               'Content-Type': 'application/json'
-            }
+            };
             localStorage.setItem('access', access);
             localStorage.setItem('headers', JSON.stringify(headers));
           })
           .catch(() => {
             navigate(path);
-          })
+          });
       });
-  }, [triggerAuth]);
-}
+  }, [path, triggerAuth, navigate, setIsAuthenticated]);
+};
 
 export default useAuthenticationVerify;
