@@ -40,58 +40,87 @@ const ChangeRegistration: React.FC = () => {
     fetchUserData();
   }, [form]);
 
-  const validatePassword = (_: any, value: string) => {
-    const errors = [];
-    const remainingChars = 8 - value.length;
-    if (remainingChars > 0) {
-      errors.push(`Faltam ${remainingChars} ${remainingChars > 1 ? 'caracteres' : 'caractere'} para atingir o mínimo necessário`);
-    }
-    if (!/[A-Z]/.test(value)) {
-      errors.push('uma letra maiúscula');
-    }
-    if (!/[a-z]/.test(value)) {
-      errors.push('uma letra minúscula');
-    }
-    if (!/\d/.test(value)) {
-      errors.push('um número');
-    }
-    if (!/[#@!$%^&*()\-_\+\=\{\}\[\]:;"'<>,.?\/\\|~`]/.test(value)) {
-      errors.push('um caractere especial');
-    }
-
-    setPasswordMessage(errors.length > 0 ? errors.join(', ') + '.' : '');
-
-    return errors.length === 0 ? Promise.resolve() : Promise.reject(new Error(''));
+  const validatePassword = (_: any, value: string | undefined) => {
+    return new Promise<void>((resolve, reject) => {
+      // Verifica se o valor é undefined ou uma string vazia.
+      if (!value) {
+        resolve(); // Não faça a validação e resolva a Promise se não houver valor.
+        return;
+      }
+  
+      const errors = [];
+      const remainingChars = 8 - value.length; // Calcula o restante dos caracteres apenas se value existir.
+  
+      if (remainingChars > 0) {
+        errors.push(`Faltam ${remainingChars} ${remainingChars > 1 ? 'caracteres' : 'caractere'} para atingir o mínimo necessário`);
+      }
+      if (!/[A-Z]/.test(value)) {
+        errors.push('uma letra maiúscula');
+      }
+      if (!/[a-z]/.test(value)) {
+        errors.push('uma letra minúscula');
+      }
+      if (!/\d/.test(value)) {
+        errors.push('um número');
+      }
+      if (!/[#@!$%^&*()\-_\+\=\{\}\[\]:;"'<>,.?\/\\|~`]/.test(value)) {
+        errors.push('um caractere especial');
+      }
+  
+      setPasswordMessage(errors.length > 0 ? errors.join(', ') + '.' : '');
+  
+      if (errors.length === 0) {
+        resolve(); // Resolve corretamente se não houver erros.
+      } else {
+        reject(new Error('')); // Rejeita com erro se houver falhas de validação.
+      }
+    });
   };
 
   const onFinish = async (values: FormValues) => {
     setTriggerAuth((prevTriggerAuth) => !prevTriggerAuth);
+  
+    // Verifica se as novas senhas coincidem
     if (values.password && values.password !== values.confirmPassword) {
       message.error('As senhas não coincidem!');
       return;
     }
-
+  
+    // Verifica se a senha atual foi preenchida
     if (!values.currentPassword) {
       message.error('Por favor, insira sua senha atual para confirmar as alterações.');
       return;
     }
-
+  
     setLoading(true);
+  
     try {
       const userId = localStorage.getItem('userId');
-      const updateData: { email: string; username: string; password?: string; first_name?: string; last_name?: string } = {
-        email: values.email,
-        username: values.email, // Atualiza o nome de usuário para ser o mesmo que o email
-        first_name: values.first_name?.toUpperCase(), // Garante que seja salvo em maiúsculas
-        last_name: values.last_name?.toUpperCase(), // Garante que seja salvo em maiúsculas
-      };
-
-      if (values.password) {
-        updateData.password = values.password; // Atualiza a senha somente se ela foi preenchida
+  
+      // Verifica a senha atual antes de prosseguir
+      const passwordCheckResponse = await axiosInstance.post(`users/${userId}/check-password/`, {
+        password: values.currentPassword,
+      });
+  
+      // Se a senha atual estiver incorreta, mostra um erro e interrompe a execução
+      if (!passwordCheckResponse.data.valid) {
+        message.error('Senha atual incorreta. Por favor, tente novamente.');
+        setLoading(false);
+        return;
       }
-
-      await axiosInstance.put(`/users/${userId}/`, updateData);
-      
+  
+      // Prepara os dados para atualização do usuário
+      const updateData = {
+        email: values.email,
+        username: values.email, // Atualiza o nome de usuário para o email
+        first_name: values.first_name?.toUpperCase(), // Garante que o primeiro nome seja salvo em maiúsculas
+        last_name: values.last_name?.toUpperCase(), // Garante que o sobrenome seja salvo em maiúsculas
+        ...(values.password && { password: values.password }), // Adiciona a nova senha somente se preenchida
+      };
+  
+      // Atualiza os dados do usuário
+      await axiosInstance.put(`users/${userId}/`, updateData);
+  
       message.success('Cadastro alterado com sucesso!');
     } catch (error) {
       message.error('Erro ao alterar cadastro, tente novamente.');
@@ -99,7 +128,7 @@ const ChangeRegistration: React.FC = () => {
       setLoading(false);
     }
   };
-
+  
   return (
     <Form
       form={form}
