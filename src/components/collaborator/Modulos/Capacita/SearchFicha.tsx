@@ -127,6 +127,21 @@ const SearchFicha: React.FC = () => {
 
   const dowloadFicha = () => {
     handleOpenFicha(getSelectedFicha.id);
+    axiosInstance.get(`capacita/fichas/${getSelectedFicha.id}/download`, {
+      responseType: 'blob'
+    })
+      .then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `${getSelectedFicha.nome_completo}.docx`); // Define o nome do arquivo
+        document.body.appendChild(link);
+        link.click(); // Simula o clique para iniciar o download
+        document.body.removeChild(link); // Remove o link temporário do DOM
+      })
+      .catch(() => {
+        message.error('Erro ao baixar a ficha, tente novamente.')
+      })
   }
 
   const onFinish = async (values: any) => {
