@@ -3,7 +3,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const webpack = require('webpack');
 const Dotenv = require('dotenv-webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin'); // Adicionando o plugin para verificação de tipos
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 module.exports = {
   entry: './src/index.tsx', // Ponto de entrada da aplicação
@@ -37,18 +37,28 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin(), // Limpa a pasta de saída antes de cada build
     new HtmlWebpackPlugin({
-      template: './src/index.html', // Modelo de arquivo HTML
+      template: './public/index.html', // Modelo de arquivo HTML, agora referenciado da pasta public
     }),
     new webpack.ProvidePlugin({
       process: 'process/browser', // Injeta o objeto process no navegador
     }),
     new Dotenv(), // Carrega variáveis de ambiente
     new ForkTsCheckerWebpackPlugin(), // Verificação de tipos TypeScript em paralelo
+    new webpack.DefinePlugin({
+      'process.env.PUBLIC_URL': JSON.stringify('/'), // Define PUBLIC_URL como a raiz
+    }),
   ],
   devServer: {
-    static: {
-      directory: path.join(__dirname, 'dist'), // Diretório para servir arquivos estáticos
-    },
+    static: [
+      {
+        directory: path.join(__dirname, 'dist'), // Diretório para servir arquivos de build
+      },
+      {
+        directory: path.join(__dirname, 'public'), // Diretório para servir arquivos estáticos da pasta public
+        publicPath: '/', // Define o caminho para acessar arquivos da pasta public
+        watch: true, // Habilita watch para mudanças na pasta public
+      },
+    ],
     compress: true, // Habilita a compressão para arquivos servidos
     port: 9000, // Porta do servidor de desenvolvimento
     historyApiFallback: true, // Suporte para SPA, redirecionando requisições para o index.html
@@ -62,3 +72,4 @@ module.exports = {
     },
   },
 };
+  

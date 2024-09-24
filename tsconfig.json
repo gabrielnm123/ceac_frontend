@@ -5,6 +5,7 @@
     "esModuleInterop": true, // Habilita a interoperabilidade entre módulos CommonJS e ES6 para melhor compatibilidade.
     "skipLibCheck": true, // Ignora a verificação de tipos em declarações de bibliotecas para acelerar o tempo de build.
     "forceConsistentCasingInFileNames": true, // Exige consistência na capitalização dos nomes de arquivos para evitar erros em sistemas sensíveis a maiúsculas e minúsculas.
-    "strict": true // Ativa todas as verificações estritas de tipos para garantir a máxima segurança e qualidade do código.
+    "strict": true, // Ativa todas as verificações estritas de tipos para garantir a máxima segurança e qualidade do código.
+    "typeRoots": ["node_modules/@types", "src/types"]
   }
 }

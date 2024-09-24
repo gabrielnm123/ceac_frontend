@@ -1,6 +1,5 @@
 import React from 'react';  
 import './css/Base.css'
-import Logo from '../img/ceac.png'
 import { Layout, Menu, theme, Typography } from 'antd';
 import type basePropsType from './types/baseProps';
 
@@ -15,7 +14,7 @@ const Base: React.FC<basePropsType> = (props) => {
   return (
     <Layout className='layout-base'>
       <Header className='header-base'>
-        <img src={Logo} alt="logo" className='logo-base' />
+        <img src='/ceac.png' alt="logo" className='logo-base' />
         <Menu
           className='menu-base'
           theme="dark"
