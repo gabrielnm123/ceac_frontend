@@ -521,7 +521,7 @@ const CreateFicha: React.FC = () => {
             {
               validator: (_, value) => {
                 if (value && value.replace(/\D/g, '').length !== 10) {
-                  return Promise.reject(new Error('A data de abertura deve conter exatamente 10 dígitos numéricos'));
+                  return Promise.reject(new Error('A data de abertura deve conter exatamente 8 dígitos numéricos'));
                 }
                 return Promise.resolve();
               },

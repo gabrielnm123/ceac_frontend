@@ -4,11 +4,13 @@ import { Form, Input, Button, message } from 'antd';
 import './css/Login.css'
 import axiosInstance from "../../services/axiosInstance";
 import useAuthenticationVerify from "../../services/useAuthenticationVerify";
+import { setCookie } from "../../services/cookie";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const [getIsAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
+  // Verifica se o usuário está autenticado
   useAuthenticationVerify('/login', undefined, setIsAuthenticated);
 
   useEffect(() => {
@@ -16,36 +18,34 @@ const Login: React.FC = () => {
       navigate('/perfil');
     }
     document.title = 'Autenticação';
-  }, [getIsAuthenticated])
+  }, [getIsAuthenticated]);
 
   const onFinish = async (values: object) => {
     try {
       const response = await axiosInstance.post(`token/`, values)
-      const refresh = response.data.refresh
-      const access = response.data.access
-      const headers = {
-        'Authorization': `Bearer ${access}`,
-        'Content-Type': 'application/json'
-      }
-      localStorage.setItem('refresh', refresh);
-      localStorage.setItem('access', access);
-      localStorage.setItem('headers', JSON.stringify(headers));
+      const { refresh, access } = response.data;
+      
+      // Armazena os tokens como cookies, com SameSite=Lax e Secure
+      setCookie('refresh_token', refresh);
+      setCookie('access_token', access);
+
       try {
-        const response = await axiosInstance.get('current_user/')
-        const userId = response.data.id;
-        localStorage.setItem('userId', userId);
+        const userResponse = await axiosInstance.get('current_user/');
+        const userId = userResponse.data.id;
+        localStorage.setItem('userId', userId);  // Somente armazena o ID do usuário no localStorage
       } catch {
-        message.error('Um erro ocorreu, tente novamente!')
+        message.error('Um erro ocorreu ao obter as informações do usuário.');
       }
+
       navigate('/perfil');
     } catch {
-      message.error('Usuário ou senha inválida(s)!')
+      message.error('Usuário ou senha inválida(s)!');
     }
-  }
+  };
 
   const onFinishFailed = (errorInfo: any) => {
-    message.error('Um erro ocorreu, tente novamente!')
-    console.log(errorInfo) 
+    message.error('Um erro ocorreu, tente novamente!');
+    console.log(errorInfo); 
   };
   
   return (
@@ -76,7 +76,7 @@ const Login: React.FC = () => {
         </Button>
       </Form.Item>
     </Form>
-  )
-}
+  );
+};
 
 export default Login;
