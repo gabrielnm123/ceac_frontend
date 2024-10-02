@@ -23,11 +23,9 @@ const Login: React.FC = () => {
   const onFinish = async (values: object) => {
     try {
       const response = await axiosInstance.post(`token/`, values)
-      const { refresh, access } = response.data;
       
       // Armazena os tokens como cookies, com SameSite=Lax e Secure
-      setCookie('refresh_token', refresh);
-      setCookie('access_token', access);
+      setCookie('access_token', response.data.access);
 
       try {
         const userResponse = await axiosInstance.get('current_user/');
@@ -45,7 +43,6 @@ const Login: React.FC = () => {
 
   const onFinishFailed = (errorInfo: any) => {
     message.error('Um erro ocorreu, tente novamente!');
-    console.log(errorInfo); 
   };
   
   return (

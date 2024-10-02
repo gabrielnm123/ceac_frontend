@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import Base from "../Base";
 import itemUser from "../menuItems/itemUser";
 import itemCapacita from "../menuItems/itemCapacita";
-import itemTest from "../menuItems/itemTest";
 import type menuItem from "../types/menuItem";
 import useAuthenticationVerify from "../../../services/useAuthenticationVerify";
 
@@ -18,7 +17,6 @@ const Modulos: React.FC = () => {
   const perfilName = localStorage.getItem('perfilName')!;
   const permissions = perfisNamePermissions[perfilName];
   const user = itemUser(setBaseContent, setBaseTitle);
-  const teste = itemTest(setBaseContent, setBaseTitle)
   
   useAuthenticationVerify('/login');
 
@@ -31,7 +29,7 @@ const Modulos: React.FC = () => {
   useEffect(() => {
     if (permissions) {
       const capacita = itemCapacita(setBaseContent, setBaseTitle, permissions);
-      const items = user.concat(capacita).concat(teste); // quando entrar em produção devo retirar esse componente de teste
+      const items = user.concat(capacita);
       setItems(items);
     }
   }, [permissions]);

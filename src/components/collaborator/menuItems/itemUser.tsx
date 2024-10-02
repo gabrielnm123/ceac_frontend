@@ -7,14 +7,15 @@ import {
 } from '@ant-design/icons';
 import getMenuItem from './getMenuItem';
 import ChangeRegistration from '../Modulos/User/ChangeRegistration';
+import { deleteCookie } from '../../../services/cookie';
 
 const itemUser = (
   setBaseContent: React.Dispatch<React.SetStateAction<React.ReactNode>>,
   setBaseTitle: React.Dispatch<React.SetStateAction<string>>,
 ) => {
   const logout = () => {
-    localStorage.removeItem('refresh');
-    localStorage.removeItem('access');
+    deleteCookie('refresh_token');
+    deleteCookie('access_token');
     localStorage.removeItem('headers');
     localStorage.removeItem('userId');
     localStorage.removeItem('perfilName');
