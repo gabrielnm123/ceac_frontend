@@ -26,6 +26,7 @@ const Login: React.FC = () => {
       
       // Armazena os tokens como cookies, com SameSite=Lax e Secure
       setCookie('access_token', response.data.access);
+      setCookie('refresh_token', response.data.refresh);
 
       try {
         const userResponse = await axiosInstance.get('current_user/');

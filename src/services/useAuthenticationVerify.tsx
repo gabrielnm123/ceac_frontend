@@ -29,6 +29,7 @@ const useAuthenticationVerify = (
               }
               // Atualiza o access token no cookie
               setCookie('access_token', response.data.access);  // Armazena o novo access token
+              setCookie('refresh_token', response.data.refresh);  // Armazena o novo access token
             })
             .catch(() => {
               // Redireciona para a página de login se a renovação também falhar
