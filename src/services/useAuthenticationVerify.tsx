@@ -12,6 +12,7 @@ const useAuthenticationVerify = (
 
   useEffect(() => {
     const accessToken = getCookie('access_token');  // Obtém o access token do cookie
+    const refreshToken = getCookie('refresh_token');  // Obtém o access token do cookie
     if (accessToken) {
       // Verifica o access token
       axiosInstance.post('token/verify/', { token: accessToken })
@@ -22,14 +23,14 @@ const useAuthenticationVerify = (
         })
         .catch(() => {
           // Se o access token expirar, tenta renovar o token com a chamada de refresh
-          axiosInstance.post('token/refresh/')  // Faz a chamada sem enviar o refresh token explicitamente
+          axiosInstance.post('token/refresh/', { refresh: refreshToken })  // Faz a chamada sem enviar o refresh token explicitamente
             .then((response) => {
               if (setIsAuthenticated) {
                 setIsAuthenticated(true);
               }
               // Atualiza o access token no cookie
-              setCookie('access_token', response.data.access);  // Armazena o novo access token
-              setCookie('refresh_token', response.data.refresh);  // Armazena o novo access token
+              setCookie('access_token', response.data.access);
+              setCookie('refresh_token', response.data.refresh);
             })
             .catch(() => {
               // Redireciona para a página de login se a renovação também falhar

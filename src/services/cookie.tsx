@@ -48,7 +48,7 @@ const setCookie = (
   cookieString += ` SameSite=${options.sameSite || 'Lax'};`;
 
   // Adiciona o atributo Secure se estiver em produção
-  if (process.env.REACT_APP_URL) {
+  if (process.env.NODE_ENV === 'production') {
     cookieString += " Secure;";
   }
 
@@ -80,7 +80,7 @@ const deleteCookie = (
   cookieString += ` SameSite=${options.sameSite || 'Lax'};`;
 
   // Adiciona o atributo Secure se estiver em produção
-  if (process.env.REACT_APP_URL) {
+  if (process.env.NODE_ENV === 'production') {
     cookieString += " Secure;";
   }
 
