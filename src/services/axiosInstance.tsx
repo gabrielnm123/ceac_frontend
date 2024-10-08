@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getCookie } from "./cookie";
+import { getCookie, setCookie } from "./cookie";
 
 // Definir a URL base da API
 const url = process.env.REACT_APP_URL || 'http://localhost:8002/api/';
@@ -23,10 +23,23 @@ axiosInstance.interceptors.request.use(config => {
 // Interceptores de resposta para tratar erros globais
 axiosInstance.interceptors.response.use(response => {
   return response;
-}, error => {
-  if (error.response && error.response.status === 401) {
-    // Tratamento para redirecionar ou renovar o token, dependendo do status de erro
-    console.error("Não autorizado, redirecionando para o login...");
+}, async error => {
+  const originalRequest = error.config;
+  if (error.response && error.response.status === 401 && !originalRequest._retry) {
+    originalRequest._retry = true;
+    try {
+      const refreshToken = getCookie('refresh_token');
+      if (refreshToken) {
+        const response = await axios.post(`${url}token/refresh/`, { refresh: refreshToken });
+        setCookie('access_token', response.data.access);
+        setCookie('refresh_token', response.data.refresh);
+        originalRequest.headers.Authorization = `Bearer ${response.data.access}`;
+        return axiosInstance(originalRequest); // Reexecuta a requisição original
+      }
+    } catch (refreshError) {
+      console.error("Erro ao renovar o token.", refreshError);
+      return Promise.reject(refreshError);
+    }
   }
   return Promise.reject(error);
 });

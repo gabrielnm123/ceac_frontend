@@ -6,6 +6,7 @@ import useAuthenticationVerify from "../../../../services/useAuthenticationVerif
 import '../../css/SearchFicha.css';
 import dayjs from 'dayjs';
 import modulosCapacitaType from "../../types/modulosCapacita";
+import { useNavigate } from "react-router-dom";
 
 const { Option } = Select;
 
@@ -40,8 +41,9 @@ const SearchFicha: React.FC = () => {
   const [getVisible, setVisible] = useState<boolean>(false);
   const [getSelectedFicha, setSelectedFicha] = useState<any>(null);
   const [getTriggerAuth, setTriggerAuth] = useState<boolean>(true);
+  const navigate = useNavigate();
 
-  useAuthenticationVerify('/login', getTriggerAuth);
+  // useAuthenticationVerify('/login', getTriggerAuth);
 
   useEffect(() => {
     const fetchModulosCapacita = async () => {
@@ -97,6 +99,7 @@ const SearchFicha: React.FC = () => {
         setColumns(columns);
       } catch (error) {
         message.error('Erro ao carregar os módulos de aprendizagem, tente novamente.');
+        navigate('/login');
       }
     };
 
@@ -119,6 +122,7 @@ const SearchFicha: React.FC = () => {
       setSelectedFicha(response.data);
       setVisible(true);
     } catch (error) {
+      navigate('/login');
       message.error('Erro ao carregar a ficha, tente novamente.');
     } finally {
       setLoading(false);
@@ -149,23 +153,23 @@ const SearchFicha: React.FC = () => {
     if (values.data_nascimento) {
       values.data_nascimento = values.data_nascimento.format('YYYY-MM-DD');
     }
-
+    
     if (values.cpf) {
       values.cpf = values.cpf.replace(/\D/g, '');
     }
-
+    
     if (values.celular) {
       values.celular = values.celular.replace(/\D/g, '');
     }
-
+    
     if (values.fixo) {
       values.fixo = values.fixo.replace(/\D/g, '');
     }
-
+    
     const cleanedValues = Object.fromEntries(
       Object.entries(values).filter(([_, v]) => v != null && v !== "")
     );
-
+    
     setLoading(true);
     try {
       const response = await axiosInstance.get('capacita/fichas/', { params: cleanedValues });
@@ -176,6 +180,7 @@ const SearchFicha: React.FC = () => {
         message.success('Busca realizada com sucesso!');
       }
     } catch (error) {
+      navigate('/login');
       message.error('Erro ao buscar ficha, tente novamente.');
     } finally {
       setLoading(false);
