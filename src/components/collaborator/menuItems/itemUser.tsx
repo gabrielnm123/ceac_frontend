@@ -7,18 +7,22 @@ import {
 } from '@ant-design/icons';
 import getMenuItem from './getMenuItem';
 import ChangeRegistration from '../Modulos/User/ChangeRegistration';
-import { deleteCookie } from '../../../services/cookie';
+import axiosInstance from '../../../services/axiosInstance';
+import Cookies from 'js-cookie';
 
 const itemUser = (
   setBaseContent: React.Dispatch<React.SetStateAction<React.ReactNode>>,
   setBaseTitle: React.Dispatch<React.SetStateAction<string>>,
 ) => {
+  const refreshToken = Cookies.get('refresh_token');
+
   const logout = () => {
-    deleteCookie('refresh_token');
-    deleteCookie('access_token');
+    Cookies.remove('refresh_token');
+    Cookies.remove('access_token');
     localStorage.removeItem('headers');
     localStorage.removeItem('userId');
     localStorage.removeItem('perfilName');
+    axiosInstance.post('token/invalidate/', {refresh: refreshToken});
   };
 
   const changeRegistration = () => {

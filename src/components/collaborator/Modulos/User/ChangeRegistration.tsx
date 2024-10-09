@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, message, Typography } from 'antd';
 import axiosInstance from '../../../../services/axiosInstance';
-import useAuthenticationVerify from '../../../../services/useAuthenticationVerify';
 
 interface FormValues {
   email: string;
@@ -19,8 +18,6 @@ const ChangeRegistration: React.FC = () => {
   const [getPasswordMessage, setPasswordMessage] = useState<string>('');
   const [form] = Form.useForm();
   const [getTriggerAuth, setTriggerAuth] = useState<boolean>(true);
-
-  useAuthenticationVerify('/login', getTriggerAuth);
 
   useEffect(() => {
     const fetchUserData = async () => {

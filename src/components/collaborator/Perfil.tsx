@@ -1,15 +1,24 @@
 import React, { useEffect } from "react";
 import { Form, Anchor } from 'antd';
-import useAuthenticationVerify from "../../services/useAuthenticationVerify";
 import perfisObject from "../../services/perfisObject";
 import './css/Perfil.css';
-import { getCookie } from "../../services/cookie";
+import Cookies from "js-cookie";
+import { useNavigate } from "react-router-dom";
+import axiosInstance from "../../services/axiosInstance";
 
 const Perfil: React.FC = () => {
   const perfisNamePermissions = perfisObject();
   const perfisNames = Object.keys(perfisNamePermissions);
+  const navigate = useNavigate();
+  const accessToken = Cookies.get('access_token')
 
-  useAuthenticationVerify('/login');
+  useEffect(() => {
+    axiosInstance.post('token/verify/', { token: accessToken })
+      .catch(() => {
+        navigate('/login');
+      })
+    document.title = 'Perfil';
+  }, [])
 
   const selectPerfil = (event: React.MouseEvent<HTMLElement>, link: { title: React.ReactNode }) => {
     localStorage.setItem('perfilName', link.title as string);

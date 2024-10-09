@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getCookie, setCookie } from "./cookie";
+import Cookies from "js-cookie";
 
 // Definir a URL base da API
 const url = process.env.REACT_APP_URL || 'http://localhost:8002/api/';
@@ -11,7 +11,7 @@ const axiosInstance = axios.create({
 
 // Interceptores de requisição para incluir os cookies
 axiosInstance.interceptors.request.use(config => {
-  const accessToken = getCookie('access_token');  // Recupera o cookie de acesso
+  const accessToken = Cookies.get('access_token');  // Recupera o cookie de acesso
   if (accessToken) {
     config.headers.Authorization = `Bearer ${accessToken}`;  // Adiciona o token ao cabeçalho
   }
@@ -28,11 +28,11 @@ axiosInstance.interceptors.response.use(response => {
   if (error.response && error.response.status === 401 && !originalRequest._retry) {
     originalRequest._retry = true;
     try {
-      const refreshToken = getCookie('refresh_token');
+      const refreshToken = Cookies.get('refresh_token');
       if (refreshToken) {
         const response = await axios.post(`${url}token/refresh/`, { refresh: refreshToken });
-        setCookie('access_token', response.data.access);
-        setCookie('refresh_token', response.data.refresh);
+        Cookies.set('access_token', response.data.access);
+        Cookies.set('refresh_token', response.data.refresh);
         originalRequest.headers.Authorization = `Bearer ${response.data.access}`;
         return axiosInstance(originalRequest); // Reexecuta a requisição original
       }

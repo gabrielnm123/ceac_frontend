@@ -3,7 +3,6 @@ import { Form, Input, Button, Select, DatePicker, Checkbox, Typography, message 
 import MaskedInput from 'antd-mask-input';
 import axios from 'axios';
 import axiosInstance from "../../../../services/axiosInstance";
-import useAuthenticationVerify from "../../../../services/useAuthenticationVerify";
 import '../../css/CreateFicha.css';
 import modulosCapacitaType from "../../types/modulosCapacita";
 
@@ -16,9 +15,6 @@ const CreateFicha: React.FC = () => {
   const [getIsPJRequired, setIsPJRequired] = useState<boolean>(false);
   const [getModulosCapacita, setModulosCapacita] = useState<Array<modulosCapacitaType> | []>([])
   const [getTriggerAuth, setTriggerAuth] = useState<boolean>(true);
-
-  useAuthenticationVerify('/login', getTriggerAuth);
-
 
   useEffect(() => {
     form.setFieldsValue({ if_true_assistir_casa: undefined });

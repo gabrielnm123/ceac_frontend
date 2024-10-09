@@ -49,7 +49,6 @@ module.exports = (env, argv) => {
       new ForkTsCheckerWebpackPlugin(),
       new webpack.DefinePlugin({
         'process.env.NODE_ENV': JSON.stringify(isProduction ? 'production' : 'development'), // Define NODE_ENV de forma explícita
-        'process.env.PUBLIC_URL': JSON.stringify('/'),
       }),
     ],
     devServer: {

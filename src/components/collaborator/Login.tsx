@@ -1,37 +1,33 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { Form, Input, Button, message } from 'antd';
 import './css/Login.css'
 import axiosInstance from "../../services/axiosInstance";
-import useAuthenticationVerify from "../../services/useAuthenticationVerify";
-import { setCookie } from "../../services/cookie";
+import Cookies from "js-cookie";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-  const [getIsAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-
-  // Verifica se o usuário está autenticado
-  useAuthenticationVerify('/login', undefined, setIsAuthenticated);
+  const accessToken = Cookies.get('access_token')
 
   useEffect(() => {
-    if (getIsAuthenticated) {
-      navigate('/perfil');
-    }
+    axiosInstance.post('token/verify/', {token: accessToken})
+      .then(() => {
+        navigate('/perfil');
+      })
     document.title = 'Autenticação';
-  }, [getIsAuthenticated]);
+  }, []);
 
   const onFinish = async (values: object) => {
     try {
       const response = await axiosInstance.post(`token/`, values)
       
-      // Armazena os tokens como cookies, com SameSite=Lax e Secure
-      setCookie('access_token', response.data.access);
-      setCookie('refresh_token', response.data.refresh);
+      Cookies.set('access_token', response.data.access);
+      Cookies.set('refresh_token', response.data.refresh);
 
       try {
         const userResponse = await axiosInstance.get('current_user/');
         const userId = userResponse.data.id;
-        localStorage.setItem('userId', userId);  // Somente armazena o ID do usuário no localStorage
+        localStorage.setItem('userId', userId);
       } catch {
         message.error('Um erro ocorreu ao obter as informações do usuário.');
       }

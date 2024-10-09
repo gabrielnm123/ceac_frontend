@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { Form, Input, Button, Select, DatePicker, Table, message, Modal, Descriptions } from 'antd';
 import MaskedInput from 'antd-mask-input';
 import axiosInstance from "../../../../services/axiosInstance";
-import useAuthenticationVerify from "../../../../services/useAuthenticationVerify";
 import '../../css/SearchFicha.css';
 import dayjs from 'dayjs';
 import modulosCapacitaType from "../../types/modulosCapacita";

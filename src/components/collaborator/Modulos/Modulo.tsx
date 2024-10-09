@@ -5,7 +5,6 @@ import Base from "../Base";
 import itemUser from "../menuItems/itemUser";
 import itemCapacita from "../menuItems/itemCapacita";
 import type menuItem from "../types/menuItem";
-import useAuthenticationVerify from "../../../services/useAuthenticationVerify";
 
 const Modulos: React.FC = () => {
   const [getItems, setItems] = useState<Array<menuItem>>();
@@ -17,8 +16,6 @@ const Modulos: React.FC = () => {
   const perfilName = localStorage.getItem('perfilName')!;
   const permissions = perfisNamePermissions[perfilName];
   const user = itemUser(setBaseContent, setBaseTitle);
-  
-  useAuthenticationVerify('/login');
 
   useEffect(() => {
     if (!perfisNames.includes(perfilName) && perfisNames[0] !== 'null') {
