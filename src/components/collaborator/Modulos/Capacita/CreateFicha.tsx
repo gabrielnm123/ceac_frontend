@@ -36,7 +36,7 @@ const CreateFicha: React.FC = () => {
 
   const isValidCPF = (cpf: string) => {
     cpf = cpf.replace(/\D/g, '');
-    if (cpf.length !== 11 || /(\d)\1{10}/.test(cpf)) return false;
+    if (cpf && (cpf.length !== 11 || /(\d)\1{10}/.test(cpf))) return false;
     let soma = 0;
     for (let i = 0; i < 9; i++) soma += parseInt(cpf.charAt(i)) * (10 - i);
     let resto = 11 - (soma % 11);
@@ -191,7 +191,7 @@ const CreateFicha: React.FC = () => {
           name="nome_completo"
           rules={[{ required: true, message: 'Por favor, insira o nome completo' }]}
         >
-          <Input onChange={(e) => form.setFieldsValue({ nome_completo: e.target.value.toUpperCase() })} />
+          <Input onChange={(e) => form.setFieldsValue({ nome_completo: e.target.value.toUpperCase() })} allowClear />
         </Form.Item>
 
         <Form.Item
@@ -202,10 +202,9 @@ const CreateFicha: React.FC = () => {
             { required: true, message: 'Por favor, insira o CPF' },
             {
               validator: (_, value) => {
-                if (value && value.replace(/\D/g, '').length !== 11) {
+                if (value.replace(/\D/g, '') && value.replace(/\D/g, '').length !== 11) {
                   return Promise.reject(new Error('O CPF deve conter exatamente 11 dígitos numéricos'));
-                }
-                if (value && !isValidCPF(value)) {
+                } else if (value.replace(/\D/g, '') && !isValidCPF(value)) {
                   return Promise.reject(new Error('CPF inválido'));
                 }
                 return Promise.resolve();
@@ -213,7 +212,7 @@ const CreateFicha: React.FC = () => {
             },
           ]}
         >
-          <MaskedInput mask="000.000.000-00" />
+          <MaskedInput mask="000.000.000-00" allowClear/>
         </Form.Item>
 
         <Form.Item
@@ -221,7 +220,7 @@ const CreateFicha: React.FC = () => {
           name="genero"
           rules={[{ required: true, message: 'Por favor, selecione o gênero' }]}
         >
-          <Select>
+          <Select allowClear>
             <Option value="M">MASCULINO</Option>
             <Option value="F">FEMININO</Option>
           </Select>
@@ -232,7 +231,7 @@ const CreateFicha: React.FC = () => {
           name="data_nascimento"
           rules={[{ required: true, message: 'Por favor, selecione a data de nascimento' }]}
         >
-          <DatePicker format="YYYY-MM-DD" />
+          <DatePicker format="DD/MM/YYYY" allowClear />
         </Form.Item>
 
         <Form.Item
@@ -240,7 +239,7 @@ const CreateFicha: React.FC = () => {
           name="escolaridade"
           rules={[{ required: true, message: 'Por favor, selecione a escolaridade' }]}
         >
-          <Select>
+          <Select allowClear>
             <Option value="FUNDAMENTAL">ENSINO FUNDAMENTAL</Option>
             <Option value="MEDIO">ENSINO MÉDIO</Option>
             <Option value="GRADUACAO">GRADUAÇÃO</Option>
@@ -253,7 +252,7 @@ const CreateFicha: React.FC = () => {
           name="atividade"
           rules={[{ required: true, message: 'Por favor, selecione a atividade' }]}
         >
-          <Select>
+          <Select allowClear>
             <Option value="ARTESANATO">ARTESANATO</Option>
             <Option value="AGRICULTURA_URBANA">AGRICULTURA URBANA</Option>
             <Option value="COMERCIO">COMÉRCIO</Option>
@@ -282,7 +281,7 @@ const CreateFicha: React.FC = () => {
             },
           ]}
         >
-          <MaskedInput mask="00000-000" onBlur={handleCEPBlur} />
+          <MaskedInput mask="00000-000" onBlur={handleCEPBlur} allowClear />
         </Form.Item>
 
         <Form.Item
@@ -290,11 +289,11 @@ const CreateFicha: React.FC = () => {
           name="endereco"
           rules={[{ required: true, message: 'Por favor, insira o endereço' }]}
         >
-          <Input onChange={(e) => form.setFieldsValue({ endereco: e.target.value.toUpperCase() })} />
+          <Input onChange={(e) => form.setFieldsValue({ endereco: e.target.value.toUpperCase() })} allowClear />
         </Form.Item>
 
         <Form.Item label="Complemento" name="complemento">
-          <Input onChange={(e) => form.setFieldsValue({ complemento: e.target.value.toUpperCase() })} />
+          <Input onChange={(e) => form.setFieldsValue({ complemento: e.target.value.toUpperCase() })} allowClear />
         </Form.Item>
 
         <Form.Item
@@ -302,7 +301,7 @@ const CreateFicha: React.FC = () => {
           name="bairro"
           rules={[{ required: true, message: 'Por favor, insira o bairro' }]}
         >
-          <Input onChange={(e) => form.setFieldsValue({ bairro: e.target.value.toUpperCase() })} />
+          <Input onChange={(e) => form.setFieldsValue({ bairro: e.target.value.toUpperCase() })} allowClear />
         </Form.Item>
 
         <Form.Item
@@ -310,7 +309,7 @@ const CreateFicha: React.FC = () => {
           name="uf"
           rules={[{ required: true, message: 'Por favor, selecione o estado' }]}
         >
-          <Select>
+          <Select allowClear>
             <Option value="AC">ACRE</Option>
             <Option value="AL">ALAGOAS</Option>
             <Option value="AP">AMAPÁ</Option>
@@ -359,7 +358,7 @@ const CreateFicha: React.FC = () => {
             },
           ]}
         >
-          <MaskedInput mask="(00) 0 0000-0000" />
+          <MaskedInput mask="(00) 0 0000-0000" allowClear />
         </Form.Item>
 
         <Form.Item
@@ -368,10 +367,9 @@ const CreateFicha: React.FC = () => {
           rules={[
             {
               validator: (_, value) => {
-                if (value && value.replace(/\D/g, '').length !== 10) {
+                if (value.replace(/\D/g, '') && value.replace(/\D/g, '').length !== 10) {
                   return Promise.reject(new Error('O telefone fixo deve conter exatamente 10 dígitos numéricos'));
-                }
-                if (value && !isValidFixo(value)) {
+                } else if (value.replace(/\D/g, '') && !isValidFixo(value)) {
                   return Promise.reject(new Error('Telefone fixo inválido'));
                 }
                 return Promise.resolve();
@@ -379,7 +377,7 @@ const CreateFicha: React.FC = () => {
             },
           ]}
         >
-          <MaskedInput mask="(00) 0000-0000" />
+          <MaskedInput mask="(00) 0000-0000" allowClear />
         </Form.Item>
 
         <Form.Item
@@ -390,7 +388,7 @@ const CreateFicha: React.FC = () => {
             { type: 'email', message: 'Por favor, insira um e-mail válido' },
           ]}
         >
-          <Input onChange={(e) => form.setFieldsValue({ email: e.target.value.toLowerCase() })} />
+          <Input onChange={(e) => form.setFieldsValue({ email: e.target.value.toLowerCase() })} allowClear />
         </Form.Item>
 
         <Form.Item
@@ -398,7 +396,7 @@ const CreateFicha: React.FC = () => {
           name="interesse_ter_negocio"
           rules={[{ required: true, message: 'Por favor, selecione' }]}
         >
-          <Select>
+          <Select allowClear>
             <Option value="S">SIM</Option>
             <Option value="N">NÃO</Option>
           </Select>
@@ -409,7 +407,7 @@ const CreateFicha: React.FC = () => {
           name="preferencia_aula"
           rules={[{ required: true, message: 'Por favor, selecione' }]}
         >
-          <Select>
+          <Select allowClear>
             <Option value="ONLINE">ONLINE</Option>
             <Option value="PRESENCIAL">PRESENCIAL</Option>
           </Select>
@@ -420,7 +418,7 @@ const CreateFicha: React.FC = () => {
           name="meio_comunicacao_aula"
           rules={[{ required: true, message: 'Por favor, selecione' }]}
         >
-          <Select>
+          <Select allowClear>
             <Option value="WHATSAPP">WHATSAPP</Option>
             <Option value="EMAIL">EMAIL</Option>
           </Select>
@@ -431,9 +429,7 @@ const CreateFicha: React.FC = () => {
           name="assistir_online"
           rules={[{ required: true, message: 'Por favor, selecione' }]}
         >
-          <Select
-            onChange={(value) => setIsOnline(value === 'S')}
-          >
+          <Select onChange={(value) => setIsOnline(value === 'S')} allowClear>
             <Option value="S">SIM</Option>
             <Option value="N">NÃO</Option>
           </Select>
@@ -449,7 +445,7 @@ const CreateFicha: React.FC = () => {
             },
           ]}
         >
-          <Select disabled={!getIsOnline}>
+          <Select disabled={!getIsOnline} allowClear>
             <Option value="COMPUTADOR">COMPUTADOR</Option>
             <Option value="CELULAR">CELULAR</Option>
             <Option value="TABLET">TABLET</Option>
@@ -463,7 +459,7 @@ const CreateFicha: React.FC = () => {
           name="nome_fantasia"
           rules={[{ required: getIsPJRequired, message: 'Por favor, insira o nome fantasia' }]}
         >
-          <Input onChange={handlePJFieldChange} />
+          <Input onChange={handlePJFieldChange} allowClear />
         </Form.Item>
 
         <Form.Item
@@ -484,7 +480,7 @@ const CreateFicha: React.FC = () => {
             },
           ]}
         >
-          <MaskedInput mask="00.000.000/0000-00" onChange={handlePJFieldChange} />
+          <MaskedInput mask="00.000.000/0000-00" onChange={handlePJFieldChange} allowClear />
         </Form.Item>
 
         <Form.Item
@@ -492,7 +488,7 @@ const CreateFicha: React.FC = () => {
           name="situacao_empresa"
           rules={[{ required: getIsPJRequired, message: 'Por favor, selecione a situação da empresa' }]}
         >
-          <Select onChange={handlePJFieldChange}>
+          <Select onChange={handlePJFieldChange} allowClear>
             <Option value="ATIVA">ATIVA</Option>
             <Option value="N_ATIVA">NÃO ATIVA</Option>
           </Select>
@@ -503,7 +499,7 @@ const CreateFicha: React.FC = () => {
           name="porte_empresa"
           rules={[{ required: getIsPJRequired, message: 'Por favor, selecione o porte da empresa' }]}
         >
-          <Select onChange={handlePJFieldChange}>
+          <Select onChange={handlePJFieldChange} allowClear>
             <Option value="MEI">MICROEMPREENDEDOR INDIVIDUAL (MEI)</Option>
             <Option value="ME">MICROEMPRESA (ME)</Option>
           </Select>
@@ -524,7 +520,7 @@ const CreateFicha: React.FC = () => {
             },
           ]}
         >
-          <DatePicker format="YYYY-MM-DD" onChange={handlePJFieldChange} />
+          <DatePicker format="YYYY-MM-DD" onChange={handlePJFieldChange} allowClear />
         </Form.Item>
 
         <Form.Item
@@ -545,7 +541,7 @@ const CreateFicha: React.FC = () => {
             },
           ]}
         >
-          <Input onChange={handlePJFieldChange} />
+          <Input onChange={handlePJFieldChange} allowClear />
         </Form.Item>
 
         <Form.Item
@@ -553,7 +549,7 @@ const CreateFicha: React.FC = () => {
           name="setor"
           rules={[{ required: getIsPJRequired, message: 'Por favor, selecione o setor' }]}
         >
-          <Select onChange={handlePJFieldChange}>
+          <Select onChange={handlePJFieldChange} allowClear>
             <Option value="COMERCIO">COMÉRCIO</Option>
             <Option value="SERVICO">SERVIÇO</Option>
             <Option value="AGRONEGOCIOS">AGRONEGÓCIOS</Option>
@@ -566,7 +562,7 @@ const CreateFicha: React.FC = () => {
           name="tipo_vinculo"
           rules={[{ required: getIsPJRequired, message: 'Por favor, selecione o tipo de vínculo' }]}
         >
-          <Select onChange={handlePJFieldChange}>
+          <Select onChange={handlePJFieldChange} allowClear>
             <Option value="REPRESENTANTE">REPRESENTANTE</Option>
             <Option value="RESPONSAVEL">RESPONSÁVEL</Option>
           </Select>

@@ -39,10 +39,7 @@ const SearchFicha: React.FC = () => {
   const [getForm] = Form.useForm();
   const [getVisible, setVisible] = useState<boolean>(false);
   const [getSelectedFicha, setSelectedFicha] = useState<any>(null);
-  const [getTriggerAuth, setTriggerAuth] = useState<boolean>(true);
   const navigate = useNavigate();
-
-  // useAuthenticationVerify('/login', getTriggerAuth);
 
   useEffect(() => {
     const fetchModulosCapacita = async () => {
@@ -114,7 +111,6 @@ const SearchFicha: React.FC = () => {
   }, []);
 
   const handleOpenFicha = async (id: number) => {
-    setTriggerAuth((prevTriggerAuth) => !prevTriggerAuth);
     try {
       setLoading(true);
       const response = await axiosInstance.get(`capacita/fichas/${id}`);
@@ -148,7 +144,6 @@ const SearchFicha: React.FC = () => {
   }
 
   const onFinish = async (values: any) => {
-    setTriggerAuth((prevTriggerAuth) => !prevTriggerAuth);
     if (values.data_nascimento) {
       values.data_nascimento = values.data_nascimento.format('YYYY-MM-DD');
     }

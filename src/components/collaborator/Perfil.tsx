@@ -10,13 +10,15 @@ const Perfil: React.FC = () => {
   const perfisNamePermissions = perfisObject();
   const perfisNames = Object.keys(perfisNamePermissions);
   const navigate = useNavigate();
-  const accessToken = Cookies.get('access_token')
+  const accessToken = Cookies.get('access_token');
 
   useEffect(() => {
-    axiosInstance.post('token/verify/', { token: accessToken })
-      .catch(() => {
-        navigate('/login');
-      })
+    if (accessToken) {
+      axiosInstance.post('token/verify/', { token: accessToken })
+        .catch(() => {
+          navigate('/login');
+        })
+    }
     document.title = 'Perfil';
   }, [])
 

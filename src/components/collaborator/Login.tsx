@@ -10,10 +10,12 @@ const Login: React.FC = () => {
   const accessToken = Cookies.get('access_token')
 
   useEffect(() => {
-    axiosInstance.post('token/verify/', {token: accessToken})
-      .then(() => {
-        navigate('/perfil');
-      })
+    if (accessToken) {
+      axiosInstance.post('token/verify/', {token: accessToken})
+        .then(() => {
+          navigate('/perfil');
+        })
+    }
     document.title = 'Autenticação';
   }, []);
 
