@@ -23,12 +23,12 @@ const App: React.FC = () => {
   }, []);
   
   return (
-    <BrowserRouter basename="/colaborador">
+    <BrowserRouter>
       <Routes>
-        <Route path='/login' element={<Base content={<Login />} title='Autenticação' />} />
-        <Route path='/perfil' element={<Base content={getBaseContent} title={getBaseTitle} menuItem={itemUser(setBaseContent, setBaseTitle)} />} />
-        <Route path={`/${localStorage.getItem('perfilName')}`} element={<Modulo /> } />
-        <Route path="*" element={<Navigate to="/perfil" />} />
+        <Route path='colaborador/login' element={<Base content={<Login />} title='Autenticação' />} />
+        <Route path='colaborador/perfil' element={<Base content={getBaseContent} title={getBaseTitle} menuItem={itemUser(setBaseContent, setBaseTitle)} />} />
+        <Route path={`colaborador/${localStorage.getItem('perfilName')}`} element={<Modulo /> } />
+        <Route path="*" element={<Navigate to="colaborador/perfil" />} />
       </Routes>
     </BrowserRouter>
   );

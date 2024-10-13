@@ -95,7 +95,7 @@ const SearchFicha: React.FC = () => {
         setColumns(columns);
       } catch (error) {
         message.error('Erro ao carregar os módulos de aprendizagem, tente novamente.');
-        navigate('/login');
+        navigate('/colaborador/login');
       }
     };
 
@@ -117,7 +117,7 @@ const SearchFicha: React.FC = () => {
       setSelectedFicha(response.data);
       setVisible(true);
     } catch (error) {
-      navigate('/login');
+      navigate('/colaborador/login');
       message.error('Erro ao carregar a ficha, tente novamente.');
     } finally {
       setLoading(false);
@@ -174,7 +174,7 @@ const SearchFicha: React.FC = () => {
         message.success('Busca realizada com sucesso!');
       }
     } catch (error) {
-      navigate('/login');
+      navigate('/colaborador/login');
       message.error('Erro ao buscar ficha, tente novamente.');
     } finally {
       setLoading(false);

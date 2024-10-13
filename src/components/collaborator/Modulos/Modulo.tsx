@@ -19,7 +19,7 @@ const Modulos: React.FC = () => {
 
   useEffect(() => {
     if (!perfisNames.includes(perfilName) && perfisNames[0] !== 'null') {
-      navigate('/perfil');
+      navigate('/colaborador/perfil');
     }
   }, [perfisNamePermissions]);
   

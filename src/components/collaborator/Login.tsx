@@ -13,7 +13,7 @@ const Login: React.FC = () => {
     if (accessToken) {
       axiosInstance.post('token/verify/', {token: accessToken})
         .then(() => {
-          navigate('/perfil');
+          navigate('/colaborador/perfil');
         })
     }
     document.title = 'Autenticação';
@@ -34,7 +34,7 @@ const Login: React.FC = () => {
         message.error('Um erro ocorreu ao obter as informações do usuário.');
       }
 
-      navigate('/perfil');
+      navigate('/colaborador/perfil');
     } catch {
       message.error('Usuário ou senha inválida(s)!');
     }

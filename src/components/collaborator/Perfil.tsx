@@ -16,9 +16,9 @@ const Perfil: React.FC = () => {
     if (accessToken) {
       axiosInstance.post('token/verify/', { token: accessToken })
         .catch(() => {
-          navigate('/login');
+          navigate('/colaborador/login');
         })
-    }
+    } else navigate('/colaborador/login')
     document.title = 'Perfil';
   }, [])
 
