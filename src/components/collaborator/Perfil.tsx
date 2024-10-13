@@ -13,13 +13,13 @@ const Perfil: React.FC = () => {
   const accessToken = Cookies.get('access_token');
 
   useEffect(() => {
+    document.title = 'Perfil';
     if (accessToken) {
       axiosInstance.post('token/verify/', { token: accessToken })
         .catch(() => {
           navigate('/colaborador/login');
         })
     } else navigate('/colaborador/login')
-    document.title = 'Perfil';
   }, [])
 
   const selectPerfil = (event: React.MouseEvent<HTMLElement>, link: { title: React.ReactNode }) => {

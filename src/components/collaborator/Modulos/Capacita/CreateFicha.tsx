@@ -5,6 +5,8 @@ import axios from 'axios';
 import axiosInstance from "../../../../services/axiosInstance";
 import '../../css/CreateFicha.css';
 import modulosCapacitaType from "../../types/modulosCapacita";
+import { useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
 
 const { Option } = Select;
 const { Title } = Typography;
@@ -14,8 +16,19 @@ const CreateFicha: React.FC = () => {
   const [getIsOnline, setIsOnline] = useState<boolean>(false);
   const [getIsPJRequired, setIsPJRequired] = useState<boolean>(false);
   const [getModulosCapacita, setModulosCapacita] = useState<Array<modulosCapacitaType> | []>([])
-  const [getTriggerAuth, setTriggerAuth] = useState<boolean>(true);
+  const navigate = useNavigate()
+  const accessToken = Cookies.get('access_token');
 
+  useEffect(() => {
+    document.title = 'Criar Ficha de Inscrição';
+    if (accessToken) {
+      axiosInstance.post('token/verify/', { token: accessToken })
+        .catch(() => {
+          navigate('/colaborador/login');
+        })
+    } else navigate('/colaborador/login')
+  }, [])
+  
   useEffect(() => {
     form.setFieldsValue({ if_true_assistir_casa: undefined });
   }, [getIsOnline]);
@@ -24,7 +37,7 @@ const CreateFicha: React.FC = () => {
     .then(response => {
       setModulosCapacita(response.data)
     })
-    .catch(error => {
+    .catch(() => {
       message.error('Erro ao atualizar os Módulos de Aprendizagem, atualize a página')
     })
 
@@ -105,7 +118,6 @@ const CreateFicha: React.FC = () => {
   };
 
   const onFinish = async (values: any) => {
-    setTriggerAuth((prevTriggerAuth) => !prevTriggerAuth);
     if (values.data_nascimento) values.data_nascimento = values.data_nascimento.format('YYYY-MM-DD');
     if (values.data_abertura) values.data_abertura = values.data_abertura.format('YYYY-MM-DD');
 
