@@ -5,6 +5,8 @@ import Base from "../Base";
 import itemUser from "../menuItems/itemUser";
 import itemCapacita from "../menuItems/itemCapacita";
 import type menuItem from "../types/menuItem";
+import Cookies from "js-cookie";
+import axiosInstance from "../../../services/axiosInstance";
 
 const Modulos: React.FC = () => {
   const [getItems, setItems] = useState<Array<menuItem>>();
@@ -16,6 +18,16 @@ const Modulos: React.FC = () => {
   const perfilName = localStorage.getItem('perfilName')!;
   const permissions = perfisNamePermissions[perfilName];
   const user = itemUser(setBaseContent, setBaseTitle);
+  const accessToken = Cookies.get('access_token');
+
+  useEffect(() => {
+    if (accessToken) {
+      axiosInstance.post('token/verify/', { token: accessToken })
+        .catch(() => {
+          navigate('/colaborador/login');
+        })
+    } else navigate('/colaborador/login')
+  }, [])
 
   useEffect(() => {
     if (!perfisNames.includes(perfilName) && perfisNames[0] !== 'null') {

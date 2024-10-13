@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, message, Typography } from 'antd';
 import axiosInstance from '../../../../services/axiosInstance';
-import Cookies = require('js-cookie');
-import { useNavigate } from 'react-router-dom';
 
 interface FormValues {
   email: string;
@@ -19,17 +17,9 @@ const ChangeRegistration: React.FC = () => {
   const [getLoading, setLoading] = useState<boolean>(false);
   const [getPasswordMessage, setPasswordMessage] = useState<string>('');
   const [form] = Form.useForm();
-  const navigate = useNavigate();
-  const accessToken = Cookies.get('access_token');
 
   useEffect(() => {
     document.title = 'Perfil';
-    if (accessToken) {
-      axiosInstance.post('token/verify/', { token: accessToken })
-        .catch(() => {
-          navigate('/colaborador/login');
-        })
-    } else navigate('/colaborador/login')
   }, [])
 
   useEffect(() => {

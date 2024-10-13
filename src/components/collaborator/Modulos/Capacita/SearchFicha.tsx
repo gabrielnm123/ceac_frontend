@@ -6,7 +6,6 @@ import '../../css/SearchFicha.css';
 import dayjs from 'dayjs';
 import modulosCapacitaType from "../../types/modulosCapacita";
 import { useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
 
 const { Option } = Select;
 
@@ -41,16 +40,9 @@ const SearchFicha: React.FC = () => {
   const [getVisible, setVisible] = useState<boolean>(false);
   const [getSelectedFicha, setSelectedFicha] = useState<any>(null);
   const navigate = useNavigate();
-  const accessToken = Cookies.get('access_token');
 
   useEffect(() => {
     document.title = 'Buscar Ficha de Inscrição';
-    if (accessToken) {
-      axiosInstance.post('token/verify/', { token: accessToken })
-        .catch(() => {
-          navigate('/colaborador/login');
-        })
-    } else navigate('/colaborador/login')
     const fetchModulosCapacita = async () => {
       try {
         const response = await axiosInstance.get('capacita/modulos_capacita/');
