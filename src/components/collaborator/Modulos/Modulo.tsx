@@ -18,16 +18,17 @@ const Modulos: React.FC = () => {
   const perfilName = localStorage.getItem('perfilName')!;
   const permissions = perfisNamePermissions[perfilName];
   const user = itemUser(setBaseContent, setBaseTitle);
-  const accessToken = Cookies.get('access_token');
+  const refreshToken = Cookies.get('refresh_token');
 
   useEffect(() => {
-    if (accessToken) {
-      axiosInstance.post('token/verify/', { token: accessToken })
+    document.title = getBaseTitle;
+    if (refreshToken) {
+      axiosInstance.post('token/verify/', { token: refreshToken })
         .catch(() => {
           navigate('/colaborador/login');
         })
     } else navigate('/colaborador/login')
-  }, [])
+  }, [getBaseContent, getBaseTitle, getItems])
 
   useEffect(() => {
     if (!perfisNames.includes(perfilName) && perfisNames[0] !== 'null') {

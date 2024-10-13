@@ -42,7 +42,6 @@ const SearchFicha: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    document.title = 'Buscar Ficha de Inscrição';
     const fetchModulosCapacita = async () => {
       try {
         const response = await axiosInstance.get('capacita/modulos_capacita/');

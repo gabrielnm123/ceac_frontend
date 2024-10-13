@@ -10,12 +10,12 @@ const Perfil: React.FC = () => {
   const perfisNamePermissions = perfisObject();
   const perfisNames = Object.keys(perfisNamePermissions);
   const navigate = useNavigate();
-  const accessToken = Cookies.get('access_token');
+  const refreshToken = Cookies.get('refresh_token');
 
   useEffect(() => {
     document.title = 'Perfil';
-    if (accessToken) {
-      axiosInstance.post('token/verify/', { token: accessToken })
+    if (refreshToken) {
+      axiosInstance.post('token/verify/', { token: refreshToken })
         .catch(() => {
           navigate('/colaborador/login');
         })

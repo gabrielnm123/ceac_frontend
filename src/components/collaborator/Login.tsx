@@ -7,11 +7,11 @@ import Cookies from "js-cookie";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-  const accessToken = Cookies.get('access_token')
+  const refreshToken = Cookies.get('refresh_token')
 
   useEffect(() => {
-    if (accessToken) {
-      axiosInstance.post('token/verify/', {token: accessToken})
+    if (refreshToken) {
+      axiosInstance.post('token/verify/', {token: refreshToken})
         .then(() => {
           navigate('/colaborador/perfil');
         })

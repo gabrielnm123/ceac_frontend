@@ -19,10 +19,6 @@ const ChangeRegistration: React.FC = () => {
   const [form] = Form.useForm();
 
   useEffect(() => {
-    document.title = 'Perfil';
-  }, [])
-
-  useEffect(() => {
     const fetchUserData = async () => {
       try {
         const userId = localStorage.getItem('userId');

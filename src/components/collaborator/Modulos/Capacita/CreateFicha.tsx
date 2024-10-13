@@ -16,20 +16,19 @@ const CreateFicha: React.FC = () => {
   const [getModulosCapacita, setModulosCapacita] = useState<Array<modulosCapacitaType> | []>([])
 
   useEffect(() => {
-    document.title = 'Criar Ficha de Inscrição';
+    axiosInstance.get('capacita/modulos_capacita/')
+      .then(response => {
+        setModulosCapacita(response.data)
+      })
+      .catch(() => {
+        message.error('Erro ao atualizar os Módulos de Aprendizagem, atualize a página')
+      })
   }, [])
-  
+
   useEffect(() => {
     form.setFieldsValue({ if_true_assistir_casa: undefined });
   }, [getIsOnline]);
 
-  axiosInstance.get('capacita/modulos_capacita/')
-    .then(response => {
-      setModulosCapacita(response.data)
-    })
-    .catch(() => {
-      message.error('Erro ao atualizar os Módulos de Aprendizagem, atualize a página')
-    })
 
   const handlePJFieldChange = () => {
     const pjFields = ['nome_fantasia', 'cnpj', 'situacao_empresa', 'porte_empresa', 'data_abertura', 'cnae_principal', 'setor', 'tipo_vinculo'];
@@ -214,7 +213,7 @@ const CreateFicha: React.FC = () => {
             },
           ]}
         >
-          <MaskedInput mask="000.000.000-00" allowClear/>
+          <MaskedInput mask="000.000.000-00" allowClear />
         </Form.Item>
 
         <Form.Item
@@ -522,7 +521,7 @@ const CreateFicha: React.FC = () => {
             },
           ]}
         >
-          <DatePicker format="YYYY-MM-DD" onChange={handlePJFieldChange} allowClear />
+          <DatePicker format="DD/MM/YYYY" onChange={handlePJFieldChange} allowClear />
         </Form.Item>
 
         <Form.Item
