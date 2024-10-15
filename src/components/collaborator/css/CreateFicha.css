@@ -1,12 +1,19 @@
 .create-ficha {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   padding: 20px;
 }
 
 .form-create-ficha {
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  max-width: 800px;
+}
+
+.form-create-ficha-partes {
+  display: flex;
+  justify-content: center;
+}
+
+.form-create-ficha-title {
+  display: flex;
+  justify-content: center;
 }

@@ -187,6 +187,7 @@ const CreateFicha: React.FC = () => {
   return (
     <div className="create-ficha">
       <Form className="form-create-ficha" onFinish={onFinish} layout="vertical" form={form}>
+        <div className="form-create-ficha-partes">
         <Form.Item
           label="Nome Completo"
           name="nome_completo"
@@ -454,7 +455,9 @@ const CreateFicha: React.FC = () => {
           </Select>
         </Form.Item>
 
-        <Title level={2}>Dados Pessoa Jurídica</Title>
+        </div>
+        <Title className="form-create-ficha-title" level={2}>Dados Pessoa Jurídica</Title>
+        <div className="form-create-ficha-partes">
         <Form.Item
           label="Nome Fantasia"
           name="nome_fantasia"
@@ -568,7 +571,9 @@ const CreateFicha: React.FC = () => {
             <Option value="RESPONSAVEL">RESPONSÁVEL</Option>
           </Select>
         </Form.Item>
-        <Title level={2}>Módulos de Capacitação</Title>
+        </div>
+        <Title className="form-create-ficha-title" level={2}>Módulos de Capacitação</Title>
+        <div className="form-create-ficha-partes">
         <Form.Item label="Selecione um Módulo" name="modulo_capacita" rules={[{ required: true, message: "Selecione um Módulo" }]}>
           <Select allowClear showSearch options={getModulosCapacita.map((modulo: modulosCapacitaType) => {
             return { value: modulo.id, label: modulo.nome }
@@ -579,6 +584,7 @@ const CreateFicha: React.FC = () => {
             Criar
           </Button>
         </Form.Item>
+        </div>
       </Form>
     </div>
   );
