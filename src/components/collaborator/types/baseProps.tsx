@@ -1,5 +1,5 @@
 import MenuItem from "./menuItem";
-import React = require("react");
+import React from 'react'
 
 type basePropsType = {
   content: React.ReactNode;
