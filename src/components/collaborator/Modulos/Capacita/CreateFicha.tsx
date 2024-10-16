@@ -158,7 +158,7 @@ const CreateFicha: React.FC = () => {
     }
 
     Object.keys(values).forEach(key => {
-      if (values[key] === undefined || values[key] === '' || values[key] === null || values[key] === '__.___.___/____-__' || (values[key] === '(__) ____-____' && key === 'fixo')) {
+      if (values[key] === undefined || values[key] === '' || values[key] === undefined || values[key] === null || values[key] === '__.___.___/____-__' || values[key] === '(__) ____-____') {
         delete values[key];
       }
     });
@@ -382,6 +382,7 @@ const CreateFicha: React.FC = () => {
           rules={[
             {
               validator: (_, value) => {
+                console.log(value);
                 if (value.replace(/\D/g, '') && value.replace(/\D/g, '').length !== 10) {
                   return Promise.reject(new Error('O telefone fixo deve conter exatamente 10 dígitos numéricos'));
                 } else if (value.replace(/\D/g, '') && !isValidFixo(value)) {
