@@ -24,3 +24,7 @@
   display: flex;
   justify-content: center;
 }
+
+.form-create-ficha-checkbox-juridica {
+  margin-right: 5px;
+}

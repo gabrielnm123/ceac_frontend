@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { Form, Input, Button, Select, DatePicker, Typography, message } from 'antd';
+import { Form, Input, Button, Select, DatePicker, Typography, message, Checkbox } from 'antd';
 import MaskedInput from 'antd-mask-input';
 import axios from 'axios';
 import axiosInstance from "../../../../services/axiosInstance";
 import '../../css/CreateFicha.css';
 import modulosCapacitaType from "../../types/modulosCapacita";
+import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 
 const { Option } = Select;
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
 const CreateFicha: React.FC = () => {
   const [form] = Form.useForm();
@@ -26,14 +27,23 @@ const CreateFicha: React.FC = () => {
   }, [])
 
   useEffect(() => {
-    form.setFieldsValue({ if_true_assistir_casa: undefined });
+    form.setFieldsValue({ if_true_assistir_casa: getIsOnline });
   }, [getIsOnline]);
 
 
-  const handlePJFieldChange = () => {
-    const pjFields = ['nome_fantasia', 'cnpj', 'situacao_empresa', 'porte_empresa', 'data_abertura', 'cnae_principal', 'setor', 'tipo_vinculo'];
-    const isPJFilled = pjFields.some(field => form.getFieldValue(field));
-    setIsPJRequired(isPJFilled);
+  const handlePJFieldChange = (e: CheckboxChangeEvent) => {
+    const PJFields: Array<string> = [
+      'nome_fantasia',
+      'cnpj',
+      'situacao_empresa',
+      'porte_empresa',
+      'data_abertura',
+      'cnae_principal',
+      'setor',
+      'tipo_vinculo'
+    ];
+    form.resetFields(PJFields);
+    setIsPJRequired(e.target.checked);
   };
 
   const isValidCPF = (cpf: string) => {
@@ -148,7 +158,7 @@ const CreateFicha: React.FC = () => {
     }
 
     Object.keys(values).forEach(key => {
-      if (values[key] === undefined || values[key] === '' || values[key] === null) {
+      if (values[key] === undefined || values[key] === '' || values[key] === null || values[key] === '__.___.___/____-__' || (values[key] === '(__) ____-____' && key === 'fixo')) {
         delete values[key];
       }
     });
@@ -203,10 +213,12 @@ const CreateFicha: React.FC = () => {
             { required: true, message: 'Por favor, insira o CPF' },
             {
               validator: (_, value) => {
-                if (value.replace(/\D/g, '') && value.replace(/\D/g, '').length !== 11) {
+                if (value.replace(/\D/g, '') && value.replace(/\D/g, '').length !== 11 && value !== '___.___.___-__') {
                   return Promise.reject(new Error('O CPF deve conter exatamente 11 dígitos numéricos'));
                 } else if (value.replace(/\D/g, '') && !isValidCPF(value)) {
                   return Promise.reject(new Error('CPF inválido'));
+                } else if (value === '___.___.___-__') {
+                  return Promise.reject(new Error('Por favor, insira o CPF'))
                 }
                 return Promise.resolve();
               },
@@ -271,11 +283,12 @@ const CreateFicha: React.FC = () => {
             { required: true, message: 'Por favor, insira o CEP' },
             {
               validator: (_, value) => {
-                if (value && value.replace(/\D/g, '').length !== 8) {
+                if (value.replace(/\D/g, '') && value.replace(/\D/g, '').length !== 8 && value !== '_____-___') {
                   return Promise.reject(new Error('O CEP deve conter exatamente 8 dígitos numéricos'));
-                }
-                if (value && !isValidCEP(value)) {
+                } else if (value.replace(/\D/g, '') && !isValidCEP(value)) {
                   return Promise.reject(new Error('CEP inválido'));
+                } else if (value === '_____-___') {
+                  return Promise.reject(new Error('Por favor, insira o CEP'))
                 }
                 return Promise.resolve();
               },
@@ -348,11 +361,12 @@ const CreateFicha: React.FC = () => {
             { required: true, message: 'Por favor, insira o número de celular' },
             {
               validator: (_, value) => {
-                if (value && value.replace(/\D/g, '').length !== 11) {
+                if (value.replace(/\D/g, '') && value.replace(/\D/g, '').length !== 11 && value !== '(__) _ ____-____') {
                   return Promise.reject(new Error('O celular deve conter exatamente 11 dígitos numéricos'));
-                }
-                if (value && !isValidCelular(value)) {
+                } else if (value.replace(/\D/g, '') && !isValidCelular(value)) {
                   return Promise.reject(new Error('Celular inválido'));
+                } else if (value === '(__) _ ____-____') {
+                  return Promise.reject('Por favor, insira o número de celular')
                 }
                 return Promise.resolve();
               },
@@ -456,34 +470,42 @@ const CreateFicha: React.FC = () => {
 
       </div>
       <Title className="form-create-ficha-title" level={2}>Dados Pessoa Jurídica</Title>
+      <div className="form-create-ficha-title">
+        <Checkbox className='form-create-ficha-checkbox-juridica' onChange={handlePJFieldChange} />
+        <Text type="warning">
+          Marque a caixa ao lado se for preencher os dados jurídicos
+        </Text>
+      </div>
       <div className="form-create-ficha-partes">
         <Form.Item className="form-create-ficha-item"
           label="Nome Fantasia"
           name="nome_fantasia"
           rules={[{ required: getIsPJRequired, message: 'Por favor, insira o nome fantasia' }]}
         >
-          <Input onChange={handlePJFieldChange} allowClear />
+          <Input disabled={!getIsPJRequired} allowClear />
         </Form.Item>
 
         <Form.Item className="form-create-ficha-item"
           label="CNPJ"
           name="cnpj"
-          rules={[
-            { required: getIsPJRequired, message: 'Por favor, insira o CNPJ' },
-            {
-              validator: (_, value) => {
-                if (value && value.replace(/\D/g, '').length !== 14) {
+          rules={[{ required: getIsPJRequired, message: 'Por favor, insira o CNPJ' },
+          {
+            validator: (_, value) => {
+              if (getIsPJRequired) {
+                if (value.replace(/\D/g, '') && value.replace(/\D/g, '').length !== 14 && value !== '__.___.___/____-__') {
                   return Promise.reject(new Error('O CNPJ deve conter exatamente 14 dígitos numéricos'));
-                }
-                if (value && !isValidCNPJ(value)) {
+                } else if (value.replace(/\D/g, '') && !isValidCNPJ(value)) {
                   return Promise.reject(new Error('CNPJ inválido'));
+                } else if (value === '__.___.___/____-__') {
+                  return Promise.reject(new Error('Por favor, insira o CNPJ'))
                 }
-                return Promise.resolve();
-              },
+              }
+              return Promise.resolve();
             },
+          },
           ]}
         >
-          <MaskedInput mask="00.000.000/0000-00" onChange={handlePJFieldChange} allowClear />
+          <MaskedInput disabled={!getIsPJRequired} mask="00.000.000/0000-00" allowClear />
         </Form.Item>
 
         <Form.Item className="form-create-ficha-item"
@@ -491,7 +513,7 @@ const CreateFicha: React.FC = () => {
           name="situacao_empresa"
           rules={[{ required: getIsPJRequired, message: 'Por favor, selecione a situação da empresa' }]}
         >
-          <Select className="form-create-ficha-select" onChange={handlePJFieldChange} allowClear>
+          <Select disabled={!getIsPJRequired} className="form-create-ficha-select" allowClear>
             <Option value="ATIVA">ATIVA</Option>
             <Option value="N_ATIVA">NÃO ATIVA</Option>
           </Select>
@@ -502,7 +524,7 @@ const CreateFicha: React.FC = () => {
           name="porte_empresa"
           rules={[{ required: getIsPJRequired, message: 'Por favor, selecione o porte da empresa' }]}
         >
-          <Select className="form-create-ficha-select" onChange={handlePJFieldChange} allowClear>
+          <Select disabled={!getIsPJRequired} className="form-create-ficha-select" allowClear>
             <Option value="MEI">MICROEMPREENDEDOR INDIVIDUAL (MEI)</Option>
             <Option value="ME">MICROEMPRESA (ME)</Option>
           </Select>
@@ -511,40 +533,41 @@ const CreateFicha: React.FC = () => {
         <Form.Item className="form-create-ficha-item"
           label="Data de Abertura"
           name="data_abertura"
-          rules={[
-            { required: getIsPJRequired, message: 'Por favor, selecione a data de abertura' },
-            {
-              validator: (_, value) => {
-                if (value && value.replace(/\D/g, '').length !== 10) {
+          rules={[{ required: getIsPJRequired, message: 'Por favor, selecione a data de abertura' },
+          {
+            validator: (_, value) => {
+              if (getIsPJRequired) {
+                if (value.replace(/\D/g, '') && value.replace(/\D/g, '').length !== 10) {
                   return Promise.reject(new Error('A data de abertura deve conter exatamente 8 dígitos numéricos'));
                 }
-                return Promise.resolve();
-              },
+              }
+              return Promise.resolve();
             },
+          },
           ]}
         >
-          <DatePicker format="DD/MM/YYYY" onChange={handlePJFieldChange} allowClear />
+          <DatePicker disabled={!getIsPJRequired} format="DD/MM/YYYY" allowClear />
         </Form.Item>
 
         <Form.Item className="form-create-ficha-item"
           label="CNAE Principal"
           name="cnae_principal"
-          rules={[
-            { required: getIsPJRequired, message: 'Por favor, insira o CNAE Principal' },
-            {
-              validator: (_, value) => {
-                if (value && value.replace(/\D/g, '').length !== 7) {
+          rules={[{ required: getIsPJRequired, message: 'Por favor, insira o CNAE Principal' },
+          {
+            validator: (_, value) => {
+              if (getIsPJRequired) {
+                if (value.replace(/\D/g, '') && value.replace(/\D/g, '').length !== 7) {
                   return Promise.reject(new Error('O CNAE deve conter exatamente 7 dígitos numéricos'));
-                }
-                if (value && !isValidCNAE(value)) {
+                } else if (value.replace(/\D/g, '') && !isValidCNAE(value)) {
                   return Promise.reject(new Error('CNAE inválido'));
                 }
-                return Promise.resolve();
-              },
+              }
+              return Promise.resolve();
             },
+          },
           ]}
         >
-          <Input onChange={handlePJFieldChange} allowClear />
+          <Input disabled={!getIsPJRequired} allowClear />
         </Form.Item>
 
         <Form.Item className="form-create-ficha-item"
@@ -552,7 +575,7 @@ const CreateFicha: React.FC = () => {
           name="setor"
           rules={[{ required: getIsPJRequired, message: 'Por favor, selecione o setor' }]}
         >
-          <Select className="form-create-ficha-select" onChange={handlePJFieldChange} allowClear>
+          <Select disabled={!getIsPJRequired} className="form-create-ficha-select" allowClear>
             <Option value="COMERCIO">COMÉRCIO</Option>
             <Option value="SERVICO">SERVIÇO</Option>
             <Option value="AGRONEGOCIOS">AGRONEGÓCIOS</Option>
@@ -565,7 +588,7 @@ const CreateFicha: React.FC = () => {
           name="tipo_vinculo"
           rules={[{ required: getIsPJRequired, message: 'Por favor, selecione o tipo de vínculo' }]}
         >
-          <Select className="form-create-ficha-select" onChange={handlePJFieldChange} allowClear>
+          <Select disabled={!getIsPJRequired} className="form-create-ficha-select" allowClear>
             <Option value="REPRESENTANTE">REPRESENTANTE</Option>
             <Option value="RESPONSAVEL">RESPONSÁVEL</Option>
           </Select>
