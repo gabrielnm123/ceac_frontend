@@ -1,19 +1,26 @@
-.create-ficha {
-  padding: 20px;
-}
-
 .form-create-ficha {
   display: flex;
   flex-direction: column;
-  width: 100%;
+  justify-content: center;
 }
 
 .form-create-ficha-partes {
   display: flex;
   justify-content: center;
+  flex-wrap: wrap;
 }
 
 .form-create-ficha-title {
+  display: flex;
+  justify-content: center;
+}
+
+.form-create-ficha-item {
+  margin: 5px;
+  width: 200px;
+}
+
+.form-create-ficha-button{
   display: flex;
   justify-content: center;
 }

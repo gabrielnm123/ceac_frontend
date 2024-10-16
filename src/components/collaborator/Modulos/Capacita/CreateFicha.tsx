@@ -185,10 +185,9 @@ const CreateFicha: React.FC = () => {
   };
 
   return (
-    <div className="create-ficha">
-      <Form className="form-create-ficha" onFinish={onFinish} layout="vertical" form={form}>
-        <div className="form-create-ficha-partes">
-        <Form.Item
+    <Form className="form-create-ficha" onFinish={onFinish} layout="vertical" form={form}>
+      <div className="form-create-ficha-partes">
+        <Form.Item className="form-create-ficha-item"
           label="Nome Completo"
           name="nome_completo"
           rules={[{ required: true, message: 'Por favor, insira o nome completo' }]}
@@ -196,7 +195,7 @@ const CreateFicha: React.FC = () => {
           <Input onChange={(e) => form.setFieldsValue({ nome_completo: e.target.value.toUpperCase() })} allowClear />
         </Form.Item>
 
-        <Form.Item
+        <Form.Item className="form-create-ficha-item"
           label="CPF"
           name="cpf"
           validateTrigger="onBlur"
@@ -217,18 +216,18 @@ const CreateFicha: React.FC = () => {
           <MaskedInput mask="000.000.000-00" allowClear />
         </Form.Item>
 
-        <Form.Item
+        <Form.Item className="form-create-ficha-item"
           label="Gênero"
           name="genero"
           rules={[{ required: true, message: 'Por favor, selecione o gênero' }]}
         >
-          <Select allowClear>
+          <Select className="form-create-ficha-select" allowClear>
             <Option value="M">MASCULINO</Option>
             <Option value="F">FEMININO</Option>
           </Select>
         </Form.Item>
 
-        <Form.Item
+        <Form.Item className="form-create-ficha-item"
           label="Data de Nascimento"
           name="data_nascimento"
           rules={[{ required: true, message: 'Por favor, selecione a data de nascimento' }]}
@@ -236,12 +235,12 @@ const CreateFicha: React.FC = () => {
           <DatePicker format="DD/MM/YYYY" allowClear />
         </Form.Item>
 
-        <Form.Item
+        <Form.Item className="form-create-ficha-item"
           label="Escolaridade"
           name="escolaridade"
           rules={[{ required: true, message: 'Por favor, selecione a escolaridade' }]}
         >
-          <Select allowClear>
+          <Select className="form-create-ficha-select" allowClear>
             <Option value="FUNDAMENTAL">ENSINO FUNDAMENTAL</Option>
             <Option value="MEDIO">ENSINO MÉDIO</Option>
             <Option value="GRADUACAO">GRADUAÇÃO</Option>
@@ -249,12 +248,12 @@ const CreateFicha: React.FC = () => {
           </Select>
         </Form.Item>
 
-        <Form.Item
+        <Form.Item className="form-create-ficha-item"
           label="Atividade"
           name="atividade"
           rules={[{ required: true, message: 'Por favor, selecione a atividade' }]}
         >
-          <Select allowClear>
+          <Select className="form-create-ficha-select" allowClear>
             <Option value="ARTESANATO">ARTESANATO</Option>
             <Option value="AGRICULTURA_URBANA">AGRICULTURA URBANA</Option>
             <Option value="COMERCIO">COMÉRCIO</Option>
@@ -265,7 +264,7 @@ const CreateFicha: React.FC = () => {
           </Select>
         </Form.Item>
 
-        <Form.Item
+        <Form.Item className="form-create-ficha-item"
           label="CEP"
           name="cep"
           rules={[
@@ -286,7 +285,7 @@ const CreateFicha: React.FC = () => {
           <MaskedInput mask="00000-000" onBlur={handleCEPBlur} allowClear />
         </Form.Item>
 
-        <Form.Item
+        <Form.Item className="form-create-ficha-item"
           label="Endereço Residencial"
           name="endereco"
           rules={[{ required: true, message: 'Por favor, insira o endereço' }]}
@@ -294,11 +293,11 @@ const CreateFicha: React.FC = () => {
           <Input onChange={(e) => form.setFieldsValue({ endereco: e.target.value.toUpperCase() })} allowClear />
         </Form.Item>
 
-        <Form.Item label="Complemento" name="complemento">
+        <Form.Item className="form-create-ficha-item" label="Complemento" name="complemento">
           <Input onChange={(e) => form.setFieldsValue({ complemento: e.target.value.toUpperCase() })} allowClear />
         </Form.Item>
 
-        <Form.Item
+        <Form.Item className="form-create-ficha-item"
           label="Bairro"
           name="bairro"
           rules={[{ required: true, message: 'Por favor, insira o bairro' }]}
@@ -306,12 +305,12 @@ const CreateFicha: React.FC = () => {
           <Input onChange={(e) => form.setFieldsValue({ bairro: e.target.value.toUpperCase() })} allowClear />
         </Form.Item>
 
-        <Form.Item
+        <Form.Item className="form-create-ficha-item"
           label="UF"
           name="uf"
           rules={[{ required: true, message: 'Por favor, selecione o estado' }]}
         >
-          <Select allowClear>
+          <Select className="form-create-ficha-select" allowClear>
             <Option value="AC">ACRE</Option>
             <Option value="AL">ALAGOAS</Option>
             <Option value="AP">AMAPÁ</Option>
@@ -342,7 +341,7 @@ const CreateFicha: React.FC = () => {
           </Select>
         </Form.Item>
 
-        <Form.Item
+        <Form.Item className="form-create-ficha-item"
           label="Celular"
           name="celular"
           rules={[
@@ -363,7 +362,7 @@ const CreateFicha: React.FC = () => {
           <MaskedInput mask="(00) 0 0000-0000" allowClear />
         </Form.Item>
 
-        <Form.Item
+        <Form.Item className="form-create-ficha-item"
           label="Telefone Fixo"
           name="fixo"
           rules={[
@@ -382,7 +381,7 @@ const CreateFicha: React.FC = () => {
           <MaskedInput mask="(00) 0000-0000" allowClear />
         </Form.Item>
 
-        <Form.Item
+        <Form.Item className="form-create-ficha-item"
           label="E-mail"
           name="email"
           rules={[
@@ -393,51 +392,51 @@ const CreateFicha: React.FC = () => {
           <Input onChange={(e) => form.setFieldsValue({ email: e.target.value.toLowerCase() })} allowClear />
         </Form.Item>
 
-        <Form.Item
+        <Form.Item className="form-create-ficha-item"
           label="Interesse em ter negócio"
           name="interesse_ter_negocio"
           rules={[{ required: true, message: 'Por favor, selecione' }]}
         >
-          <Select allowClear>
+          <Select className="form-create-ficha-select" allowClear>
             <Option value="S">SIM</Option>
             <Option value="N">NÃO</Option>
           </Select>
         </Form.Item>
 
-        <Form.Item
+        <Form.Item className="form-create-ficha-item"
           label="Preferência de Aula"
           name="preferencia_aula"
           rules={[{ required: true, message: 'Por favor, selecione' }]}
         >
-          <Select allowClear>
+          <Select className="form-create-ficha-select" allowClear>
             <Option value="ONLINE">ONLINE</Option>
             <Option value="PRESENCIAL">PRESENCIAL</Option>
           </Select>
         </Form.Item>
 
-        <Form.Item
+        <Form.Item className="form-create-ficha-item"
           label="Meio de Comunicação para Aula"
           name="meio_comunicacao_aula"
           rules={[{ required: true, message: 'Por favor, selecione' }]}
         >
-          <Select allowClear>
+          <Select className="form-create-ficha-select" allowClear>
             <Option value="WHATSAPP">WHATSAPP</Option>
             <Option value="EMAIL">EMAIL</Option>
           </Select>
         </Form.Item>
 
-        <Form.Item
+        <Form.Item className="form-create-ficha-item"
           label="Condições de Assistir Aulas Online"
           name="assistir_online"
           rules={[{ required: true, message: 'Por favor, selecione' }]}
         >
-          <Select onChange={(value) => setIsOnline(value === 'S')} allowClear>
+          <Select className="form-create-ficha-select" onChange={(value) => setIsOnline(value === 'S')} allowClear>
             <Option value="S">SIM</Option>
             <Option value="N">NÃO</Option>
           </Select>
         </Form.Item>
 
-        <Form.Item
+        <Form.Item className="form-create-ficha-item"
           label="Por onde assistiria as aulas online"
           name="if_true_assistir_casa"
           rules={[
@@ -447,7 +446,7 @@ const CreateFicha: React.FC = () => {
             },
           ]}
         >
-          <Select disabled={!getIsOnline} allowClear>
+          <Select className="form-create-ficha-select" disabled={!getIsOnline} allowClear>
             <Option value="COMPUTADOR">COMPUTADOR</Option>
             <Option value="CELULAR">CELULAR</Option>
             <Option value="TABLET">TABLET</Option>
@@ -455,10 +454,10 @@ const CreateFicha: React.FC = () => {
           </Select>
         </Form.Item>
 
-        </div>
-        <Title className="form-create-ficha-title" level={2}>Dados Pessoa Jurídica</Title>
-        <div className="form-create-ficha-partes">
-        <Form.Item
+      </div>
+      <Title className="form-create-ficha-title" level={2}>Dados Pessoa Jurídica</Title>
+      <div className="form-create-ficha-partes">
+        <Form.Item className="form-create-ficha-item"
           label="Nome Fantasia"
           name="nome_fantasia"
           rules={[{ required: getIsPJRequired, message: 'Por favor, insira o nome fantasia' }]}
@@ -466,7 +465,7 @@ const CreateFicha: React.FC = () => {
           <Input onChange={handlePJFieldChange} allowClear />
         </Form.Item>
 
-        <Form.Item
+        <Form.Item className="form-create-ficha-item"
           label="CNPJ"
           name="cnpj"
           rules={[
@@ -487,29 +486,29 @@ const CreateFicha: React.FC = () => {
           <MaskedInput mask="00.000.000/0000-00" onChange={handlePJFieldChange} allowClear />
         </Form.Item>
 
-        <Form.Item
+        <Form.Item className="form-create-ficha-item"
           label="Situação da Empresa"
           name="situacao_empresa"
           rules={[{ required: getIsPJRequired, message: 'Por favor, selecione a situação da empresa' }]}
         >
-          <Select onChange={handlePJFieldChange} allowClear>
+          <Select className="form-create-ficha-select" onChange={handlePJFieldChange} allowClear>
             <Option value="ATIVA">ATIVA</Option>
             <Option value="N_ATIVA">NÃO ATIVA</Option>
           </Select>
         </Form.Item>
 
-        <Form.Item
+        <Form.Item className="form-create-ficha-item"
           label="Porte da Empresa"
           name="porte_empresa"
           rules={[{ required: getIsPJRequired, message: 'Por favor, selecione o porte da empresa' }]}
         >
-          <Select onChange={handlePJFieldChange} allowClear>
+          <Select className="form-create-ficha-select" onChange={handlePJFieldChange} allowClear>
             <Option value="MEI">MICROEMPREENDEDOR INDIVIDUAL (MEI)</Option>
             <Option value="ME">MICROEMPRESA (ME)</Option>
           </Select>
         </Form.Item>
 
-        <Form.Item
+        <Form.Item className="form-create-ficha-item"
           label="Data de Abertura"
           name="data_abertura"
           rules={[
@@ -527,7 +526,7 @@ const CreateFicha: React.FC = () => {
           <DatePicker format="DD/MM/YYYY" onChange={handlePJFieldChange} allowClear />
         </Form.Item>
 
-        <Form.Item
+        <Form.Item className="form-create-ficha-item"
           label="CNAE Principal"
           name="cnae_principal"
           rules={[
@@ -548,12 +547,12 @@ const CreateFicha: React.FC = () => {
           <Input onChange={handlePJFieldChange} allowClear />
         </Form.Item>
 
-        <Form.Item
+        <Form.Item className="form-create-ficha-item"
           label="Setor"
           name="setor"
           rules={[{ required: getIsPJRequired, message: 'Por favor, selecione o setor' }]}
         >
-          <Select onChange={handlePJFieldChange} allowClear>
+          <Select className="form-create-ficha-select" onChange={handlePJFieldChange} allowClear>
             <Option value="COMERCIO">COMÉRCIO</Option>
             <Option value="SERVICO">SERVIÇO</Option>
             <Option value="AGRONEGOCIOS">AGRONEGÓCIOS</Option>
@@ -561,32 +560,33 @@ const CreateFicha: React.FC = () => {
           </Select>
         </Form.Item>
 
-        <Form.Item
+        <Form.Item className="form-create-ficha-item"
           label="Tipo de Vínculo"
           name="tipo_vinculo"
           rules={[{ required: getIsPJRequired, message: 'Por favor, selecione o tipo de vínculo' }]}
         >
-          <Select onChange={handlePJFieldChange} allowClear>
+          <Select className="form-create-ficha-select" onChange={handlePJFieldChange} allowClear>
             <Option value="REPRESENTANTE">REPRESENTANTE</Option>
             <Option value="RESPONSAVEL">RESPONSÁVEL</Option>
           </Select>
         </Form.Item>
-        </div>
-        <Title className="form-create-ficha-title" level={2}>Módulos de Capacitação</Title>
-        <div className="form-create-ficha-partes">
-        <Form.Item label="Selecione um Módulo" name="modulo_capacita" rules={[{ required: true, message: "Selecione um Módulo" }]}>
-          <Select allowClear showSearch options={getModulosCapacita.map((modulo: modulosCapacitaType) => {
+      </div>
+      <Title className="form-create-ficha-title" level={2}>Módulos de Capacitação</Title>
+      <div className="form-create-ficha-partes">
+        <Form.Item className="form-create-ficha-item" label="Selecione um Módulo" name="modulo_capacita" rules={[{ required: true, message: "Selecione um Módulo" }]}>
+          <Select className="form-create-ficha-select" allowClear showSearch options={getModulosCapacita.map((modulo: modulosCapacitaType) => {
             return { value: modulo.id, label: modulo.nome }
           })} />
         </Form.Item>
-        <Form.Item>
+      </div>
+      <div className="form-create-ficha-button">
+        <Form.Item className="form-create-ficha-item form-create-ficha-button" >
           <Button type="primary" htmlType="submit">
             Criar
           </Button>
         </Form.Item>
-        </div>
-      </Form>
-    </div>
+      </div>
+    </Form>
   );
 };
 

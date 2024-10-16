@@ -143,27 +143,38 @@ const SearchFicha: React.FC = () => {
       })
   }
 
+  const deleteFicha = () => {
+    handleOpenFicha(getSelectedFicha.id);
+    axiosInstance.delete(`capacita/fichas/${getSelectedFicha.id}/`)
+      .then(() => {
+        message.success(`Ficha do(a) ${getSelectedFicha.nome} deletada com sucesso.`)
+      })
+      .catch(() => {
+        message.error(`Erro ao deletar a ficha do(a) ${getSelectedFicha.nome}. Tente novamente.`)
+      })
+  }
+
   const onFinish = async (values: any) => {
     if (values.data_nascimento) {
       values.data_nascimento = values.data_nascimento.format('YYYY-MM-DD');
     }
-    
+
     if (values.cpf) {
       values.cpf = values.cpf.replace(/\D/g, '');
     }
-    
+
     if (values.celular) {
       values.celular = values.celular.replace(/\D/g, '');
     }
-    
+
     if (values.fixo) {
       values.fixo = values.fixo.replace(/\D/g, '');
     }
-    
+
     const cleanedValues = Object.fromEntries(
       Object.entries(values).filter(([_, v]) => v != null && v !== "")
     );
-    
+
     setLoading(true);
     try {
       const response = await axiosInstance.get('capacita/fichas/', { params: cleanedValues });
@@ -190,29 +201,29 @@ const SearchFicha: React.FC = () => {
       <div className="search-ficha">
         <Form form={getForm} className="form-search-ficha" onFinish={onFinish}>
           <div className="form-search-ficha-minus-button">
-            <Form.Item label="Nome" name="nome" className="form-search-ficha-nome form-search-ficha-form-item">
+            <Form.Item label="Nome" name="nome" className="form-search-ficha-nome form-search-ficha-item">
               <Input onChange={(e) => getForm.setFieldsValue({ nome: e.target.value.toUpperCase() })} allowClear />
             </Form.Item>
-            <Form.Item label="Módulo de Capacitação" name='modulo_capacita' className="form-search-ficha-modulos-capacita form-search-ficha-form-item">
+            <Form.Item label="Módulo de Capacitação" name='modulo_capacita' className="form-search-ficha-modulos-capacita form-search-ficha-item">
               <Select allowClear showSearch className="form-search-ficha-select-modulos-capacita" options={getModulosCapacita.map(
                 (modulo: modulosCapacitaType) => {
                   return { value: modulo.id, label: modulo.nome };
                 }
               )} />
             </Form.Item>
-            <Form.Item label="CPF" name="cpf" className="form-search-ficha-cpf form-search-ficha-form-item">
+            <Form.Item label="CPF" name="cpf" className="form-search-ficha-cpf form-search-ficha-item">
               <MaskedInput mask="000.000.000-00" allowClear />
             </Form.Item>
-            <Form.Item label="Data de Nascimento" name="data_nascimento" className="form-search-ficha-nascimento form-search-ficha-form-item">
+            <Form.Item label="Data de Nascimento" name="data_nascimento" className="form-search-ficha-nascimento form-search-ficha-item">
               <DatePicker format="DD/MM/YYYY" allowClear />
             </Form.Item>
-            <Form.Item label="Gênero" name="genero" className="form-search-ficha-genero form-search-ficha-form-item">
+            <Form.Item label="Gênero" name="genero" className="form-search-ficha-genero form-search-ficha-item">
               <Select allowClear showSearch className="form-search-ficha-select-genero">
                 <Option value="M">MASCULINO</Option>
                 <Option value="F">FEMININO</Option>
               </Select>
             </Form.Item>
-            <Form.Item label="Escolaridade" name="escolaridade" className="form-search-ficha-escolaridade form-search-ficha-form-item">
+            <Form.Item label="Escolaridade" name="escolaridade" className="form-search-ficha-escolaridade form-search-ficha-item">
               <Select allowClear showSearch className="form-search-ficha-select-escolaridade">
                 <Option value="FUNDAMENTAL">ENSINO FUNDAMENTAL</Option>
                 <Option value="MEDIO">ENSINO MÉDIO</Option>
@@ -220,7 +231,7 @@ const SearchFicha: React.FC = () => {
                 <Option value="POS_GRADUACAO">PÓS-GRADUAÇÃO</Option>
               </Select>
             </Form.Item>
-            <Form.Item label="UF" name="uf" className="form-search-ficha-uf form-search-ficha-form-item">
+            <Form.Item label="UF" name="uf" className="form-search-ficha-uf form-search-ficha-item">
               <Select allowClear showSearch className="form-search-ficha-select-uf">
                 <Option value="AC">ACRE</Option>
                 <Option value="AL">ALAGOAS</Option>
@@ -251,7 +262,7 @@ const SearchFicha: React.FC = () => {
                 <Option value="TO">TOCANTINS</Option>
               </Select>
             </Form.Item>
-            <Form.Item label="Atividade" name="atividade" className="form-search-ficha-atividade form-search-ficha-form-item">
+            <Form.Item label="Atividade" name="atividade" className="form-search-ficha-atividade form-search-ficha-item">
               <Select allowClear showSearch className="form-search-ficha-select-atividade">
                 <Option value="ARTESANATO">ARTESANATO</Option>
                 <Option value="AGRICULTURA_URBANA">AGRICULTURA URBANA</Option>
@@ -262,17 +273,17 @@ const SearchFicha: React.FC = () => {
                 <Option value="SERVICO">SERVIÇO</Option>
               </Select>
             </Form.Item>
-            <Form.Item label="Email" name="email" className="form-search-ficha-email form-search-ficha-form-item">
+            <Form.Item label="Email" name="email" className="form-search-ficha-email form-search-ficha-item">
               <Input type="email" allowClear />
             </Form.Item>
-            <Form.Item label="Celular" name="celular" className="form-search-ficha-celular form-search-ficha-form-item">
+            <Form.Item label="Celular" name="celular" className="form-search-ficha-celular form-search-ficha-item">
               <MaskedInput mask="(00) 0.0000-0000" allowClear />
             </Form.Item>
-            <Form.Item label="Fixo" name="fixo" className="form-search-ficha-fixo form-search-ficha-form-item">
+            <Form.Item label="Fixo" name="fixo" className="form-search-ficha-fixo form-search-ficha-item">
               <MaskedInput mask="(00) 0000-0000" allowClear />
             </Form.Item>
           </div>
-          <Form.Item className="form-search-ficha-button form-search-ficha-form-item">
+          <Form.Item className="form-search-ficha-button form-search-ficha-item">
             <Button type="primary" htmlType="submit" loading={getLoading}>
               Buscar
             </Button>
@@ -293,68 +304,71 @@ const SearchFicha: React.FC = () => {
       </div>
 
       <Modal
-      open={getVisible}
-      onCancel={() => setVisible(false)}
-      footer={null}
-    >
-      {getSelectedFicha && (
-        <>
-        <Button className="dowload-ficha" onClick={dowloadFicha}>Baixar Ficha</Button>
-        <Descriptions bordered column={1} layout="horizontal">
-          <Descriptions.Item label="Nome">{getSelectedFicha.nome_completo || 'NÃO INFORMADO'}</Descriptions.Item>
-          <Descriptions.Item label="CPF">
-            {getSelectedFicha.cpf ? getSelectedFicha.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : 'NÃO INFORMADO'}
-          </Descriptions.Item>
-          <Descriptions.Item label="Gênero">{generoMap[getSelectedFicha.genero] || 'NÃO INFORMADO'}</Descriptions.Item>
-          <Descriptions.Item label="Data de Nascimento">
-            {getSelectedFicha.data_nascimento ? dayjs(getSelectedFicha.data_nascimento).format('DD/MM/YYYY').toUpperCase() : 'NÃO INFORMADO'}
-          </Descriptions.Item>
-          <Descriptions.Item label="Escolaridade">{escolaridadeMap[getSelectedFicha.escolaridade] || 'NÃO INFORMADO'}</Descriptions.Item>
-          <Descriptions.Item label="Atividade">{atividadeMap[getSelectedFicha.atividade] || 'NÃO INFORMADO'}</Descriptions.Item>
-          <Descriptions.Item label="Endereço">{getSelectedFicha.endereco || 'NÃO INFORMADO'}</Descriptions.Item>
-          <Descriptions.Item label="Complemento">{getSelectedFicha.complemento || 'NÃO INFORMADO'}</Descriptions.Item>
-          <Descriptions.Item label="Bairro">{getSelectedFicha.bairro || 'NÃO INFORMADO'}</Descriptions.Item>
-          <Descriptions.Item label="CEP">
-            {getSelectedFicha.cep ? getSelectedFicha.cep.replace(/(\d{5})(\d{3})/, '$1-$2') : 'NÃO INFORMADO'}
-          </Descriptions.Item>
-          <Descriptions.Item label="UF">{getSelectedFicha.uf || 'NÃO INFORMADO'}</Descriptions.Item>
-          <Descriptions.Item label="Celular">
-            {getSelectedFicha.celular ? getSelectedFicha.celular.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3') : 'NÃO INFORMADO'}
-          </Descriptions.Item>
-          <Descriptions.Item label="Fixo">
-            {getSelectedFicha.fixo ? getSelectedFicha.fixo.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3') : 'NÃO INFORMADO'}
-          </Descriptions.Item>
-          <Descriptions.Item label="Email">{getSelectedFicha.email.toLowerCase()}</Descriptions.Item>
-          <Descriptions.Item label="Interesse em ter negócio">
-            {getSelectedFicha.interesse_ter_negocio === 'S' ? 'SIM' : 'NÃO'}
-          </Descriptions.Item>
-          <Descriptions.Item label="Preferência de Aula">{getSelectedFicha.preferencia_aula || 'NÃO INFORMADO'}</Descriptions.Item>
-          <Descriptions.Item label="Meio de Comunicação de Aula">{getSelectedFicha.meio_comunicacao_aula || 'NÃO INFORMADO'}</Descriptions.Item>
-          <Descriptions.Item label="Assistir Online">{getSelectedFicha.assistir_online === 'S' ? 'SIM' : 'NÃO'}</Descriptions.Item>
-          {getSelectedFicha.assistir_online === 'S' && (
-            <Descriptions.Item label="Se assistir em casa, como?">{getSelectedFicha.if_true_assistir_casa || 'NÃO INFORMADO'}</Descriptions.Item>
-          )}
-          <Descriptions.Item label="Nome Fantasia">{getSelectedFicha.nome_fantasia || 'NÃO INFORMADO'}</Descriptions.Item>
-          <Descriptions.Item label="CNPJ">
-            {getSelectedFicha.cnpj ? getSelectedFicha.cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5') : 'NÃO INFORMADO'}
-          </Descriptions.Item>
-          <Descriptions.Item label="Situação da Empresa">
-            {getSelectedFicha.situacao_empresa === 'ATIVA' ? 'ATIVA' : 'NÃO ATIVA'}
-          </Descriptions.Item>
-          <Descriptions.Item label="Porte da Empresa">{getSelectedFicha.porte_empresa || 'NÃO INFORMADO'}</Descriptions.Item>
-          <Descriptions.Item label="Data de Abertura">
-            {getSelectedFicha.data_abertura ? dayjs(getSelectedFicha.data_abertura).format('DD/MM/YYYY').toUpperCase() : 'NÃO INFORMADO'}
-          </Descriptions.Item>
-          <Descriptions.Item label="CNAE Principal">{getSelectedFicha.cnae_principal || 'NÃO INFORMADO'}</Descriptions.Item>
-          <Descriptions.Item label="Setor">{getSelectedFicha.setor || 'NÃO INFORMADO'}</Descriptions.Item>
-          <Descriptions.Item label="Tipo de Vínculo">{getSelectedFicha.tipo_vinculo || 'NÃO INFORMADO'}</Descriptions.Item>
-          <Descriptions.Item label="Módulo de Capacitação">
-            {getModulosCapacita.find((modulo) => modulo.id === getSelectedFicha.modulo_capacita)?.nome.split(": ").join(": ") || 'NÃO INFORMADO'}
-          </Descriptions.Item>
-        </Descriptions>
-        </>
-      )}
-    </Modal>
+        open={getVisible}
+        onCancel={() => setVisible(false)}
+        footer={null}
+      >
+        {getSelectedFicha && (
+          <>
+            <div className="button-ficha-description">
+              <Button className="dowload-ficha" type="primary" onClick={dowloadFicha}>Baixar Ficha</Button>
+              <Button className="delete-ficha" onClick={deleteFicha}>Deletar Ficha</Button>
+            </div>
+            <Descriptions bordered column={1} layout="horizontal">
+              <Descriptions.Item label="Nome">{getSelectedFicha.nome_completo || 'NÃO INFORMADO'}</Descriptions.Item>
+              <Descriptions.Item label="CPF">
+                {getSelectedFicha.cpf ? getSelectedFicha.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : 'NÃO INFORMADO'}
+              </Descriptions.Item>
+              <Descriptions.Item label="Gênero">{generoMap[getSelectedFicha.genero] || 'NÃO INFORMADO'}</Descriptions.Item>
+              <Descriptions.Item label="Data de Nascimento">
+                {getSelectedFicha.data_nascimento ? dayjs(getSelectedFicha.data_nascimento).format('DD/MM/YYYY').toUpperCase() : 'NÃO INFORMADO'}
+              </Descriptions.Item>
+              <Descriptions.Item label="Escolaridade">{escolaridadeMap[getSelectedFicha.escolaridade] || 'NÃO INFORMADO'}</Descriptions.Item>
+              <Descriptions.Item label="Atividade">{atividadeMap[getSelectedFicha.atividade] || 'NÃO INFORMADO'}</Descriptions.Item>
+              <Descriptions.Item label="Endereço">{getSelectedFicha.endereco || 'NÃO INFORMADO'}</Descriptions.Item>
+              <Descriptions.Item label="Complemento">{getSelectedFicha.complemento || 'NÃO INFORMADO'}</Descriptions.Item>
+              <Descriptions.Item label="Bairro">{getSelectedFicha.bairro || 'NÃO INFORMADO'}</Descriptions.Item>
+              <Descriptions.Item label="CEP">
+                {getSelectedFicha.cep ? getSelectedFicha.cep.replace(/(\d{5})(\d{3})/, '$1-$2') : 'NÃO INFORMADO'}
+              </Descriptions.Item>
+              <Descriptions.Item label="UF">{getSelectedFicha.uf || 'NÃO INFORMADO'}</Descriptions.Item>
+              <Descriptions.Item label="Celular">
+                {getSelectedFicha.celular ? getSelectedFicha.celular.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3') : 'NÃO INFORMADO'}
+              </Descriptions.Item>
+              <Descriptions.Item label="Fixo">
+                {getSelectedFicha.fixo ? getSelectedFicha.fixo.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3') : 'NÃO INFORMADO'}
+              </Descriptions.Item>
+              <Descriptions.Item label="Email">{getSelectedFicha.email.toLowerCase()}</Descriptions.Item>
+              <Descriptions.Item label="Interesse em ter negócio">
+                {getSelectedFicha.interesse_ter_negocio === 'S' ? 'SIM' : 'NÃO'}
+              </Descriptions.Item>
+              <Descriptions.Item label="Preferência de Aula">{getSelectedFicha.preferencia_aula || 'NÃO INFORMADO'}</Descriptions.Item>
+              <Descriptions.Item label="Meio de Comunicação de Aula">{getSelectedFicha.meio_comunicacao_aula || 'NÃO INFORMADO'}</Descriptions.Item>
+              <Descriptions.Item label="Assistir Online">{getSelectedFicha.assistir_online === 'S' ? 'SIM' : 'NÃO'}</Descriptions.Item>
+              {getSelectedFicha.assistir_online === 'S' && (
+                <Descriptions.Item label="Se assistir em casa, como?">{getSelectedFicha.if_true_assistir_casa || 'NÃO INFORMADO'}</Descriptions.Item>
+              )}
+              <Descriptions.Item label="Nome Fantasia">{getSelectedFicha.nome_fantasia || 'NÃO INFORMADO'}</Descriptions.Item>
+              <Descriptions.Item label="CNPJ">
+                {getSelectedFicha.cnpj ? getSelectedFicha.cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5') : 'NÃO INFORMADO'}
+              </Descriptions.Item>
+              <Descriptions.Item label="Situação da Empresa">
+                {getSelectedFicha.situacao_empresa === 'ATIVA' ? 'ATIVA' : 'NÃO ATIVA'}
+              </Descriptions.Item>
+              <Descriptions.Item label="Porte da Empresa">{getSelectedFicha.porte_empresa || 'NÃO INFORMADO'}</Descriptions.Item>
+              <Descriptions.Item label="Data de Abertura">
+                {getSelectedFicha.data_abertura ? dayjs(getSelectedFicha.data_abertura).format('DD/MM/YYYY').toUpperCase() : 'NÃO INFORMADO'}
+              </Descriptions.Item>
+              <Descriptions.Item label="CNAE Principal">{getSelectedFicha.cnae_principal || 'NÃO INFORMADO'}</Descriptions.Item>
+              <Descriptions.Item label="Setor">{getSelectedFicha.setor || 'NÃO INFORMADO'}</Descriptions.Item>
+              <Descriptions.Item label="Tipo de Vínculo">{getSelectedFicha.tipo_vinculo || 'NÃO INFORMADO'}</Descriptions.Item>
+              <Descriptions.Item label="Módulo de Capacitação">
+                {getModulosCapacita.find((modulo) => modulo.id === getSelectedFicha.modulo_capacita)?.nome.split(": ").join(": ") || 'NÃO INFORMADO'}
+              </Descriptions.Item>
+            </Descriptions>
+          </>
+        )}
+      </Modal>
     </>
   );
 }
