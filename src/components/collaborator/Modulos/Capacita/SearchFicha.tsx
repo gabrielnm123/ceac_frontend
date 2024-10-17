@@ -353,7 +353,7 @@ const SearchFicha: React.FC = () => {
                 {getSelectedFicha.cnpj ? getSelectedFicha.cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5') : 'NÃO INFORMADO'}
               </Descriptions.Item>
               <Descriptions.Item label="Situação da Empresa">
-                {getSelectedFicha.situacao_empresa === 'ATIVA' ? 'ATIVA' : 'NÃO ATIVA'}
+                {getSelectedFicha.situacao_empresa === 'ATIVA' ? 'ATIVA' : getSelectedFicha.situacao_empresa === 'N_ATIVA' ? 'NÃO ATIVA' : 'NÃO INFORMADO'}
               </Descriptions.Item>
               <Descriptions.Item label="Porte da Empresa">{getSelectedFicha.porte_empresa || 'NÃO INFORMADO'}</Descriptions.Item>
               <Descriptions.Item label="Data de Abertura">

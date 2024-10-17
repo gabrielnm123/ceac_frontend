@@ -62,29 +62,31 @@ const CreateFicha: React.FC = () => {
   };
 
   const isValidCNPJ = (cnpj: string) => {
-    cnpj = cnpj.replace(/\D/g, '');
-    if (cnpj.length !== 14 || /(\d)\1{13}/.test(cnpj)) return false;
-    let tamanho = cnpj.length - 2;
-    let numeros = cnpj.substring(0, tamanho);
-    let digitos = cnpj.substring(tamanho);
-    let soma = 0;
-    let pos = tamanho - 7;
-    for (let i = tamanho; i >= 1; i--) {
-      soma += parseInt(numeros.charAt(tamanho - i)) * pos--;
-      if (pos < 2) pos = 9;
+    if (cnpj) {
+      cnpj = cnpj.replace(/\D/g, '');
+      if (cnpj.length !== 14 || /(\d)\1{13}/.test(cnpj)) return false;
+      let tamanho = cnpj.length - 2;
+      let numeros = cnpj.substring(0, tamanho);
+      let digitos = cnpj.substring(tamanho);
+      let soma = 0;
+      let pos = tamanho - 7;
+      for (let i = tamanho; i >= 1; i--) {
+        soma += parseInt(numeros.charAt(tamanho - i)) * pos--;
+        if (pos < 2) pos = 9;
+      }
+      let resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+      if (resultado !== parseInt(digitos.charAt(0))) return false;
+      tamanho = tamanho + 1;
+      numeros = cnpj.substring(0, tamanho);
+      soma = 0;
+      pos = tamanho - 7;
+      for (let i = tamanho; i >= 1; i--) {
+        soma += parseInt(numeros.charAt(tamanho - i)) * pos--;
+        if (pos < 2) pos = 9;
+      }
+      resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+      return resultado === parseInt(digitos.charAt(1));
     }
-    let resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
-    if (resultado !== parseInt(digitos.charAt(0))) return false;
-    tamanho = tamanho + 1;
-    numeros = cnpj.substring(0, tamanho);
-    soma = 0;
-    pos = tamanho - 7;
-    for (let i = tamanho; i >= 1; i--) {
-      soma += parseInt(numeros.charAt(tamanho - i)) * pos--;
-      if (pos < 2) pos = 9;
-    }
-    resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
-    return resultado === parseInt(digitos.charAt(1));
   };
 
   const isValidCNAE = (cnae: string) => {
@@ -96,7 +98,7 @@ const CreateFicha: React.FC = () => {
   };
 
   const isValidFixo = (fixo: string) => {
-    return /^\d{10}$/.test(fixo.replace(/\D/g, ''));
+    if (fixo) return /^\d{10}$/.test(fixo.replace(/\D/g, ''));
   };
 
   const isValidCEP = (cep: string) => {
@@ -158,7 +160,7 @@ const CreateFicha: React.FC = () => {
     }
 
     Object.keys(values).forEach(key => {
-      if (values[key] === undefined || values[key] === '' || values[key] === undefined || values[key] === null || values[key] === '__.___.___/____-__' || values[key] === '(__) ____-____') {
+      if (!values[key] || values[key] === '__.___.___/____-__' || values[key] === '(__) ____-____') {
         delete values[key];
       }
     });
@@ -166,17 +168,12 @@ const CreateFicha: React.FC = () => {
     if (values.comunicacao) {
       values.comunicacao = values.comunicacao === 'Sim, eu concordo.' ? 'S' : 'N';
     }
-
+    console.log(values);
     try {
       const response = await axiosInstance.post('capacita/fichas/', values);
       message.success('Ficha criada com sucesso!');
-    } catch (error: any) {
-      if (error.response && error.response.data) {
-        const errorMsgs = Object.values(error.response.data).flat().join(', ');
-        message.error(`Erro na criação da ficha: ${errorMsgs}`);
-      } else {
-        message.error('Erro ao criar ficha, tente novamente.');
-      }
+    } catch {
+      message.error('Erro ao criar ficha, tente novamente.');
     }
   };
 
@@ -307,7 +304,7 @@ const CreateFicha: React.FC = () => {
         </Form.Item>
 
         <Form.Item className="form-create-ficha-item" label="Complemento" name="complemento">
-          <Input onChange={(e) => form.setFieldsValue({ complemento: e.target.value.toUpperCase() })} allowClear />
+          <Input onChange={(e) => { if (e.target.value) { form.setFieldsValue({ complemento: e.target.value.toUpperCase() }) } }} allowClear />
         </Form.Item>
 
         <Form.Item className="form-create-ficha-item"
@@ -382,11 +379,12 @@ const CreateFicha: React.FC = () => {
           rules={[
             {
               validator: (_, value) => {
-                console.log(value);
-                if (value.replace(/\D/g, '') && value.replace(/\D/g, '').length !== 10) {
-                  return Promise.reject(new Error('O telefone fixo deve conter exatamente 10 dígitos numéricos'));
-                } else if (value.replace(/\D/g, '') && !isValidFixo(value)) {
-                  return Promise.reject(new Error('Telefone fixo inválido'));
+                if (value) {
+                  if (value.replace(/\D/g, '') && value.replace(/\D/g, '').length !== 10) {
+                    return Promise.reject(new Error('O telefone fixo deve conter exatamente 10 dígitos numéricos'));
+                  } else if (value.replace(/\D/g, '') && !isValidFixo(value)) {
+                    return Promise.reject(new Error('Telefone fixo inválido'));
+                  }
                 }
                 return Promise.resolve();
               },
@@ -492,7 +490,7 @@ const CreateFicha: React.FC = () => {
           rules={[{ required: getIsPJRequired, message: 'Por favor, insira o CNPJ' },
           {
             validator: (_, value) => {
-              if (getIsPJRequired) {
+              if (getIsPJRequired && value) {
                 if (value.replace(/\D/g, '') && value.replace(/\D/g, '').length !== 14 && value !== '__.___.___/____-__') {
                   return Promise.reject(new Error('O CNPJ deve conter exatamente 14 dígitos numéricos'));
                 } else if (value.replace(/\D/g, '') && !isValidCNPJ(value)) {
@@ -537,7 +535,7 @@ const CreateFicha: React.FC = () => {
           rules={[{ required: getIsPJRequired, message: 'Por favor, selecione a data de abertura' },
           {
             validator: (_, value) => {
-              if (getIsPJRequired) {
+              if (getIsPJRequired && value) {
                 if (value.replace(/\D/g, '') && value.replace(/\D/g, '').length !== 10) {
                   return Promise.reject(new Error('A data de abertura deve conter exatamente 8 dígitos numéricos'));
                 }
@@ -556,7 +554,7 @@ const CreateFicha: React.FC = () => {
           rules={[{ required: getIsPJRequired, message: 'Por favor, insira o CNAE Principal' },
           {
             validator: (_, value) => {
-              if (getIsPJRequired) {
+              if (getIsPJRequired && value) {
                 if (value.replace(/\D/g, '') && value.replace(/\D/g, '').length !== 7) {
                   return Promise.reject(new Error('O CNAE deve conter exatamente 7 dígitos numéricos'));
                 } else if (value.replace(/\D/g, '') && !isValidCNAE(value)) {
