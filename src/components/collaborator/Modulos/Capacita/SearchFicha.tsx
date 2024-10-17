@@ -315,25 +315,25 @@ const SearchFicha: React.FC = () => {
               <Button className="delete-ficha" onClick={deleteFicha}>Deletar Ficha</Button>
             </div>
             <Descriptions bordered column={1} layout="horizontal">
-              <Descriptions.Item label="Nome">{getSelectedFicha.nome_completo || 'NÃO INFORMADO'}</Descriptions.Item>
+              <Descriptions.Item label="Nome">{getSelectedFicha.nome_completo}</Descriptions.Item>
               <Descriptions.Item label="CPF">
-                {getSelectedFicha.cpf ? getSelectedFicha.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : 'NÃO INFORMADO'}
+                {getSelectedFicha.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')}
               </Descriptions.Item>
-              <Descriptions.Item label="Gênero">{generoMap[getSelectedFicha.genero] || 'NÃO INFORMADO'}</Descriptions.Item>
+              <Descriptions.Item label="Gênero">{generoMap[getSelectedFicha.genero]}</Descriptions.Item>
               <Descriptions.Item label="Data de Nascimento">
-                {getSelectedFicha.data_nascimento ? dayjs(getSelectedFicha.data_nascimento).format('DD/MM/YYYY').toUpperCase() : 'NÃO INFORMADO'}
+                {dayjs(getSelectedFicha.data_nascimento).format('DD/MM/YYYY').toUpperCase()}
               </Descriptions.Item>
-              <Descriptions.Item label="Escolaridade">{escolaridadeMap[getSelectedFicha.escolaridade] || 'NÃO INFORMADO'}</Descriptions.Item>
-              <Descriptions.Item label="Atividade">{atividadeMap[getSelectedFicha.atividade] || 'NÃO INFORMADO'}</Descriptions.Item>
-              <Descriptions.Item label="Endereço">{getSelectedFicha.endereco || 'NÃO INFORMADO'}</Descriptions.Item>
+              <Descriptions.Item label="Escolaridade">{escolaridadeMap[getSelectedFicha.escolaridade]}</Descriptions.Item>
+              <Descriptions.Item label="Atividade">{atividadeMap[getSelectedFicha.atividade]}</Descriptions.Item>
+              <Descriptions.Item label="Endereço">{getSelectedFicha.endereco}</Descriptions.Item>
               <Descriptions.Item label="Complemento">{getSelectedFicha.complemento || 'NÃO INFORMADO'}</Descriptions.Item>
-              <Descriptions.Item label="Bairro">{getSelectedFicha.bairro || 'NÃO INFORMADO'}</Descriptions.Item>
+              <Descriptions.Item label="Bairro">{getSelectedFicha.bairro}</Descriptions.Item>
               <Descriptions.Item label="CEP">
-                {getSelectedFicha.cep ? getSelectedFicha.cep.replace(/(\d{5})(\d{3})/, '$1-$2') : 'NÃO INFORMADO'}
+                {getSelectedFicha.cep.replace(/(\d{5})(\d{3})/, '$1-$2')}
               </Descriptions.Item>
-              <Descriptions.Item label="UF">{getSelectedFicha.uf || 'NÃO INFORMADO'}</Descriptions.Item>
+              <Descriptions.Item label="UF">{getSelectedFicha.uf}</Descriptions.Item>
               <Descriptions.Item label="Celular">
-                {getSelectedFicha.celular ? getSelectedFicha.celular.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3') : 'NÃO INFORMADO'}
+                {getSelectedFicha.celular.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')}
               </Descriptions.Item>
               <Descriptions.Item label="Fixo">
                 {getSelectedFicha.fixo ? getSelectedFicha.fixo.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3') : 'NÃO INFORMADO'}
@@ -342,8 +342,8 @@ const SearchFicha: React.FC = () => {
               <Descriptions.Item label="Interesse em ter negócio">
                 {getSelectedFicha.interesse_ter_negocio === 'S' ? 'SIM' : 'NÃO'}
               </Descriptions.Item>
-              <Descriptions.Item label="Preferência de Aula">{getSelectedFicha.preferencia_aula || 'NÃO INFORMADO'}</Descriptions.Item>
-              <Descriptions.Item label="Meio de Comunicação de Aula">{getSelectedFicha.meio_comunicacao_aula || 'NÃO INFORMADO'}</Descriptions.Item>
+              <Descriptions.Item label="Preferência de Aula">{getSelectedFicha.preferencia_aula}</Descriptions.Item>
+              <Descriptions.Item label="Meio de Comunicação de Aula">{getSelectedFicha.meio_comunicacao_aula}</Descriptions.Item>
               <Descriptions.Item label="Assistir Online">{getSelectedFicha.assistir_online === 'S' ? 'SIM' : 'NÃO'}</Descriptions.Item>
               {getSelectedFicha.assistir_online === 'S' && (
                 <Descriptions.Item label="Se assistir em casa, como?">{getSelectedFicha.if_true_assistir_casa || 'NÃO INFORMADO'}</Descriptions.Item>
@@ -363,7 +363,7 @@ const SearchFicha: React.FC = () => {
               <Descriptions.Item label="Setor">{getSelectedFicha.setor || 'NÃO INFORMADO'}</Descriptions.Item>
               <Descriptions.Item label="Tipo de Vínculo">{getSelectedFicha.tipo_vinculo || 'NÃO INFORMADO'}</Descriptions.Item>
               <Descriptions.Item label="Módulo de Capacitação">
-                {getModulosCapacita.find((modulo) => modulo.id === getSelectedFicha.modulo_capacita)?.nome.split(": ").join(": ") || 'NÃO INFORMADO'}
+                {getModulosCapacita.find((modulo) => modulo.id === getSelectedFicha.modulo_capacita)?.nome.split(": ").join(": ")}
               </Descriptions.Item>
             </Descriptions>
           </>
