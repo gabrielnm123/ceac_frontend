@@ -10,9 +10,9 @@ const Perfil: React.FC = () => {
   const perfisNamePermissions = perfisObject();
   const perfisNames = Object.keys(perfisNamePermissions);
   const navigate = useNavigate();
-  const refreshToken = Cookies.get('refresh_token');
-
+  
   useEffect(() => {
+    const refreshToken = Cookies.get('refresh_token');
     document.title = 'Perfil';
     if (refreshToken) {
       axiosInstance.post('token/verify/', { token: refreshToken })

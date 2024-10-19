@@ -125,7 +125,6 @@ const SearchFicha: React.FC = () => {
   };
 
   const dowloadFicha = () => {
-    handleOpenFicha(getSelectedFicha.id);
     axiosInstance.get(`capacita/fichas/${getSelectedFicha.id}/download`, {
       responseType: 'blob'
     })
@@ -144,13 +143,12 @@ const SearchFicha: React.FC = () => {
   }
 
   const deleteFicha = () => {
-    handleOpenFicha(getSelectedFicha.id);
     axiosInstance.delete(`capacita/fichas/${getSelectedFicha.id}/`)
       .then(() => {
-        message.success(`Ficha do(a) ${getSelectedFicha.nome} deletada com sucesso.`)
+        message.success(`Ficha do(a) ${getSelectedFicha.nome_completo} deletada com sucesso.`)
       })
       .catch(() => {
-        message.error(`Erro ao deletar a ficha do(a) ${getSelectedFicha.nome}. Tente novamente.`)
+        message.error(`Erro ao deletar a ficha do(a) ${getSelectedFicha.nome_completo}. Tente novamente.`)
       })
   }
 
@@ -201,8 +199,8 @@ const SearchFicha: React.FC = () => {
       <div className="search-ficha">
         <Form form={getForm} className="form-search-ficha" onFinish={onFinish}>
           <div className="form-search-ficha-minus-button">
-            <Form.Item label="Nome" name="nome" className="form-search-ficha-nome form-search-ficha-item">
-              <Input onChange={(e) => getForm.setFieldsValue({ nome: e.target.value.toUpperCase() })} allowClear />
+            <Form.Item label="Nome" name="nome_completo" className="form-search-ficha-nome form-search-ficha-item">
+              <Input onChange={(e) => getForm.setFieldsValue({ nome_completo: e.target.value.toUpperCase() })} allowClear />
             </Form.Item>
             <Form.Item label="Módulo de Capacitação" name='modulo_capacita' className="form-search-ficha-modulos-capacita form-search-ficha-item">
               <Select allowClear showSearch className="form-search-ficha-select-modulos-capacita" options={getModulosCapacita.map(

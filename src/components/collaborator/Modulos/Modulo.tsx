@@ -18,9 +18,9 @@ const Modulos: React.FC = () => {
   const perfilName = localStorage.getItem('perfilName')!;
   const permissions = perfisNamePermissions[perfilName];
   const user = itemUser(setBaseContent, setBaseTitle);
-  const refreshToken = Cookies.get('refresh_token');
-
+  
   useEffect(() => {
+    const refreshToken = Cookies.get('refresh_token');
     document.title = getBaseTitle;
     if (refreshToken) {
       axiosInstance.post('token/verify/', { token: refreshToken })

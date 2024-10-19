@@ -98,7 +98,7 @@ const CreateFicha: React.FC = () => {
   };
 
   const isValidFixo = (fixo: string) => {
-    if (fixo) return /^\d{10}$/.test(fixo.replace(/\D/g, ''));
+    if (fixo ) return /^\d{10}$/.test(fixo.replace(/\D/g, ''));
   };
 
   const isValidCEP = (cep: string) => {
@@ -115,6 +115,20 @@ const CreateFicha: React.FC = () => {
     } catch (error) {
       message.error('Erro ao buscar o endereço. Verifique o CEP.');
       return null;
+    }
+  };
+
+  const handleCEPBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
+    const cep = e.target.value.replace(/\D/g, '');
+    if (cep.length === 8) {
+      const addressData = await fetchAddressByCEP(cep);
+      if (addressData) {
+        form.setFieldsValue({
+          endereco: addressData.logradouro.toUpperCase(),
+          bairro: addressData.bairro.toUpperCase(),
+          uf: addressData.uf,
+        });
+      }
     }
   };
 
@@ -175,20 +189,6 @@ const CreateFicha: React.FC = () => {
     } catch (error) {
       console.log(error)
       message.error('Erro ao criar ficha, tente novamente.');
-    }
-  };
-
-  const handleCEPBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
-    const cep = e.target.value.replace(/\D/g, '');
-    if (cep.length === 8) {
-      const addressData = await fetchAddressByCEP(cep);
-      if (addressData) {
-        form.setFieldsValue({
-          endereco: addressData.logradouro.toUpperCase(),
-          bairro: addressData.bairro.toUpperCase(),
-          uf: addressData.uf,
-        });
-      }
     }
   };
 
