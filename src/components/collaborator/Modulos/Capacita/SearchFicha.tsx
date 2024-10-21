@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Form, Input, Button, Select, DatePicker, Table, message, Modal, Descriptions } from 'antd';
+import { Form, Input, Button, Select, DatePicker, Table, message, Modal, Descriptions, Popconfirm } from 'antd';
 import MaskedInput from 'antd-mask-input';
 import axiosInstance from "../../../../services/axiosInstance";
 import '../../css/SearchFicha.css';
@@ -37,7 +37,7 @@ const SearchFicha: React.FC = () => {
   const [getData, setData] = useState<any[]>([]);
   const [getModulosCapacita, setModulosCapacita] = useState<modulosCapacitaType[]>([]);
   const [getColumns, setColumns] = useState<undefined | Array<Object>>(undefined);
-  const [getForm] = Form.useForm();
+  const [form] = Form.useForm();
   const [getVisible, setVisible] = useState<boolean>(false);
   const [getSelectedFicha, setSelectedFicha] = useState<any>(null);
   const navigate = useNavigate();
@@ -100,8 +100,8 @@ const SearchFicha: React.FC = () => {
           navigate('/colaborador/login');
         } else message.error('Erro ao carregar os módulos de aprendizagem, tente novamente.');
       })
-      
-      axiosInstance.get('capacita/fichas/')
+
+    axiosInstance.get('capacita/fichas/')
       .then((response) => {
         setData(response.data);
       })
@@ -129,12 +129,12 @@ const SearchFicha: React.FC = () => {
       .finally(() => {
         setLoading(false);
       })
-    };
-    
-    const dowloadFicha = () => {
-      axiosInstance.get(`capacita/fichas/${getSelectedFicha.id}/download`, {
-        responseType: 'blob'
-      })
+  };
+
+  const dowloadFicha = () => {
+    axiosInstance.get(`capacita/fichas/${getSelectedFicha.id}/download`, {
+      responseType: 'blob'
+    })
       .then((response) => {
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');
@@ -150,13 +150,14 @@ const SearchFicha: React.FC = () => {
           navigate('/colaborador/login');
         } else message.error('Erro ao baixar a ficha, tente novamente.');
       })
-    }
-    
-    const deleteFicha = () => {
-      axiosInstance.delete(`capacita/fichas/${getSelectedFicha.id}/`)
+  }
+
+  const deleteFicha = () => {
+    axiosInstance.delete(`capacita/fichas/${getSelectedFicha.id}/`)
       .then(() => {
         message.success(`Ficha do(a) ${getSelectedFicha.nome_completo} deletada com sucesso.`)
         setVisible(false)
+        onFinish(form.getFieldsValue());
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
@@ -165,6 +166,10 @@ const SearchFicha: React.FC = () => {
         } else message.error(`Erro ao deletar a ficha do(a) ${getSelectedFicha.nome_completo}. Tente novamente.`);
       })
   }
+
+  const onReset = () => {
+    form.resetFields();
+  };
 
   const onFinish = (values: any) => {
     if (values.data_nascimento) {
@@ -208,17 +213,13 @@ const SearchFicha: React.FC = () => {
       })
   };
 
-  const onReset = () => {
-    getForm.resetFields();
-  };
-
   return (
     <>
       <div className="search-ficha">
-        <Form form={getForm} className="form-search-ficha" onFinish={onFinish}>
+        <Form form={form} className="form-search-ficha" onFinish={onFinish}>
           <div className="form-search-ficha-minus-button">
             <Form.Item label="Nome" name="nome" className="form-search-ficha-nome form-search-ficha-item">
-              <Input onChange={(e) => getForm.setFieldsValue({ nome: e.target.value.toUpperCase() })} allowClear />
+              <Input onChange={(e) => form.setFieldsValue({ nome: e.target.value.toUpperCase() })} allowClear />
             </Form.Item>
             <Form.Item label="Módulo de Capacitação" name='modulo_capacita' className="form-search-ficha-modulos-capacita form-search-ficha-item">
               <Select allowClear showSearch className="form-search-ficha-select-modulos-capacita" options={getModulosCapacita.map(
@@ -328,7 +329,15 @@ const SearchFicha: React.FC = () => {
           <>
             <div className="button-ficha-description">
               <Button className="dowload-ficha" type="primary" onClick={dowloadFicha}>Baixar Ficha</Button>
-              <Button className="delete-ficha" onClick={deleteFicha}>Deletar Ficha</Button>
+              <Button className="edit-ficha" type="primary" onClick={() => navigate(`/colaborador/ficha/editar/${getSelectedFicha.id}`)}>Editar Ficha</Button>
+              <Popconfirm
+                title="Tem certeza que deseja deletar esta ficha?"
+                onConfirm={deleteFicha}
+                okText="Sim"
+                cancelText="Não"
+              >
+                <Button className="delete-ficha">Deletar Ficha</Button>
+              </Popconfirm>
             </div>
             <Descriptions bordered column={1} layout="horizontal">
               <Descriptions.Item label="Nome">{getSelectedFicha.nome_completo}</Descriptions.Item>
