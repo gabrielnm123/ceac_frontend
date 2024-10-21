@@ -37,7 +37,6 @@ axiosInstance.interceptors.response.use(response => {
 
           // Atualiza o cabeçalho de autorização da requisição original
           originalRequest.headers.Authorization = `Bearer ${response.data.access}`;
-          console.log('renovou refresh e access');
 
           // Reexecuta a requisição original com o novo token e retorna a promessa
           return axiosInstance(originalRequest);

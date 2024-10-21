@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, message, Typography } from 'antd';
 import axiosInstance from '../../../../services/axiosInstance';
 import Cookies from 'js-cookie';
+import { logout } from '../../menuItems/itemUser';
+import { useNavigate } from 'react-router-dom';
 
 interface FormValues {
   email: string;
@@ -18,6 +20,7 @@ const ChangeRegistration: React.FC = () => {
   const [getLoading, setLoading] = useState<boolean>(false);
   const [getPasswordMessage, setPasswordMessage] = useState<string>('');
   const [form] = Form.useForm();
+  const navigate = useNavigate();
 
   useEffect(() => {
 
@@ -30,8 +33,11 @@ const ChangeRegistration: React.FC = () => {
           last_name: response.data.last_name.toUpperCase(),
         });
       })
-      .catch(() => {
-        message.error('Erro ao carregar dados do usuário.');
+      .catch((error) => {
+        if (error.response && error.response.status === 401) {
+          logout();
+          navigate('/colaborador/login');
+        } else message.error('Erro ao carregar dados do usuário.');
       })
   }, [form]);
 
@@ -109,13 +115,22 @@ const ChangeRegistration: React.FC = () => {
         };
 
         // Atualiza os dados do usuário
-        axiosInstance.put(`users/${userId}/`, updateData);
+        axiosInstance.put(`users/${userId}/`, updateData)
+          .catch(error => {
+            if (error.response && error.response.status === 401) {
+              logout();
+              navigate('/colaborador/login');
+            } else message.error('Erro ao atualizar dados do usuário, tente novamente.');
+          })
 
         message.success('Cadastro alterado com sucesso!');
       })
 
-      .catch(() => {
-        message.error('Erro ao alterar cadastro, tente novamente.');
+      .catch((error) => {
+        if (error.response && error.response.status === 401) {
+          logout();
+          navigate('/colaborador/login');
+        } else message.error('Erro ao alterar cadastro, tente novamente.');
       })
       .finally(() => {
         setLoading(false);

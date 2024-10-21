@@ -95,18 +95,22 @@ const SearchFicha: React.FC = () => {
         setColumns(columns);
       })
       .catch((error) => {
-
         if (error.response && error.response.status === 401) {
           logout();
           navigate('/colaborador/login');
         } else message.error('Erro ao carregar os módulos de aprendizagem, tente novamente.');
       })
-
-    axiosInstance.get('capacita/fichas/')
+      
+      axiosInstance.get('capacita/fichas/')
       .then((response) => {
         setData(response.data);
       })
-      .catch()
+      .catch(error => {
+        if (error.response && error.response.status === 401) {
+          logout();
+          navigate('/colaborador/login');
+        } else message.error('Erro ao carregar fichas, recarregue a página.');
+      })
   }, []);
 
   const handleOpenFicha = (id: number) => {
@@ -125,12 +129,12 @@ const SearchFicha: React.FC = () => {
       .finally(() => {
         setLoading(false);
       })
-  };
-
-  const dowloadFicha = () => {
-    axiosInstance.get(`capacita/fichas/${getSelectedFicha.id}/download`, {
-      responseType: 'blob'
-    })
+    };
+    
+    const dowloadFicha = () => {
+      axiosInstance.get(`capacita/fichas/${getSelectedFicha.id}/download`, {
+        responseType: 'blob'
+      })
       .then((response) => {
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');
@@ -140,19 +144,25 @@ const SearchFicha: React.FC = () => {
         link.click(); // Simula o clique para iniciar o download
         document.body.removeChild(link); // Remove o link temporário do DOM
       })
-      .catch(() => {
-        message.error('Erro ao baixar a ficha, tente novamente.')
+      .catch((error) => {
+        if (error.response && error.response.status === 401) {
+          logout();
+          navigate('/colaborador/login');
+        } else message.error('Erro ao baixar a ficha, tente novamente.');
       })
-  }
-
-  const deleteFicha = () => {
-    axiosInstance.delete(`capacita/fichas/${getSelectedFicha.id}/`)
+    }
+    
+    const deleteFicha = () => {
+      axiosInstance.delete(`capacita/fichas/${getSelectedFicha.id}/`)
       .then(() => {
         message.success(`Ficha do(a) ${getSelectedFicha.nome_completo} deletada com sucesso.`)
         setVisible(false)
       })
-      .catch(() => {
-        message.error(`Erro ao deletar a ficha do(a) ${getSelectedFicha.nome_completo}. Tente novamente.`)
+      .catch((error) => {
+        if (error.response && error.response.status === 401) {
+          logout();
+          navigate('/colaborador/login');
+        } else message.error(`Erro ao deletar a ficha do(a) ${getSelectedFicha.nome_completo}. Tente novamente.`);
       })
   }
 

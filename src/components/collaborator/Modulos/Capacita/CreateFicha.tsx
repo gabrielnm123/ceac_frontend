@@ -6,6 +6,8 @@ import axiosInstance from "../../../../services/axiosInstance";
 import '../../css/CreateFicha.css';
 import modulosCapacitaType from "../../types/modulosCapacita";
 import type { CheckboxChangeEvent } from 'antd/es/checkbox';
+import { logout } from "../../menuItems/itemUser";
+import { useNavigate } from "react-router-dom";
 
 const { Option } = Select;
 const { Title, Text } = Typography;
@@ -15,14 +17,18 @@ const CreateFicha: React.FC = () => {
   const [getIsOnline, setIsOnline] = useState<boolean>(false);
   const [getIsPJRequired, setIsPJRequired] = useState<boolean>(false);
   const [getModulosCapacita, setModulosCapacita] = useState<Array<modulosCapacitaType> | []>([])
+  const navigate = useNavigate();
 
   useEffect(() => {
     axiosInstance.get('capacita/modulos_capacita/')
       .then(response => {
         setModulosCapacita(response.data)
       })
-      .catch(() => {
-        message.error('Erro ao atualizar os Módulos de Aprendizagem, atualize a página')
+      .catch((error) => {
+        if (error.response && error.response.status === 401) {
+          logout();
+          navigate('/colaborador/login');
+        } else message.error('Erro ao carregar os módulos da capacitação, recarregue a página.');
       })
   }, [])
 
@@ -189,8 +195,11 @@ const fetchAddressByCEP = (cep: string) => {
       .then(() => {
         message.success('Ficha criada com sucesso!');
       })
-      .catch (() => {
-      message.error('Erro ao criar ficha, tente novamente.');
+      .catch ((error) => {
+        if (error.response && error.response.status === 401) {
+          logout();
+          navigate('/colaborador/login');
+        } else message.error('Erro ao criar ficha, tente novamente.');
     })
   };
 
