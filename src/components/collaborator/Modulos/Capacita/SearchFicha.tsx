@@ -103,7 +103,9 @@ const SearchFicha: React.FC = () => {
       try {
         const response = await axiosInstance.get('capacita/fichas/');
         setData(response.data);
-      } catch { }
+      } catch (error) {
+        console.log(error)
+      }
     };
 
     fetchModulosCapacita();
@@ -199,8 +201,8 @@ const SearchFicha: React.FC = () => {
       <div className="search-ficha">
         <Form form={getForm} className="form-search-ficha" onFinish={onFinish}>
           <div className="form-search-ficha-minus-button">
-            <Form.Item label="Nome" name="nome_completo" className="form-search-ficha-nome form-search-ficha-item">
-              <Input onChange={(e) => getForm.setFieldsValue({ nome_completo: e.target.value.toUpperCase() })} allowClear />
+            <Form.Item label="Nome" name="nome" className="form-search-ficha-nome form-search-ficha-item">
+              <Input onChange={(e) => getForm.setFieldsValue({ nome: e.target.value.toUpperCase() })} allowClear />
             </Form.Item>
             <Form.Item label="Módulo de Capacitação" name='modulo_capacita' className="form-search-ficha-modulos-capacita form-search-ficha-item">
               <Select allowClear showSearch className="form-search-ficha-select-modulos-capacita" options={getModulosCapacita.map(
