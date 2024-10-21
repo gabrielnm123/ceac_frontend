@@ -23,7 +23,7 @@ const Perfil: React.FC = () => {
   }, [])
 
   const selectPerfil = (event: React.MouseEvent<HTMLElement>, link: { title: React.ReactNode }) => {
-    localStorage.setItem('perfilName', link.title as string);
+    Cookies.set('perfilName', link.title as string);
   };
 
   if (perfisNames[0] !== 'null') {

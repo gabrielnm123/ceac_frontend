@@ -19,25 +19,24 @@ const Login: React.FC = () => {
     document.title = 'Autenticação';
   }, []);
 
-  const onFinish = async (values: object) => {
-    try {
-      const response = await axiosInstance.post(`token/`, values)
-      
-      Cookies.set('access_token', response.data.access);
-      Cookies.set('refresh_token', response.data.refresh);
-
-      try {
-        const userResponse = await axiosInstance.get('current_user/');
-        const userId = userResponse.data.id;
-        localStorage.setItem('userId', userId);
-      } catch {
-        message.error('Um erro ocorreu ao obter as informações do usuário.');
-      }
-
-      navigate('/colaborador/perfil');
-    } catch {
+  const onFinish = (values: object) => {
+    axiosInstance.post(`token/`, values)
+      .then((response) => {
+        Cookies.set('access_token', response.data.access);
+        Cookies.set('refresh_token', response.data.refresh);
+        axiosInstance.get('current_user/')
+          .then((userResponse) => {
+            const userId = userResponse.data.id;
+            Cookies.set('userId', userId);
+            navigate('/colaborador/perfil');
+          })
+          .catch(() => {
+            message.error('Um erro ocorreu ao obter as informações do usuário.');
+          })
+      })
+      .catch (() => {
       message.error('Usuário ou senha inválida(s)!');
-    }
+    })
   };
 
   const onFinishFailed = (errorInfo: any) => {

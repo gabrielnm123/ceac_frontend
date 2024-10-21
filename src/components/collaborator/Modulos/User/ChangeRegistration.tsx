@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, message, Typography } from 'antd';
 import axiosInstance from '../../../../services/axiosInstance';
+import Cookies from 'js-cookie';
 
 interface FormValues {
   email: string;
@@ -21,7 +22,7 @@ const ChangeRegistration: React.FC = () => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const userId = localStorage.getItem('userId');
+        const userId = Cookies.get('userId');
         const response = await axiosInstance.get(`/users/${userId}/`);
         form.setFieldsValue({
           email: response.data.email,
@@ -89,7 +90,7 @@ const ChangeRegistration: React.FC = () => {
     setLoading(true);
   
     try {
-      const userId = localStorage.getItem('userId');
+      const userId = Cookies.get('userId');
   
       // Verifica a senha atual antes de prosseguir
       const passwordCheckResponse = await axiosInstance.post(`users/${userId}/check-password/`, {

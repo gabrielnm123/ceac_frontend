@@ -187,7 +187,6 @@ const CreateFicha: React.FC = () => {
       const response = await axiosInstance.post('capacita/fichas/', values);
       message.success('Ficha criada com sucesso!');
     } catch (error) {
-      console.log(error)
       message.error('Erro ao criar ficha, tente novamente.');
     }
   };

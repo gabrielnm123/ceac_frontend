@@ -7,6 +7,7 @@ import Modulo from './collaborator/Modulos/Modulo';
 import itemUser from './collaborator/menuItems/itemUser';
 import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br';
+import Cookies from 'js-cookie';
 
 const App: React.FC = () => {
   const [getBaseContent, setBaseContent] = useState<React.ReactNode>(<Perfil />);
@@ -27,7 +28,7 @@ const App: React.FC = () => {
       <Routes>
         <Route path='colaborador/login' element={<Base content={<Login />} title='Autenticação' />} />
         <Route path='colaborador/perfil' element={<Base content={getBaseContent} title={getBaseTitle} menuItem={itemUser(setBaseContent, setBaseTitle)} />} />
-        <Route path={`colaborador/${localStorage.getItem('perfilName')}`} element={<Modulo /> } />
+        <Route path={`colaborador/${Cookies.get('perfilName')}`} element={<Modulo /> } />
         <Route path="*" element={<Navigate to="colaborador/perfil" />} />
       </Routes>
     </BrowserRouter>
