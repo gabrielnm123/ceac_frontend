@@ -5,21 +5,26 @@ import './css/Perfil.css';
 import Cookies from "js-cookie";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "../../services/axiosInstance";
+import { logout } from "./menuItems/itemUser";
 
 const Perfil: React.FC = () => {
   const perfisNamePermissions = perfisObject();
   const perfisNames = Object.keys(perfisNamePermissions);
   const navigate = useNavigate();
-  
+
   useEffect(() => {
     const refreshToken = Cookies.get('refresh_token');
     document.title = 'Perfil';
     if (refreshToken) {
       axiosInstance.post('token/verify/', { token: refreshToken })
         .catch(() => {
+          logout();
           navigate('/colaborador/login');
         })
-    } else navigate('/colaborador/login')
+    } else {
+      logout();
+      navigate('/colaborador/login')
+    }
   }, [])
 
   const selectPerfil = (event: React.MouseEvent<HTMLElement>, link: { title: React.ReactNode }) => {

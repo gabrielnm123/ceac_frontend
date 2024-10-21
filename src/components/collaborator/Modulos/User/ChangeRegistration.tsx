@@ -20,21 +20,19 @@ const ChangeRegistration: React.FC = () => {
   const [form] = Form.useForm();
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const userId = Cookies.get('userId');
-        const response = await axiosInstance.get(`/users/${userId}/`);
+
+    const userId = Cookies.get('userId');
+    axiosInstance.get(`/users/${userId}/`)
+      .then((response) => {
         form.setFieldsValue({
           email: response.data.email,
           first_name: response.data.first_name.toUpperCase(),
           last_name: response.data.last_name.toUpperCase(),
         });
-      } catch (error) {
+      })
+      .catch(() => {
         message.error('Erro ao carregar dados do usuário.');
-      }
-    };
-
-    fetchUserData();
+      })
   }, [form]);
 
   const validatePassword = (_: any, value: string | undefined) => {
@@ -44,10 +42,10 @@ const ChangeRegistration: React.FC = () => {
         resolve(); // Não faça a validação e resolva a Promise se não houver valor.
         return;
       }
-  
+
       const errors = [];
       const remainingChars = 8 - value.length; // Calcula o restante dos caracteres apenas se value existir.
-  
+
       if (remainingChars > 0) {
         errors.push(`Faltam ${remainingChars} ${remainingChars > 1 ? 'caracteres' : 'caractere'} para atingir o mínimo necessário`);
       }
@@ -63,9 +61,9 @@ const ChangeRegistration: React.FC = () => {
       if (!/[#@!$%^&*()\-_\+\=\{\}\[\]:;"'<>,.?\/\\|~`]/.test(value)) {
         errors.push('um caractere especial');
       }
-  
+
       setPasswordMessage(errors.length > 0 ? errors.join(', ') + '.' : '');
-  
+
       if (errors.length === 0) {
         resolve(); // Resolve corretamente se não houver erros.
       } else {
@@ -74,56 +72,56 @@ const ChangeRegistration: React.FC = () => {
     });
   };
 
-  const onFinish = async (values: FormValues) => {
+  const onFinish = (values: FormValues) => {
     // Verifica se as novas senhas coincidem
     if (values.password && values.password !== values.confirmPassword) {
       message.error('As senhas não coincidem!');
       return;
     }
-  
+
     // Verifica se a senha atual foi preenchida
     if (!values.currentPassword) {
       message.error('Por favor, insira sua senha atual para confirmar as alterações.');
       return;
     }
-  
+
     setLoading(true);
-  
-    try {
-      const userId = Cookies.get('userId');
-  
-      // Verifica a senha atual antes de prosseguir
-      const passwordCheckResponse = await axiosInstance.post(`users/${userId}/check-password/`, {
-        password: values.currentPassword,
-      });
-  
-      // Se a senha atual estiver incorreta, mostra um erro e interrompe a execução
-      if (!passwordCheckResponse.data.valid) {
-        message.error('Senha atual incorreta. Por favor, tente novamente.');
+
+    const userId = Cookies.get('userId');
+    axiosInstance.post(`users/${userId}/check-password/`, {
+      password: values.currentPassword,
+    })
+      .then((passwordCheckResponse) => {
+        // Se a senha atual estiver incorreta, mostra um erro e interrompe a execução
+        if (!passwordCheckResponse.data.valid) {
+          message.error('Senha atual incorreta. Por favor, tente novamente.');
+          setLoading(false);
+          return;
+        }
+
+        // Prepara os dados para atualização do usuário
+        const updateData = {
+          email: values.email,
+          username: values.email, // Atualiza o nome de usuário para o email
+          first_name: values.first_name?.toUpperCase(), // Garante que o primeiro nome seja salvo em maiúsculas
+          last_name: values.last_name?.toUpperCase(), // Garante que o sobrenome seja salvo em maiúsculas
+          ...(values.password && { password: values.password }), // Adiciona a nova senha somente se preenchida
+        };
+
+        // Atualiza os dados do usuário
+        axiosInstance.put(`users/${userId}/`, updateData);
+
+        message.success('Cadastro alterado com sucesso!');
+      })
+
+      .catch(() => {
+        message.error('Erro ao alterar cadastro, tente novamente.');
+      })
+      .finally(() => {
         setLoading(false);
-        return;
-      }
-  
-      // Prepara os dados para atualização do usuário
-      const updateData = {
-        email: values.email,
-        username: values.email, // Atualiza o nome de usuário para o email
-        first_name: values.first_name?.toUpperCase(), // Garante que o primeiro nome seja salvo em maiúsculas
-        last_name: values.last_name?.toUpperCase(), // Garante que o sobrenome seja salvo em maiúsculas
-        ...(values.password && { password: values.password }), // Adiciona a nova senha somente se preenchida
-      };
-  
-      // Atualiza os dados do usuário
-      await axiosInstance.put(`users/${userId}/`, updateData);
-  
-      message.success('Cadastro alterado com sucesso!');
-    } catch (error) {
-      message.error('Erro ao alterar cadastro, tente novamente.');
-    } finally {
-      setLoading(false);
-    }
+      })
   };
-  
+
   return (
     <Form
       form={form}
@@ -162,7 +160,7 @@ const ChangeRegistration: React.FC = () => {
         Regras para a nova senha (opcional):
       </Text>
       <Text style={{ marginBottom: '16px', display: 'block' }}>
-        A senha deve conter pelo menos 8 caracteres, incluindo uma letra maiúscula, uma letra minúscula, um número e um caractere especial. Caracteres especiais permitidos: #@!$%^&*()-_+={}[]:;"'&lt;&gt;,.?/\\|~`.
+        A senha deve conter pelo menos 8 caracteres, incluindo uma letra maiúscula, uma letra minúscula, um número e um caractere especial. Caracteres especiais permitidos: #@!$%^&*()-_+={ }[]:;"'&lt;&gt;,.?/\\|~`.
       </Text>
       <Form.Item
         label="Nova Senha"
@@ -170,15 +168,15 @@ const ChangeRegistration: React.FC = () => {
         rules={[{ validator: validatePassword }]}
         hasFeedback
       >
-        <Input.Password 
-          placeholder="Nova senha (opcional)" 
+        <Input.Password
+          placeholder="Nova senha (opcional)"
           onChange={(e) => {
             form.setFieldsValue({ password: e.target.value });
             form.validateFields(['password']);
           }}
         />
       </Form.Item>
-      {getPasswordMessage && <Text type="danger">{getPasswordMessage}</Text>} 
+      {getPasswordMessage && <Text type="danger">{getPasswordMessage}</Text>}
       <Form.Item
         label="Confirme a Nova Senha"
         name="confirmPassword"

@@ -98,41 +98,44 @@ const CreateFicha: React.FC = () => {
   };
 
   const isValidFixo = (fixo: string) => {
-    if (fixo ) return /^\d{10}$/.test(fixo.replace(/\D/g, ''));
+    if (fixo) return /^\d{10}$/.test(fixo.replace(/\D/g, ''));
   };
 
   const isValidCEP = (cep: string) => {
     return /^\d{8}$/.test(cep.replace(/\D/g, ''));
   };
 
-  const fetchAddressByCEP = async (cep: string) => {
-    try {
-      const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
+const fetchAddressByCEP = (cep: string) => {
+  return axios.get(`https://viacep.com.br/ws/${cep}/json/`)
+    .then((response) => {
       if (response.data.erro) {
         throw new Error('CEP não encontrado');
       }
-      return response.data;
-    } catch (error) {
+      return response.data; // Agora isso será retornado corretamente para o chamador
+    })
+    .catch((error) => {
       message.error('Erro ao buscar o endereço. Verifique o CEP.');
-      return null;
-    }
-  };
+      return null; // Certifique-se de que retornamos null em caso de erro
+    });
+};
 
-  const handleCEPBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
+  const handleCEPBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const cep = e.target.value.replace(/\D/g, '');
     if (cep.length === 8) {
-      const addressData = await fetchAddressByCEP(cep);
-      if (addressData) {
-        form.setFieldsValue({
-          endereco: addressData.logradouro.toUpperCase(),
-          bairro: addressData.bairro.toUpperCase(),
-          uf: addressData.uf,
-        });
-      }
+      fetchAddressByCEP(cep)
+        .then((addressData) => {
+          if (addressData) {
+            form.setFieldsValue({
+              endereco: addressData.logradouro.toUpperCase(),
+              bairro: addressData.bairro.toUpperCase(),
+              uf: addressData.uf,
+            });
+          }
+        })
     }
   };
 
-  const onFinish = async (values: any) => {
+  const onFinish = (values: any) => {
     if (values.data_nascimento) values.data_nascimento = values.data_nascimento.format('YYYY-MM-DD');
     if (values.data_abertura) values.data_abertura = values.data_abertura.format('YYYY-MM-DD');
 
@@ -182,13 +185,13 @@ const CreateFicha: React.FC = () => {
     if (values.comunicacao) {
       values.comunicacao = values.comunicacao === 'Sim, eu concordo.' ? 'S' : 'N';
     }
-    console.log(values);
-    try {
-      const response = await axiosInstance.post('capacita/fichas/', values);
-      message.success('Ficha criada com sucesso!');
-    } catch (error) {
+    axiosInstance.post('capacita/fichas/', values)
+      .then(() => {
+        message.success('Ficha criada com sucesso!');
+      })
+      .catch (() => {
       message.error('Erro ao criar ficha, tente novamente.');
-    }
+    })
   };
 
   return (

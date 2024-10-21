@@ -10,20 +10,20 @@ import ChangeRegistration from '../Modulos/User/ChangeRegistration';
 import axiosInstance from '../../../services/axiosInstance';
 import Cookies from 'js-cookie';
 
+const logout = () => {
+  const refreshToken = Cookies.get('refresh_token');
+  Cookies.remove('refresh_token');
+  Cookies.remove('access_token');
+  Cookies.remove('headers');
+  Cookies.remove('userId');
+  Cookies.remove('perfilName');
+  axiosInstance.post('token/invalidate/', { refresh: refreshToken }).catch(() => {})
+};
+
 const itemUser = (
   setBaseContent: React.Dispatch<React.SetStateAction<React.ReactNode>>,
   setBaseTitle: React.Dispatch<React.SetStateAction<string>>,
 ) => {
-  const refreshToken = Cookies.get('refresh_token');
-
-  const logout = () => {
-    Cookies.remove('refresh_token');
-    Cookies.remove('access_token');
-    Cookies.remove('headers');
-    Cookies.remove('userId');
-    Cookies.remove('perfilName');
-    axiosInstance.post('token/invalidate/', {refresh: refreshToken});
-  };
 
   const changeRegistration = () => {
     setBaseContent(<ChangeRegistration />);
@@ -39,4 +39,4 @@ const itemUser = (
   ]
 }
 
-export default itemUser;
+export { itemUser, logout };

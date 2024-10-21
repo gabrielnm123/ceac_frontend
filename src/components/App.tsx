@@ -4,7 +4,7 @@ import Base from './collaborator/Base';
 import Login from './collaborator/Login';
 import Perfil from './collaborator/Perfil';
 import Modulo from './collaborator/Modulos/Modulo';
-import itemUser from './collaborator/menuItems/itemUser';
+import { itemUser } from './collaborator/menuItems/itemUser';
 import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br';
 import Cookies from 'js-cookie';
@@ -22,13 +22,13 @@ const App: React.FC = () => {
     favicon.href = '/ceac.ico';
     document.head.appendChild(favicon);
   }, []);
-  
+
   return (
     <BrowserRouter>
       <Routes>
         <Route path='colaborador/login' element={<Base content={<Login />} title='Autenticação' />} />
         <Route path='colaborador/perfil' element={<Base content={getBaseContent} title={getBaseTitle} menuItem={itemUser(setBaseContent, setBaseTitle)} />} />
-        <Route path={`colaborador/${Cookies.get('perfilName')}`} element={<Modulo /> } />
+        <Route path={`colaborador/${Cookies.get('perfilName')}`} element={<Modulo />} />
         <Route path="*" element={<Navigate to="colaborador/perfil" />} />
       </Routes>
     </BrowserRouter>

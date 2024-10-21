@@ -3,36 +3,38 @@ import axiosInstance from "./axiosInstance";
 import Cookies from "js-cookie";
 
 const perfisObject = () => {
-  const [getPerfis, setPerfis] = useState< { [key: string]: Array<string> } | {[key: string]: null} >({'null': null})
+  const [getPerfis, setPerfis] = useState<{ [key: string]: Array<string> } | { [key: string]: null }>({ 'null': null });
 
   useEffect(() => {
-    const fetchPerfisNames = async () => {
-      try {
-        const user = await axiosInstance.get(`users/${Cookies.get('userId')}/`);
-        const perfisLinks = user.data.groups;
-        const perfisNamePermissions: { [key: string]: Array<string> } = {};
-        for (const perfilLink of perfisLinks) {
-          const perfil = await axiosInstance.get(perfilLink);
-          const permissionCodeName = []
-          for (const permission of perfil.data.permissions) {
-            const response = await axiosInstance.get(permission);
-            permissionCodeName.push(response.data.codename)
-          }
-          perfisNamePermissions[perfil.data.name] = permissionCodeName;
-        }
+    axiosInstance.get(`users/${Cookies.get('userId')}/`).then(user => {
+      const perfisLinks = user.data.groups;
+      const perfisNamePermissions: { [key: string]: Array<string> } = {};
+
+      const fetchPerfis = perfisLinks.map((perfilLink: string) => {
+        return axiosInstance.get(perfilLink).then(perfil => {
+          const permissionCodeName: Array<string> = [];
+          const fetchPermissions = perfil.data.permissions.map((permission: string) => {
+            return axiosInstance.get(permission).then(response => {
+              permissionCodeName.push(response.data.codename);
+            });
+          });
+
+          return Promise.all(fetchPermissions).then(() => {
+            perfisNamePermissions[perfil.data.name] = permissionCodeName;
+          });
+        });
+      });
+
+      Promise.all(fetchPerfis).then(() => {
         if (user.data.is_superuser) {
-          perfisNamePermissions['SUPER USUÁRIO'] = ['SUPER USUÁRIO']
-          setPerfis(perfisNamePermissions);
-        } else {
-          setPerfis(perfisNamePermissions);
+          perfisNamePermissions['SUPER USUÁRIO'] = ['SUPER USUÁRIO'];
         }
-      } catch {}
-    }
-    
-    fetchPerfisNames()
-  }, [])
-  
+        setPerfis(perfisNamePermissions);
+      });
+    }).catch(() => { });
+  }, []);
+
   return getPerfis;
-}
+};
 
 export default perfisObject;

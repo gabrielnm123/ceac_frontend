@@ -4,17 +4,22 @@ import { Form, Input, Button, message } from 'antd';
 import './css/Login.css'
 import axiosInstance from "../../services/axiosInstance";
 import Cookies from "js-cookie";
+import { logout } from "./menuItems/itemUser";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-  const refreshToken = Cookies.get('refresh_token')
-
+  
   useEffect(() => {
+    const refreshToken = Cookies.get('refresh_token')
     if (refreshToken) {
       axiosInstance.post('token/verify/', {token: refreshToken})
         .then(() => {
           navigate('/colaborador/perfil');
         })
+        .catch(() => {})
+    } else {
+      logout();
+      navigate('/colaborador/login');
     }
     document.title = 'Autenticação';
   }, []);

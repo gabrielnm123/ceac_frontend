@@ -6,6 +6,7 @@ import '../../css/SearchFicha.css';
 import dayjs from 'dayjs';
 import modulosCapacitaType from "../../types/modulosCapacita";
 import { useNavigate } from "react-router-dom";
+import { logout } from "../../menuItems/itemUser";
 
 const { Option } = Select;
 
@@ -42,9 +43,8 @@ const SearchFicha: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchModulosCapacita = async () => {
-      try {
-        const response = await axiosInstance.get('capacita/modulos_capacita/');
+    axiosInstance.get('capacita/modulos_capacita/')
+      .then((response) => {
         setModulosCapacita(response.data);
         const columns = [
           {
@@ -93,37 +93,38 @@ const SearchFicha: React.FC = () => {
           },
         ];
         setColumns(columns);
-      } catch (error) {
-        message.error('Erro ao carregar os módulos de aprendizagem, tente novamente.');
-        navigate('/colaborador/login');
-      }
-    };
+      })
+      .catch((error) => {
 
-    const fetchFichas = async () => {
-      try {
-        const response = await axiosInstance.get('capacita/fichas/');
+        if (error.response && error.response.status === 401) {
+          logout();
+          navigate('/colaborador/login');
+        } else message.error('Erro ao carregar os módulos de aprendizagem, tente novamente.');
+      })
+
+    axiosInstance.get('capacita/fichas/')
+      .then((response) => {
         setData(response.data);
-      } catch (error) {
-        console.log(error)
-      }
-    };
-
-    fetchModulosCapacita();
-    fetchFichas();
+      })
+      .catch()
   }, []);
 
-  const handleOpenFicha = async (id: number) => {
-    try {
-      setLoading(true);
-      const response = await axiosInstance.get(`capacita/fichas/${id}`);
-      setSelectedFicha(response.data);
-      setVisible(true);
-    } catch (error) {
-      navigate('/colaborador/login');
-      message.error('Erro ao carregar a ficha, tente novamente.');
-    } finally {
-      setLoading(false);
-    }
+  const handleOpenFicha = (id: number) => {
+    axiosInstance.get(`capacita/fichas/${id}`)
+      .then((response) => {
+        setLoading(true);
+        setSelectedFicha(response.data);
+        setVisible(true);
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 401) {
+          logout();
+          navigate('/colaborador/login');
+        } else message.error('Erro ao carregar a ficha, tente novamente.');
+      })
+      .finally(() => {
+        setLoading(false);
+      })
   };
 
   const dowloadFicha = () => {
@@ -148,13 +149,14 @@ const SearchFicha: React.FC = () => {
     axiosInstance.delete(`capacita/fichas/${getSelectedFicha.id}/`)
       .then(() => {
         message.success(`Ficha do(a) ${getSelectedFicha.nome_completo} deletada com sucesso.`)
+        setVisible(false)
       })
       .catch(() => {
         message.error(`Erro ao deletar a ficha do(a) ${getSelectedFicha.nome_completo}. Tente novamente.`)
       })
   }
 
-  const onFinish = async (values: any) => {
+  const onFinish = (values: any) => {
     if (values.data_nascimento) {
       values.data_nascimento = values.data_nascimento.format('YYYY-MM-DD');
     }
@@ -176,20 +178,24 @@ const SearchFicha: React.FC = () => {
     );
 
     setLoading(true);
-    try {
-      const response = await axiosInstance.get('capacita/fichas/', { params: cleanedValues });
-      setData(response.data);
-      if (response.data.length === 0) {
-        message.info('Nenhuma ficha encontrada.');
-      } else {
-        message.success('Busca realizada com sucesso!');
-      }
-    } catch (error) {
-      navigate('/colaborador/login');
-      message.error('Erro ao buscar ficha, tente novamente.');
-    } finally {
-      setLoading(false);
-    }
+    axiosInstance.get('capacita/fichas/', { params: cleanedValues })
+      .then((response) => {
+        setData(response.data);
+        if (response.data.length === 0) {
+          message.info('Nenhuma ficha encontrada.');
+        } else {
+          message.success('Busca realizada com sucesso!');
+        }
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 401) {
+          logout();
+          navigate('/colaborador/login');
+        } else message.error('Erro ao buscar ficha, tente novamente.');
+      })
+      .finally(() => {
+        setLoading(false);
+      })
   };
 
   const onReset = () => {
