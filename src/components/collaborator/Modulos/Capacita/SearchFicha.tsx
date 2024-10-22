@@ -38,9 +38,13 @@ const SearchFicha: React.FC = () => {
   const [getModulosCapacita, setModulosCapacita] = useState<modulosCapacitaType[]>([]);
   const [getColumns, setColumns] = useState<undefined | Array<Object>>(undefined);
   const [form] = Form.useForm();
-  const [getVisible, setVisible] = useState<boolean>(false);
+  const [getVisibleFicha, setVisibleFicha] = useState<boolean>(false);
   const [getSelectedFicha, setSelectedFicha] = useState<any>(null);
+  const [getIsEditingFicha, setIsEditingFicha] = useState<boolean>(false); // flag pra visualizar model de edição de ficha
   const navigate = useNavigate();
+
+
+  // no butão de editar vai ter uma função que vai deixar um model de edição aparente enquanto o outro não, e vai preencher com dados atuais, ainda tenho que modificar o model de visualização pra ter uma aparencia de createficha
 
   useEffect(() => {
     axiosInstance.get('capacita/modulos_capacita/')
@@ -118,7 +122,7 @@ const SearchFicha: React.FC = () => {
       .then((response) => {
         setLoading(true);
         setSelectedFicha(response.data);
-        setVisible(true);
+        setVisibleFicha(true);
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {
@@ -156,7 +160,7 @@ const SearchFicha: React.FC = () => {
     axiosInstance.delete(`capacita/fichas/${getSelectedFicha.id}/`)
       .then(() => {
         message.success(`Ficha do(a) ${getSelectedFicha.nome_completo} deletada com sucesso.`)
-        setVisible(false)
+        setVisibleFicha(false)
         onFinish(form.getFieldsValue());
       })
       .catch((error) => {
@@ -321,15 +325,15 @@ const SearchFicha: React.FC = () => {
       </div>
 
       <Modal
-        open={getVisible}
-        onCancel={() => setVisible(false)}
+        open={getVisibleFicha}
+        onCancel={() => setVisibleFicha(false)}
         footer={null}
       >
         {getSelectedFicha && (
           <>
             <div className="button-ficha-description">
               <Button className="dowload-ficha" type="primary" onClick={dowloadFicha}>Baixar Ficha</Button>
-              <Button className="edit-ficha" type="primary" onClick={() => navigate(`/colaborador/ficha/editar/${getSelectedFicha.id}`)}>Editar Ficha</Button>
+              <Button className="edit-ficha">Editar Ficha</Button>
               <Popconfirm
                 title="Tem certeza que deseja deletar esta ficha?"
                 onConfirm={deleteFicha}
