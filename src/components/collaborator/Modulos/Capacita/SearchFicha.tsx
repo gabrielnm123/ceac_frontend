@@ -143,10 +143,10 @@ const SearchFicha: React.FC = () => {
         const url = window.URL.createObjectURL(new Blob([response.data]));
         const link = document.createElement('a');
         link.href = url;
-        link.setAttribute('download', `${getSelectedFicha.nome_completo}.docx`); // Define o nome do arquivo
+        link.setAttribute('download', `${getSelectedFicha.nome_completo}.docx`);
         document.body.appendChild(link);
-        link.click(); // Simula o clique para iniciar o download
-        document.body.removeChild(link); // Remove o link temporário do DOM
+        link.click();
+        document.body.removeChild(link);
       })
       .catch((error) => {
         if (error.response && error.response.status === 401) {

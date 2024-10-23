@@ -27,7 +27,6 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
 
   useEffect(() => {
     if (props.form && form.getFieldsValue().nome_fantasia) {
-      // setIsChecked(true);
       setIsPJRequired(true);
     }
     axiosInstance.get('capacita/modulos_capacita/')
@@ -127,11 +126,11 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
         if (response.data.erro) {
           throw new Error('CEP não encontrado');
         }
-        return response.data; // Agora isso será retornado corretamente para o chamador
+        return response.data;
       })
       .catch((error) => {
         message.error('Erro ao buscar o endereço. Verifique o CEP.');
-        return null; // Certifique-se de que retornamos null em caso de erro
+        return null;
       });
   };
 

@@ -43,14 +43,13 @@ const ChangeRegistration: React.FC = () => {
 
   const validatePassword = (_: any, value: string | undefined) => {
     return new Promise<void>((resolve, reject) => {
-      // Verifica se o valor é undefined ou uma string vazia.
       if (!value) {
-        resolve(); // Não faça a validação e resolva a Promise se não houver valor.
+        resolve();
         return;
       }
 
       const errors = [];
-      const remainingChars = 8 - value.length; // Calcula o restante dos caracteres apenas se value existir.
+      const remainingChars = 8 - value.length;
 
       if (remainingChars > 0) {
         errors.push(`Faltam ${remainingChars} ${remainingChars > 1 ? 'caracteres' : 'caractere'} para atingir o mínimo necessário`);
@@ -71,21 +70,19 @@ const ChangeRegistration: React.FC = () => {
       setPasswordMessage(errors.length > 0 ? errors.join(', ') + '.' : '');
 
       if (errors.length === 0) {
-        resolve(); // Resolve corretamente se não houver erros.
+        resolve();
       } else {
-        reject(new Error('')); // Rejeita com erro se houver falhas de validação.
+        reject(new Error(''));
       }
     });
   };
 
   const onFinish = (values: FormValues) => {
-    // Verifica se as novas senhas coincidem
     if (values.password && values.password !== values.confirmPassword) {
       message.error('As senhas não coincidem!');
       return;
     }
 
-    // Verifica se a senha atual foi preenchida
     if (!values.currentPassword) {
       message.error('Por favor, insira sua senha atual para confirmar as alterações.');
       return;
@@ -98,23 +95,20 @@ const ChangeRegistration: React.FC = () => {
       password: values.currentPassword,
     })
       .then((passwordCheckResponse) => {
-        // Se a senha atual estiver incorreta, mostra um erro e interrompe a execução
         if (!passwordCheckResponse.data.valid) {
           message.error('Senha atual incorreta. Por favor, tente novamente.');
           setLoading(false);
           return;
         }
 
-        // Prepara os dados para atualização do usuário
         const updateData = {
           email: values.email,
-          username: values.email, // Atualiza o nome de usuário para o email
-          first_name: values.first_name?.toUpperCase(), // Garante que o primeiro nome seja salvo em maiúsculas
-          last_name: values.last_name?.toUpperCase(), // Garante que o sobrenome seja salvo em maiúsculas
-          ...(values.password && { password: values.password }), // Adiciona a nova senha somente se preenchida
+          username: values.email,
+          first_name: values.first_name?.toUpperCase(),
+          last_name: values.last_name?.toUpperCase(),
+          ...(values.password && { password: values.password }),
         };
 
-        // Atualiza os dados do usuário
         axiosInstance.put(`users/${userId}/`, updateData)
           .catch(error => {
             if (error.response && error.response.status === 401) {
