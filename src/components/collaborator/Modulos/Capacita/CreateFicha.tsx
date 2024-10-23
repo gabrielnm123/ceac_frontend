@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Form, Input, Button, Select, DatePicker, Typography, message, Checkbox } from 'antd';
+import { Form, Input, Button, Select, DatePicker, Typography, message, Checkbox, Popconfirm } from 'antd';
 import MaskedInput from 'antd-mask-input';
 import axios from 'axios';
 import axiosInstance from "../../../../services/axiosInstance";
@@ -22,7 +22,6 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
   const [getIsOnline, setIsOnline] = useState<boolean>(false);
   const [getIsPJRequired, setIsPJRequired] = useState<boolean>(false);
   const [getModulosCapacita, setModulosCapacita] = useState<Array<modulosCapacitaType> | []>([])
-  const [getIsChecked, setIsChecked] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -627,9 +626,16 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
       </div>
       <div className="form-create-ficha-button">
         <Form.Item validateTrigger="onBlur" className="form-create-ficha-item form-create-ficha-button" >
-          <Button type="primary" htmlType="submit">
-            {props.form ? 'Editar' : 'Criar'}
-          </Button>
+          {
+            props.form ? <Popconfirm
+              title="Tem certeza que deseja confirmar a edição"
+              onConfirm={() => onFinish(form.getFieldsValue)}
+              okText="Sim"
+              cancelText="Não"
+            >
+              <Button type="primary">Editar</Button>
+            </Popconfirm> : <Button type="primary" htmlType="submit"></Button>
+          }
         </Form.Item>
       </div>
     </Form>
