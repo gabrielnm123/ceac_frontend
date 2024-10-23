@@ -8,18 +8,28 @@ import modulosCapacitaType from "../../types/modulosCapacita";
 import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { logout } from "../../menuItems/itemUser";
 import { useNavigate } from "react-router-dom";
+import createFichaProps from "../../types/createFichaProps";
 
 const { Option } = Select;
 const { Title, Text } = Typography;
 
-const CreateFicha: React.FC = () => {
-  const [form] = Form.useForm();
+const CreateFicha: React.FC<createFichaProps> = (props) => {
+  if (props.form) {
+    var form = props.form;
+  } else {
+    var [form] = Form.useForm();
+  }
   const [getIsOnline, setIsOnline] = useState<boolean>(false);
   const [getIsPJRequired, setIsPJRequired] = useState<boolean>(false);
   const [getModulosCapacita, setModulosCapacita] = useState<Array<modulosCapacitaType> | []>([])
+  const [getIsChecked, setIsChecked] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
+    if (props.form && form.getFieldsValue().nome_fantasia) {
+      // setIsChecked(true);
+      setIsPJRequired(true);
+    }
     axiosInstance.get('capacita/modulos_capacita/')
       .then(response => {
         setModulosCapacita(response.data)
@@ -111,19 +121,19 @@ const CreateFicha: React.FC = () => {
     return /^\d{8}$/.test(cep.replace(/\D/g, ''));
   };
 
-const fetchAddressByCEP = (cep: string) => {
-  return axios.get(`https://viacep.com.br/ws/${cep}/json/`)
-    .then((response) => {
-      if (response.data.erro) {
-        throw new Error('CEP não encontrado');
-      }
-      return response.data; // Agora isso será retornado corretamente para o chamador
-    })
-    .catch((error) => {
-      message.error('Erro ao buscar o endereço. Verifique o CEP.');
-      return null; // Certifique-se de que retornamos null em caso de erro
-    });
-};
+  const fetchAddressByCEP = (cep: string) => {
+    return axios.get(`https://viacep.com.br/ws/${cep}/json/`)
+      .then((response) => {
+        if (response.data.erro) {
+          throw new Error('CEP não encontrado');
+        }
+        return response.data; // Agora isso será retornado corretamente para o chamador
+      })
+      .catch((error) => {
+        message.error('Erro ao buscar o endereço. Verifique o CEP.');
+        return null; // Certifique-se de que retornamos null em caso de erro
+      });
+  };
 
   const handleCEPBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const cep = e.target.value.replace(/\D/g, '');
@@ -191,22 +201,26 @@ const fetchAddressByCEP = (cep: string) => {
     if (values.comunicacao) {
       values.comunicacao = values.comunicacao === 'Sim, eu concordo.' ? 'S' : 'N';
     }
-    axiosInstance.post('capacita/fichas/', values)
-      .then(() => {
-        message.success('Ficha criada com sucesso!');
-      })
-      .catch ((error) => {
-        if (error.response && error.response.status === 401) {
-          logout();
-          navigate('/colaborador/login');
-        } else message.error('Erro ao criar ficha, tente novamente.');
-    })
+    if (props.funcEditing) {
+      props.funcEditing(values);
+    } else {
+      axiosInstance.post('capacita/fichas/', values)
+        .then(() => {
+          message.success('Ficha criada com sucesso!');
+        })
+        .catch((error) => {
+          if (error.response && error.response.status === 401) {
+            logout();
+            navigate('/colaborador/login');
+          } else message.error('Erro ao criar ficha, tente novamente.');
+        })
+    }
   };
 
   return (
     <Form className="form-create-ficha" onFinish={onFinish} layout="vertical" form={form}>
       <div className="form-create-ficha-partes">
-        <Form.Item className="form-create-ficha-item"
+        <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
           label="Nome Completo"
           name="nome_completo"
           rules={[{ required: true, message: 'Por favor, insira o nome completo' }]}
@@ -214,10 +228,9 @@ const fetchAddressByCEP = (cep: string) => {
           <Input onChange={(e) => form.setFieldsValue({ nome_completo: e.target.value.toUpperCase() })} allowClear />
         </Form.Item>
 
-        <Form.Item className="form-create-ficha-item"
+        <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
           label="CPF"
           name="cpf"
-          validateTrigger="onBlur"
           rules={[
             { required: true, message: 'Por favor, insira o CPF' },
             {
@@ -237,7 +250,7 @@ const fetchAddressByCEP = (cep: string) => {
           <MaskedInput mask="000.000.000-00" allowClear />
         </Form.Item>
 
-        <Form.Item className="form-create-ficha-item"
+        <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
           label="Gênero"
           name="genero"
           rules={[{ required: true, message: 'Por favor, selecione o gênero' }]}
@@ -248,7 +261,7 @@ const fetchAddressByCEP = (cep: string) => {
           </Select>
         </Form.Item>
 
-        <Form.Item className="form-create-ficha-item"
+        <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
           label="Data de Nascimento"
           name="data_nascimento"
           rules={[{ required: true, message: 'Por favor, selecione a data de nascimento' }]}
@@ -256,7 +269,7 @@ const fetchAddressByCEP = (cep: string) => {
           <DatePicker format="DD/MM/YYYY" allowClear />
         </Form.Item>
 
-        <Form.Item className="form-create-ficha-item"
+        <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
           label="Escolaridade"
           name="escolaridade"
           rules={[{ required: true, message: 'Por favor, selecione a escolaridade' }]}
@@ -269,7 +282,7 @@ const fetchAddressByCEP = (cep: string) => {
           </Select>
         </Form.Item>
 
-        <Form.Item className="form-create-ficha-item"
+        <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
           label="Atividade"
           name="atividade"
           rules={[{ required: true, message: 'Por favor, selecione a atividade' }]}
@@ -285,7 +298,7 @@ const fetchAddressByCEP = (cep: string) => {
           </Select>
         </Form.Item>
 
-        <Form.Item className="form-create-ficha-item"
+        <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
           label="CEP"
           name="cep"
           rules={[
@@ -307,7 +320,7 @@ const fetchAddressByCEP = (cep: string) => {
           <MaskedInput mask="00000-000" onBlur={handleCEPBlur} allowClear />
         </Form.Item>
 
-        <Form.Item className="form-create-ficha-item"
+        <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
           label="Endereço Residencial"
           name="endereco"
           rules={[{ required: true, message: 'Por favor, insira o endereço' }]}
@@ -315,11 +328,11 @@ const fetchAddressByCEP = (cep: string) => {
           <Input onChange={(e) => form.setFieldsValue({ endereco: e.target.value.toUpperCase() })} allowClear />
         </Form.Item>
 
-        <Form.Item className="form-create-ficha-item" label="Complemento" name="complemento">
+        <Form.Item validateTrigger="onBlur" className="form-create-ficha-item" label="Complemento" name="complemento">
           <Input onChange={(e) => { if (e.target.value) { form.setFieldsValue({ complemento: e.target.value.toUpperCase() }) } }} allowClear />
         </Form.Item>
 
-        <Form.Item className="form-create-ficha-item"
+        <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
           label="Bairro"
           name="bairro"
           rules={[{ required: true, message: 'Por favor, insira o bairro' }]}
@@ -327,7 +340,7 @@ const fetchAddressByCEP = (cep: string) => {
           <Input onChange={(e) => form.setFieldsValue({ bairro: e.target.value.toUpperCase() })} allowClear />
         </Form.Item>
 
-        <Form.Item className="form-create-ficha-item"
+        <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
           label="UF"
           name="uf"
           rules={[{ required: true, message: 'Por favor, selecione o estado' }]}
@@ -363,7 +376,7 @@ const fetchAddressByCEP = (cep: string) => {
           </Select>
         </Form.Item>
 
-        <Form.Item className="form-create-ficha-item"
+        <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
           label="Celular"
           name="celular"
           rules={[
@@ -385,7 +398,7 @@ const fetchAddressByCEP = (cep: string) => {
           <MaskedInput mask="(00) 0 0000-0000" allowClear />
         </Form.Item>
 
-        <Form.Item className="form-create-ficha-item"
+        <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
           label="Telefone Fixo"
           name="fixo"
           rules={[
@@ -406,7 +419,7 @@ const fetchAddressByCEP = (cep: string) => {
           <MaskedInput mask="(00) 0000-0000" allowClear />
         </Form.Item>
 
-        <Form.Item className="form-create-ficha-item"
+        <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
           label="E-mail"
           name="email"
           rules={[
@@ -417,7 +430,7 @@ const fetchAddressByCEP = (cep: string) => {
           <Input onChange={(e) => form.setFieldsValue({ email: e.target.value.toLowerCase() })} allowClear />
         </Form.Item>
 
-        <Form.Item className="form-create-ficha-item"
+        <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
           label="Interesse em ter negócio"
           name="interesse_ter_negocio"
           rules={[{ required: true, message: 'Por favor, selecione' }]}
@@ -428,7 +441,7 @@ const fetchAddressByCEP = (cep: string) => {
           </Select>
         </Form.Item>
 
-        <Form.Item className="form-create-ficha-item"
+        <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
           label="Preferência de Aula"
           name="preferencia_aula"
           rules={[{ required: true, message: 'Por favor, selecione' }]}
@@ -439,7 +452,7 @@ const fetchAddressByCEP = (cep: string) => {
           </Select>
         </Form.Item>
 
-        <Form.Item className="form-create-ficha-item"
+        <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
           label="Meio de Comunicação para Aula"
           name="meio_comunicacao_aula"
           rules={[{ required: true, message: 'Por favor, selecione' }]}
@@ -450,7 +463,7 @@ const fetchAddressByCEP = (cep: string) => {
           </Select>
         </Form.Item>
 
-        <Form.Item className="form-create-ficha-item"
+        <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
           label="Condições de Assistir Aulas Online"
           name="assistir_online"
           rules={[{ required: true, message: 'Por favor, selecione' }]}
@@ -461,7 +474,7 @@ const fetchAddressByCEP = (cep: string) => {
           </Select>
         </Form.Item>
 
-        <Form.Item className="form-create-ficha-item"
+        <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
           label="Por onde assistiria as aulas online"
           name="if_true_assistir_casa"
           rules={[
@@ -482,13 +495,13 @@ const fetchAddressByCEP = (cep: string) => {
       </div>
       <Title className="form-create-ficha-title" level={2}>Dados Pessoa Jurídica</Title>
       <div className="form-create-ficha-title">
-        <Checkbox className='form-create-ficha-checkbox-juridica' onChange={handlePJFieldChange} />
+        <Checkbox checked={getIsPJRequired} className='form-create-ficha-checkbox-juridica' onChange={handlePJFieldChange} />
         <Text type="warning">
           Marque a caixa ao lado se for preencher os dados jurídicos
         </Text>
       </div>
       <div className="form-create-ficha-partes">
-        <Form.Item className="form-create-ficha-item"
+        <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
           label="Nome Fantasia"
           name="nome_fantasia"
           rules={[{ required: getIsPJRequired, message: 'Por favor, insira o nome fantasia' }]}
@@ -496,7 +509,7 @@ const fetchAddressByCEP = (cep: string) => {
           <Input disabled={!getIsPJRequired} allowClear />
         </Form.Item>
 
-        <Form.Item className="form-create-ficha-item"
+        <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
           label="CNPJ"
           name="cnpj"
           rules={[{ required: getIsPJRequired, message: 'Por favor, insira o CNPJ' },
@@ -519,7 +532,7 @@ const fetchAddressByCEP = (cep: string) => {
           <MaskedInput disabled={!getIsPJRequired} mask="00.000.000/0000-00" allowClear />
         </Form.Item>
 
-        <Form.Item className="form-create-ficha-item"
+        <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
           label="Situação da Empresa"
           name="situacao_empresa"
           rules={[{ required: getIsPJRequired, message: 'Por favor, selecione a situação da empresa' }]}
@@ -530,7 +543,7 @@ const fetchAddressByCEP = (cep: string) => {
           </Select>
         </Form.Item>
 
-        <Form.Item className="form-create-ficha-item"
+        <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
           label="Porte da Empresa"
           name="porte_empresa"
           rules={[{ required: getIsPJRequired, message: 'Por favor, selecione o porte da empresa' }]}
@@ -541,7 +554,7 @@ const fetchAddressByCEP = (cep: string) => {
           </Select>
         </Form.Item>
 
-        <Form.Item className="form-create-ficha-item"
+        <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
           label="Data de Abertura"
           name="data_abertura"
           rules={[{ required: getIsPJRequired, message: 'Por favor, selecione a data de abertura' },
@@ -560,7 +573,7 @@ const fetchAddressByCEP = (cep: string) => {
           <DatePicker disabled={!getIsPJRequired} format="DD/MM/YYYY" allowClear />
         </Form.Item>
 
-        <Form.Item className="form-create-ficha-item"
+        <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
           label="CNAE Principal"
           name="cnae_principal"
           rules={[{ required: getIsPJRequired, message: 'Por favor, insira o CNAE Principal' },
@@ -581,7 +594,7 @@ const fetchAddressByCEP = (cep: string) => {
           <Input disabled={!getIsPJRequired} allowClear />
         </Form.Item>
 
-        <Form.Item className="form-create-ficha-item"
+        <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
           label="Setor"
           name="setor"
           rules={[{ required: getIsPJRequired, message: 'Por favor, selecione o setor' }]}
@@ -594,7 +607,7 @@ const fetchAddressByCEP = (cep: string) => {
           </Select>
         </Form.Item>
 
-        <Form.Item className="form-create-ficha-item"
+        <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
           label="Tipo de Vínculo"
           name="tipo_vinculo"
           rules={[{ required: getIsPJRequired, message: 'Por favor, selecione o tipo de vínculo' }]}
@@ -607,16 +620,16 @@ const fetchAddressByCEP = (cep: string) => {
       </div>
       <Title className="form-create-ficha-title" level={2}>Módulos de Capacitação</Title>
       <div className="form-create-ficha-partes">
-        <Form.Item className="form-create-ficha-item" label="Selecione um Módulo" name="modulo_capacita" rules={[{ required: true, message: "Selecione um Módulo" }]}>
+        <Form.Item validateTrigger="onBlur" className="form-create-ficha-item" label="Selecione um Módulo" name="modulo_capacita" rules={[{ required: true, message: "Selecione um Módulo" }]}>
           <Select className="form-create-ficha-select" allowClear showSearch options={getModulosCapacita.map((modulo: modulosCapacitaType) => {
             return { value: modulo.id, label: modulo.nome }
           })} />
         </Form.Item>
       </div>
       <div className="form-create-ficha-button">
-        <Form.Item className="form-create-ficha-item form-create-ficha-button" >
+        <Form.Item validateTrigger="onBlur" className="form-create-ficha-item form-create-ficha-button" >
           <Button type="primary" htmlType="submit">
-            Criar
+            {props.form ? 'Editar' : 'Criar'}
           </Button>
         </Form.Item>
       </div>

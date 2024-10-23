@@ -42,7 +42,6 @@ axiosInstance.interceptors.response.use(response => {
           return axiosInstance(originalRequest);
         })
         .catch((refreshError) => {
-          console.error("Erro ao renovar o token.", refreshError);
           // Rejeita o erro para que seja tratado no catch da requisição original
           return Promise.reject(refreshError);
         });

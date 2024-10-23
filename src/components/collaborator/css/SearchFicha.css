@@ -71,3 +71,14 @@
   justify-content: space-around;
   margin: 10px;
 }
+
+.modal-ficha {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.modal-title {
+  display: flex;
+  justify-content: center;
+}

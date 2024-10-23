@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Form, Input, Button, Select, DatePicker, Table, message, Modal, Descriptions, Popconfirm } from 'antd';
+import { Form, Input, Button, Select, DatePicker, Table, message, Modal, Descriptions, Popconfirm, Typography } from 'antd';
 import MaskedInput from 'antd-mask-input';
 import axiosInstance from "../../../../services/axiosInstance";
 import '../../css/SearchFicha.css';
@@ -7,8 +7,10 @@ import dayjs from 'dayjs';
 import modulosCapacitaType from "../../types/modulosCapacita";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../menuItems/itemUser";
+import CreateFicha from "./CreateFicha";
 
 const { Option } = Select;
+const { Title } = Typography
 
 const escolaridadeMap: { [key: string]: string } = {
   'FUNDAMENTAL': 'ENSINO FUNDAMENTAL',
@@ -38,13 +40,11 @@ const SearchFicha: React.FC = () => {
   const [getModulosCapacita, setModulosCapacita] = useState<modulosCapacitaType[]>([]);
   const [getColumns, setColumns] = useState<undefined | Array<Object>>(undefined);
   const [form] = Form.useForm();
+  const [form2] = Form.useForm();
   const [getVisibleFicha, setVisibleFicha] = useState<boolean>(false);
   const [getSelectedFicha, setSelectedFicha] = useState<any>(null);
-  const [getIsEditingFicha, setIsEditingFicha] = useState<boolean>(false); // flag pra visualizar model de edição de ficha
+  const [getIsEditingFicha, setIsEditingFicha] = useState<boolean>(false);
   const navigate = useNavigate();
-
-
-  // no butão de editar vai ter uma função que vai deixar um model de edição aparente enquanto o outro não, e vai preencher com dados atuais, ainda tenho que modificar o model de visualização pra ter uma aparencia de createficha
 
   useEffect(() => {
     axiosInstance.get('capacita/modulos_capacita/')
@@ -173,6 +173,41 @@ const SearchFicha: React.FC = () => {
 
   const onReset = () => {
     form.resetFields();
+  };
+
+  const editingFicha = () => {
+    form2.resetFields()
+    form2.setFieldsValue({
+      ...getSelectedFicha,
+      data_nascimento: dayjs(getSelectedFicha.data_nascimento),
+      data_abertura: getSelectedFicha.data_abertura ? dayjs(getSelectedFicha.data_abertura) : null,
+      cpf: getSelectedFicha.cpf ? getSelectedFicha.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : '',
+      celular: getSelectedFicha.celular ? getSelectedFicha.celular.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3') : '',
+      fixo: getSelectedFicha.fixo ? getSelectedFicha.fixo.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3') : '',
+      cep: getSelectedFicha.cep ? getSelectedFicha.cep.replace(/(\d{5})(\d{3})/, '$1-$2') : '',
+      cnpj: getSelectedFicha.cnpj ? getSelectedFicha.cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5') : '',
+    });
+    setIsEditingFicha(true);
+  };
+
+  const onEditFinish = (values: any) => {
+    setLoading(true);
+    axiosInstance.put(`capacita/fichas/${getSelectedFicha.id}/`, values)
+      .then(() => {
+        message.success('Ficha editada com sucesso!');
+        setIsEditingFicha(false);
+        handleOpenFicha(getSelectedFicha.id);
+        onFinish(form.getFieldsValue());
+      })
+      .catch((error) => {
+        if (error.response && error.response.status === 401) {
+          logout();
+          navigate('/colaborador/login');
+        } else message.error('Erro ao editar ficha, tente novamente.');
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   const onFinish = (values: any) => {
@@ -330,10 +365,10 @@ const SearchFicha: React.FC = () => {
         footer={null}
       >
         {getSelectedFicha && (
-          <>
+          <div className="modal-ficha">
             <div className="button-ficha-description">
               <Button className="dowload-ficha" type="primary" onClick={dowloadFicha}>Baixar Ficha</Button>
-              <Button className="edit-ficha">Editar Ficha</Button>
+              <Button className="edit-ficha" onClick={editingFicha}>Editar Ficha</Button>
               <Popconfirm
                 title="Tem certeza que deseja deletar esta ficha?"
                 onConfirm={deleteFicha}
@@ -343,7 +378,9 @@ const SearchFicha: React.FC = () => {
                 <Button className="delete-ficha">Deletar Ficha</Button>
               </Popconfirm>
             </div>
+            <Title className="modal-title" level={2}>Dados Pessoais</Title>
             <Descriptions bordered column={1} layout="horizontal">
+
               <Descriptions.Item label="Nome">{getSelectedFicha.nome_completo}</Descriptions.Item>
               <Descriptions.Item label="CPF">
                 {getSelectedFicha.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')}
@@ -355,7 +392,9 @@ const SearchFicha: React.FC = () => {
               <Descriptions.Item label="Escolaridade">{escolaridadeMap[getSelectedFicha.escolaridade]}</Descriptions.Item>
               <Descriptions.Item label="Atividade">{atividadeMap[getSelectedFicha.atividade]}</Descriptions.Item>
               <Descriptions.Item label="Endereço">{getSelectedFicha.endereco}</Descriptions.Item>
-              <Descriptions.Item label="Complemento">{getSelectedFicha.complemento || 'NÃO INFORMADO'}</Descriptions.Item>
+              {getSelectedFicha.complemento && (
+                <Descriptions.Item label="Complemento">{getSelectedFicha.complemento}</Descriptions.Item>
+              )}
               <Descriptions.Item label="Bairro">{getSelectedFicha.bairro}</Descriptions.Item>
               <Descriptions.Item label="CEP">
                 {getSelectedFicha.cep.replace(/(\d{5})(\d{3})/, '$1-$2')}
@@ -364,9 +403,11 @@ const SearchFicha: React.FC = () => {
               <Descriptions.Item label="Celular">
                 {getSelectedFicha.celular.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')}
               </Descriptions.Item>
-              <Descriptions.Item label="Fixo">
-                {getSelectedFicha.fixo ? getSelectedFicha.fixo.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3') : 'NÃO INFORMADO'}
-              </Descriptions.Item>
+              {getSelectedFicha.fixo && (
+                <Descriptions.Item label="Fixo">
+                  {getSelectedFicha.fixo.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3')}
+                </Descriptions.Item>
+              )}
               <Descriptions.Item label="Email">{getSelectedFicha.email.toLowerCase()}</Descriptions.Item>
               <Descriptions.Item label="Interesse em ter negócio">
                 {getSelectedFicha.interesse_ter_negocio === 'S' ? 'SIM' : 'NÃO'}
@@ -374,29 +415,66 @@ const SearchFicha: React.FC = () => {
               <Descriptions.Item label="Preferência de Aula">{getSelectedFicha.preferencia_aula}</Descriptions.Item>
               <Descriptions.Item label="Meio de Comunicação de Aula">{getSelectedFicha.meio_comunicacao_aula}</Descriptions.Item>
               <Descriptions.Item label="Assistir Online">{getSelectedFicha.assistir_online === 'S' ? 'SIM' : 'NÃO'}</Descriptions.Item>
-              {getSelectedFicha.assistir_online === 'S' && (
-                <Descriptions.Item label="Se assistir em casa, como?">{getSelectedFicha.if_true_assistir_casa || 'NÃO INFORMADO'}</Descriptions.Item>
+              {getSelectedFicha.assistir_online === 'S' && getSelectedFicha.if_true_assistir_casa && (
+                <Descriptions.Item label="Se assistir em casa, como?">{getSelectedFicha.if_true_assistir_casa}</Descriptions.Item>
               )}
-              <Descriptions.Item label="Nome Fantasia">{getSelectedFicha.nome_fantasia || 'NÃO INFORMADO'}</Descriptions.Item>
-              <Descriptions.Item label="CNPJ">
-                {getSelectedFicha.cnpj ? getSelectedFicha.cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5') : 'NÃO INFORMADO'}
-              </Descriptions.Item>
-              <Descriptions.Item label="Situação da Empresa">
-                {getSelectedFicha.situacao_empresa === 'ATIVA' ? 'ATIVA' : getSelectedFicha.situacao_empresa === 'N_ATIVA' ? 'NÃO ATIVA' : 'NÃO INFORMADO'}
-              </Descriptions.Item>
-              <Descriptions.Item label="Porte da Empresa">{getSelectedFicha.porte_empresa || 'NÃO INFORMADO'}</Descriptions.Item>
-              <Descriptions.Item label="Data de Abertura">
-                {getSelectedFicha.data_abertura ? dayjs(getSelectedFicha.data_abertura).format('DD/MM/YYYY').toUpperCase() : 'NÃO INFORMADO'}
-              </Descriptions.Item>
-              <Descriptions.Item label="CNAE Principal">{getSelectedFicha.cnae_principal || 'NÃO INFORMADO'}</Descriptions.Item>
-              <Descriptions.Item label="Setor">{getSelectedFicha.setor || 'NÃO INFORMADO'}</Descriptions.Item>
-              <Descriptions.Item label="Tipo de Vínculo">{getSelectedFicha.tipo_vinculo || 'NÃO INFORMADO'}</Descriptions.Item>
-              <Descriptions.Item label="Módulo de Capacitação">
-                {getModulosCapacita.find((modulo) => modulo.id === getSelectedFicha.modulo_capacita)?.nome.split(": ").join(": ")}
-              </Descriptions.Item>
             </Descriptions>
-          </>
+
+            {getSelectedFicha.nome_fantasia && (
+              <Title className="modal-title" level={2}>Dados Jurídicos</Title>
+            )}
+            <Descriptions bordered column={1} layout="horizontal">
+              {getSelectedFicha.nome_fantasia && (
+                <Descriptions.Item label="Nome Fantasia">{getSelectedFicha.nome_fantasia}</Descriptions.Item>
+              )}
+              {getSelectedFicha.cnpj && (
+                <Descriptions.Item label="CNPJ">
+                  {getSelectedFicha.cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5')}
+                </Descriptions.Item>
+              )}
+              {getSelectedFicha.situacao_empresa && (
+                <Descriptions.Item label="Situação da Empresa">
+                  {getSelectedFicha.situacao_empresa === 'ATIVA' ? 'ATIVA' : 'NÃO ATIVA'}
+                </Descriptions.Item>
+              )}
+              {getSelectedFicha.porte_empresa && (
+                <Descriptions.Item label="Porte da Empresa">{getSelectedFicha.porte_empresa}</Descriptions.Item>
+              )}
+              {getSelectedFicha.data_abertura && (
+                <Descriptions.Item label="Data de Abertura">
+                  {dayjs(getSelectedFicha.data_abertura).format('DD/MM/YYYY').toUpperCase()}
+                </Descriptions.Item>
+              )}
+              {getSelectedFicha.cnae_principal && (
+                <Descriptions.Item label="CNAE Principal">{getSelectedFicha.cnae_principal}</Descriptions.Item>
+              )}
+              {getSelectedFicha.setor && (
+                <Descriptions.Item label="Setor">{getSelectedFicha.setor}</Descriptions.Item>
+              )}
+              {getSelectedFicha.tipo_vinculo && (
+                <Descriptions.Item label="Tipo de Vínculo">{getSelectedFicha.tipo_vinculo}</Descriptions.Item>
+              )}
+            </Descriptions>
+
+            <Title className="modal-title" level={2}>Módulo de Capacitação</Title>
+            <Descriptions bordered column={1} layout="horizontal">
+              {getModulosCapacita.find((modulo) => modulo.id === getSelectedFicha.modulo_capacita)?.nome && (
+                <Descriptions.Item label="Módulo de Capacitação">
+                  {getModulosCapacita.find((modulo) => modulo.id === getSelectedFicha.modulo_capacita)?.nome.split(": ").join(": ")}
+                </Descriptions.Item>
+              )}
+            </Descriptions>
+
+          </div>
         )}
+      </Modal>
+      <Modal
+        open={getIsEditingFicha}
+        onCancel={() => setIsEditingFicha(false)}
+        footer={null}
+      >
+        <Title className="modal-title" level={2}>Editar Ficha</Title>
+        <CreateFicha form={form2} funcEditing={onEditFinish} />
       </Modal>
     </>
   );
