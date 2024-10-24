@@ -25,6 +25,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    setIsOnline(form.getFieldsValue().assistir_online === 'S')
     if (props.form && form.getFieldsValue().nome_fantasia) {
       setIsPJRequired(true);
     }
@@ -41,7 +42,10 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
   }, [])
 
   useEffect(() => {
-    form.setFieldsValue({ if_true_assistir_casa: getIsOnline });
+    if (!getIsOnline) {
+      
+    }
+    // form.setFieldsValue({ if_true_assistir_casa: getIsOnline });
   }, [getIsOnline]);
 
 
@@ -150,6 +154,14 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
   };
 
   const onFinish = (values: any) => {
+    try {
+      values = values()
+    }
+    catch (error) {
+      if (error instanceof TypeError && error.message !== 'values is not a function') {
+        console.error(error)
+      }
+    }
     if (values.data_nascimento) values.data_nascimento = values.data_nascimento.format('YYYY-MM-DD');
     if (values.data_abertura) values.data_abertura = values.data_abertura.format('YYYY-MM-DD');
 
@@ -634,7 +646,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
               cancelText="Não"
             >
               <Button type="primary">Editar</Button>
-            </Popconfirm> : <Button type="primary" htmlType="submit"></Button>
+            </Popconfirm> : <Button type="primary" htmlType="submit">Criar</Button>
           }
         </Form.Item>
       </div>
