@@ -19,13 +19,12 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
   } else {
     var [form] = Form.useForm();
   }
-  const [getIsOnline, setIsOnline] = useState<boolean>(false);
+  const [getIsOnline, setIsOnline] = useState<boolean>(form.getFieldsValue().assistir_online === 'S');
   const [getIsPJRequired, setIsPJRequired] = useState<boolean>(false);
   const [getModulosCapacita, setModulosCapacita] = useState<Array<modulosCapacitaType> | []>([])
   const navigate = useNavigate();
 
   useEffect(() => {
-    setIsOnline(form.getFieldsValue().assistir_online === 'S')
     if (props.form && form.getFieldsValue().nome_fantasia) {
       setIsPJRequired(true);
     }
@@ -42,10 +41,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
   }, [])
 
   useEffect(() => {
-    if (!getIsOnline) {
-      
-    }
-    // form.setFieldsValue({ if_true_assistir_casa: getIsOnline });
+    form.resetFields(['if_true_assistir_casa']);
   }, [getIsOnline]);
 
 
@@ -153,6 +149,11 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
     }
   };
 
+  const handleAssistirCasa = (value: string) => {
+    form.resetFields(['if_true_assistir_casa']);
+    setIsOnline(value === 'S');
+  }
+
   const onFinish = (values: any) => {
     try {
       values = values()
@@ -211,6 +212,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
     if (values.comunicacao) {
       values.comunicacao = values.comunicacao === 'Sim, eu concordo.' ? 'S' : 'N';
     }
+    console.log(values)
     if (props.funcEditing) {
       props.funcEditing(values);
     } else {
@@ -478,7 +480,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
           name="assistir_online"
           rules={[{ required: true, message: 'Por favor, selecione' }]}
         >
-          <Select className="form-create-ficha-select" onChange={(value) => setIsOnline(value === 'S')} allowClear>
+          <Select className="form-create-ficha-select" onChange={handleAssistirCasa} allowClear>
             <Option value="S">SIM</Option>
             <Option value="N">NÃO</Option>
           </Select>

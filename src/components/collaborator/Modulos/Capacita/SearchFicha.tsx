@@ -234,6 +234,7 @@ const SearchFicha: React.FC = () => {
     setLoading(true);
     axiosInstance.get('capacita/fichas/', { params: cleanedValues })
       .then((response) => {
+        console.log(response.data)
         setData(response.data);
         if (response.data.length === 0) {
           message.info('Nenhuma ficha encontrada.');
