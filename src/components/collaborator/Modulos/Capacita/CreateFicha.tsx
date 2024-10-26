@@ -16,6 +16,7 @@ const { Title, Text } = Typography;
 const CreateFicha: React.FC<createFichaProps> = (props) => {
   if (props.form) {
     var form = props.form;
+    var formOrigin = form.getFieldsValue()
   } else {
     var [form] = Form.useForm();
   }
@@ -39,11 +40,6 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
         } else message.error('Erro ao carregar os módulos da capacitação, recarregue a página.');
       })
   }, [])
-
-  useEffect(() => {
-    form.resetFields(['if_true_assistir_casa']);
-  }, [getIsOnline]);
-
 
   const handlePJFieldChange = (e: CheckboxChangeEvent) => {
     const PJFields: Array<string> = [
@@ -151,18 +147,15 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
 
   const handleAssistirCasa = (value: string) => {
     form.resetFields(['if_true_assistir_casa']);
+    console.log('CreateFicha handleAssistirCasa')
+    console.log(form.getFieldsValue())
     setIsOnline(value === 'S');
   }
 
-  const onFinish = (values: any) => {
-    try {
-      values = values()
-    }
-    catch (error) {
-      if (error instanceof TypeError && error.message !== 'values is not a function') {
-        console.error(error)
-      }
-    }
+  const onFinish = () => {
+    const values = form.getFieldsValue()
+    console.log('CreateFicha onFinish 0')
+    console.log(values)
     if (values.data_nascimento) values.data_nascimento = values.data_nascimento.format('YYYY-MM-DD');
     if (values.data_abertura) values.data_abertura = values.data_abertura.format('YYYY-MM-DD');
 
@@ -202,16 +195,19 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
       message.error('CEP deve conter exatamente 8 dígitos');
       return;
     }
-
+    
+    console.log('CreateFicha onFinish 1: ')
+    console.log(values)
     Object.keys(values).forEach(key => {
       if (!values[key] || values[key] === '__.___.___/____-__' || values[key] === '(__) ____-____') {
-        delete values[key];
+        values[key] === values['data_criacao'] ? delete values[key] : values[key] = null
       }
     });
 
     if (values.comunicacao) {
       values.comunicacao = values.comunicacao === 'Sim, eu concordo.' ? 'S' : 'N';
     }
+    console.log('CreateFicha onFinish 2: ') 
     console.log(values)
     if (props.funcEditing) {
       props.funcEditing(values);
@@ -643,7 +639,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
           {
             props.form ? <Popconfirm
               title="Tem certeza que deseja confirmar a edição"
-              onConfirm={() => onFinish(form.getFieldsValue)}
+              onConfirm={() => onFinish()}
               okText="Sim"
               cancelText="Não"
             >

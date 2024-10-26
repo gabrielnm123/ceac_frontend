@@ -190,7 +190,10 @@ const SearchFicha: React.FC = () => {
     setIsEditingFicha(true);
   };
 
-  const onEditFinish = (values: any) => {
+  const onEditFinish = (values: object) => {
+    console.log('on edit finish')
+    console.log(typeof(values))
+    console.log(values)
     setLoading(true);
     axiosInstance.put(`capacita/fichas/${getSelectedFicha.id}/`, values)
       .then(() => {
@@ -200,6 +203,7 @@ const SearchFicha: React.FC = () => {
         onFinish(form.getFieldsValue());
       })
       .catch((error) => {
+        console.log(error.response)
         if (error.response && error.response.status === 401) {
           logout();
           navigate('/colaborador/login');
@@ -234,6 +238,7 @@ const SearchFicha: React.FC = () => {
     setLoading(true);
     axiosInstance.get('capacita/fichas/', { params: cleanedValues })
       .then((response) => {
+        console.log('SearchFicha: ')
         console.log(response.data)
         setData(response.data);
         if (response.data.length === 0) {
