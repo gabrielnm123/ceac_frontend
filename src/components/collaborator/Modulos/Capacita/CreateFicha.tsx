@@ -100,7 +100,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
     return typeof cep === 'string' ? /^\d{8}$/.test(cep.replace(/\D/g, '')) : false;
   };
 
-  const isValidInput = (input: string) => typeof input === 'string' && input.trim() !== '';
+  const isValidInput = (input: string) => typeof input === 'string' && (input.trim() !== '' || input === '');
 
   const fetchAddressByCEP = (cep: string) => {
     return axios.get(`https://viacep.com.br/ws/${cep}/json/`)
