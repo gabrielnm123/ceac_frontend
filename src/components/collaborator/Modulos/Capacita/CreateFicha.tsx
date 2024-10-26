@@ -42,7 +42,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
   }, [])
 
   const isValidCPF = (cpf: string) => {
-    if (typeof cpf === 'string') cpf = cpf.replace(/\D/g, '');
+    if (typeof cpf === 'string') { cpf = cpf.replace(/\D/g, '') } else return false;
     if (typeof cpf === 'string' && (cpf.length !== 11 || /(\d)\1{10}/.test(cpf))) return false;
     let soma = 0;
     for (let i = 0; i < 9; i++) soma += parseInt(cpf.charAt(i)) * (10 - i);
@@ -81,7 +81,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
       }
       resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
       return resultado === parseInt(digitos.charAt(1));
-    }
+    } else return false
   };
 
   const isValidCNAE = (cnae: string) => {
@@ -99,6 +99,8 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
   const isValidCEP = (cep: string) => {
     return typeof cep === 'string' ? /^\d{8}$/.test(cep.replace(/\D/g, '')) : false;
   };
+
+  const isValidNomeCompleto = (nome_completo: string) => typeof nome_completo === 'string' && nome_completo.trim() !== ''
 
   const fetchAddressByCEP = (cep: string) => {
     return axios.get(`https://viacep.com.br/ws/${cep}/json/`)
@@ -132,15 +134,33 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
 
   const handleAssistirCasa = (value: string) => {
     form.resetFields(['if_true_assistir_casa']);
-    console.log('CreateFicha handleAssistirCasa')
-    console.log(form.getFieldsValue())
     setIsOnline(value === 'S');
   }
-
+  
+  const handlePJFieldChange = (e: CheckboxChangeEvent) => {
+    const PJFields: Array<string> = [
+      'nome_fantasia',
+      'cnpj',
+      'situacao_empresa',
+      'porte_empresa',
+      'data_abertura',
+      'cnae_principal',
+      'setor',
+      'tipo_vinculo'
+    ];
+    form.resetFields(PJFields);
+    setIsPJRequired(e.target.checked);
+  };
+  
   const onFinish = () => {
     const values = form.getFieldsValue()
-    console.log('CreateFicha onFinish 0')
-    console.log(values)
+    Object.entries(values).forEach(([key, value]) => {
+      if (!value || value === '__.___.___/____-__' || value === '(__) ____-____' || (typeof value === 'string' && value.trim() === '')) {
+        values[key] = null
+      } else if (typeof value === 'string') {
+        values[key] = value.trim()
+      }
+    });
     if (values.data_nascimento) values.data_nascimento = values.data_nascimento.format('YYYY-MM-DD');
     if (values.data_abertura) values.data_abertura = values.data_abertura.format('YYYY-MM-DD');
 
@@ -151,49 +171,38 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
     values.cep = typeof values.cep === 'string' ? values.cep.replace(/\D/g, '') : null;
     if (values.cnae_principal) values.cnae_principal = typeof values.cnae_principal === 'string' ? values.cnae_principal.replace(/\D/g, '') : null;
 
-    if (values.cpf && !isValidCPF(values.cpf)) {
+    if (!isValidCPF(values.cpf)) {
       message.error('CPF inválido');
       return;
     }
 
-    if (values.cnpj && !isValidCNPJ(values.cnpj)) {
+    if (!isValidCNPJ(values.cnpj) && getIsPJRequired) {
       message.error('CNPJ inválido');
       return;
     }
 
-    if (values.cnae_principal && !isValidCNAE(values.cnae_principal)) {
+    if (!isValidCNAE(values.cnae_principal) && getIsPJRequired) {
       message.error('CNAE deve conter exatamente 7 dígitos');
       return;
     }
 
-    if (values.celular && !isValidCelular(values.celular)) {
+    if (!isValidCelular(values.celular) && values.celular !== null) {
       message.error('Celular deve conter exatamente 11 dígitos');
       return;
     }
-
-    if (values.fixo && !isValidFixo(values.fixo)) {
+    if (!isValidFixo(values.fixo) && values.fixo !== null) {
       message.error('Telefone fixo deve conter exatamente 10 dígitos');
       return;
     }
 
-    if (values.cep && !isValidCEP(values.cep)) {
+    if (!isValidCEP(values.cep)) {
       message.error('CEP deve conter exatamente 8 dígitos');
       return;
     }
-    
-    console.log('CreateFicha onFinish 1: ')
-    console.log(values)
-    Object.keys(values).forEach(key => {
-      if (!values[key] || values[key] === '__.___.___/____-__' || values[key] === '(__) ____-____') {
-        values[key] === values['data_criacao'] ? delete values[key] : values[key] = null
-      }
-    });
 
     if (values.comunicacao) {
       values.comunicacao = values.comunicacao === 'Sim, eu concordo.' ? 'S' : 'N';
     }
-    console.log('CreateFicha onFinish 2: ') 
-    console.log(values)
     if (props.funcEditing) {
       props.funcEditing(values);
     } else {
@@ -210,28 +219,19 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
     }
   };
 
-  const handlePJFieldChange = (e: CheckboxChangeEvent) => {
-    const PJFields: Array<string> = [
-      'nome_fantasia',
-      'cnpj',
-      'situacao_empresa',
-      'porte_empresa',
-      'data_abertura',
-      'cnae_principal',
-      'setor',
-      'tipo_vinculo'
-    ];
-    form.resetFields(PJFields);
-    setIsPJRequired(e.target.checked);
-  };
-
   return (
     <Form className="form-create-ficha" onFinish={onFinish} layout="vertical" form={form}>
       <div className="form-create-ficha-partes">
         <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
           label="Nome Completo"
           name="nome_completo"
-          rules={[{ required: true, message: 'Por favor, insira o nome completo' }]}
+          rules={[{ required: true, message: 'Por favor, insira o nome completo' },
+            {
+              validator: (_, value) => {
+
+              }
+            }
+          ]}
         >
           <Input onChange={(e) => form.setFieldsValue({ nome_completo: e.target.value.toUpperCase() })} allowClear />
         </Form.Item>
@@ -243,9 +243,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
             { required: true, message: 'Por favor, insira o CPF' },
             {
               validator: (_, value) => {
-                if (value.replace(/\D/g, '') && value.replace(/\D/g, '').length !== 11 && value !== '___.___.___-__') {
-                  return Promise.reject(new Error('O CPF deve conter exatamente 11 dígitos numéricos'));
-                } else if (value.replace(/\D/g, '') && !isValidCPF(value)) {
+                if (!isValidCPF(value)) {
                   return Promise.reject(new Error('CPF inválido'));
                 } else if (value === '___.___.___-__') {
                   return Promise.reject(new Error('Por favor, insira o CPF'))
@@ -313,9 +311,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
             { required: true, message: 'Por favor, insira o CEP' },
             {
               validator: (_, value) => {
-                if (value.replace(/\D/g, '') && value.replace(/\D/g, '').length !== 8 && value !== '_____-___') {
-                  return Promise.reject(new Error('O CEP deve conter exatamente 8 dígitos numéricos'));
-                } else if (value.replace(/\D/g, '') && !isValidCEP(value)) {
+                if (!isValidCEP(value)) {
                   return Promise.reject(new Error('CEP inválido'));
                 } else if (value === '_____-___') {
                   return Promise.reject(new Error('Por favor, insira o CEP'))
@@ -391,9 +387,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
             { required: true, message: 'Por favor, insira o número de celular' },
             {
               validator: (_, value) => {
-                if (value.replace(/\D/g, '') && value.replace(/\D/g, '').length !== 11 && value !== '(__) _ ____-____') {
-                  return Promise.reject(new Error('O celular deve conter exatamente 11 dígitos numéricos'));
-                } else if (value.replace(/\D/g, '') && !isValidCelular(value)) {
+                if (!isValidCelular(value)) {
                   return Promise.reject(new Error('Celular inválido'));
                 } else if (value === '(__) _ ____-____') {
                   return Promise.reject('Por favor, insira o número de celular')
@@ -413,9 +407,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
             {
               validator: (_, value) => {
                 if (value) {
-                  if (value.replace(/\D/g, '') && value.replace(/\D/g, '').length !== 10) {
-                    return Promise.reject(new Error('O telefone fixo deve conter exatamente 10 dígitos numéricos'));
-                  } else if (value.replace(/\D/g, '') && !isValidFixo(value)) {
+                  if (!isValidFixo(value)) {
                     return Promise.reject(new Error('Telefone fixo inválido'));
                   }
                 }
@@ -524,9 +516,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
           {
             validator: (_, value) => {
               if (getIsPJRequired && value) {
-                if (value.replace(/\D/g, '') && value.replace(/\D/g, '').length !== 14 && value !== '__.___.___/____-__') {
-                  return Promise.reject(new Error('O CNPJ deve conter exatamente 14 dígitos numéricos'));
-                } else if (value.replace(/\D/g, '') && !isValidCNPJ(value)) {
+                if (!isValidCNPJ(value)) {
                   return Promise.reject(new Error('CNPJ inválido'));
                 } else if (value === '__.___.___/____-__') {
                   return Promise.reject(new Error('Por favor, insira o CNPJ'))
@@ -569,7 +559,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
           {
             validator: (_, value) => {
               if (getIsPJRequired && value) {
-                if (value.replace(/\D/g, '') && value.replace(/\D/g, '').length !== 10) {
+                if (typeof value === 'string' && value.replace(/\D/g, '').length !== 10) {
                   return Promise.reject(new Error('A data de abertura deve conter exatamente 8 dígitos numéricos'));
                 }
               }
@@ -588,9 +578,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
           {
             validator: (_, value) => {
               if (getIsPJRequired && value) {
-                if (value.replace(/\D/g, '') && value.replace(/\D/g, '').length !== 7) {
-                  return Promise.reject(new Error('O CNAE deve conter exatamente 7 dígitos numéricos'));
-                } else if (value.replace(/\D/g, '') && !isValidCNAE(value)) {
+                if (!isValidCNAE(value)) {
                   return Promise.reject(new Error('CNAE inválido'));
                 }
               }
