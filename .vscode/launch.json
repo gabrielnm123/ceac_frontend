@@ -12,9 +12,6 @@
         "source ~/.zshrc && nvm use && npm run start"
       ],
       "sourceMaps": true,
-      "env": {
-        "NODE_ENV": "development"
-      },
       "console": "integratedTerminal"
     }
   ]
