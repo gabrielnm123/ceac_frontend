@@ -45,24 +45,9 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
   }, [getIsOnline]);
 
 
-  const handlePJFieldChange = (e: CheckboxChangeEvent) => {
-    const PJFields: Array<string> = [
-      'nome_fantasia',
-      'cnpj',
-      'situacao_empresa',
-      'porte_empresa',
-      'data_abertura',
-      'cnae_principal',
-      'setor',
-      'tipo_vinculo'
-    ];
-    form.resetFields(PJFields);
-    setIsPJRequired(e.target.checked);
-  };
-
   const isValidCPF = (cpf: string) => {
-    cpf = cpf.replace(/\D/g, '');
-    if (cpf && (cpf.length !== 11 || /(\d)\1{10}/.test(cpf))) return false;
+    if (typeof cpf === 'string') cpf = cpf.replace(/\D/g, '');
+    if (typeof cpf === 'string' && (cpf.length !== 11 || /(\d)\1{10}/.test(cpf))) return false;
     let soma = 0;
     for (let i = 0; i < 9; i++) soma += parseInt(cpf.charAt(i)) * (10 - i);
     let resto = 11 - (soma % 11);
@@ -76,7 +61,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
   };
 
   const isValidCNPJ = (cnpj: string) => {
-    if (cnpj) {
+    if (typeof cnpj === 'string') {
       cnpj = cnpj.replace(/\D/g, '');
       if (cnpj.length !== 14 || /(\d)\1{13}/.test(cnpj)) return false;
       let tamanho = cnpj.length - 2;
@@ -104,19 +89,19 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
   };
 
   const isValidCNAE = (cnae: string) => {
-    return /^\d{7}$/.test(cnae.replace(/\D/g, ''));
+    return typeof cnae === 'string' ? /^\d{7}$/.test(cnae.replace(/\D/g, '')) : false;
   };
 
   const isValidCelular = (celular: string) => {
-    return /^\d{11}$/.test(celular.replace(/\D/g, ''));
+    return typeof celular === 'string' ? /^\d{11}$/.test(celular.replace(/\D/g, '')) : false;
   };
 
   const isValidFixo = (fixo: string) => {
-    if (fixo) return /^\d{10}$/.test(fixo.replace(/\D/g, ''));
+    return typeof fixo === 'string' ? /^\d{10}$/.test(fixo.replace(/\D/g, '')) : false;
   };
 
   const isValidCEP = (cep: string) => {
-    return /^\d{8}$/.test(cep.replace(/\D/g, ''));
+    return typeof cep === 'string' ? /^\d{8}$/.test(cep.replace(/\D/g, '')) : false;
   };
 
   const fetchAddressByCEP = (cep: string) => {
@@ -134,8 +119,8 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
   };
 
   const handleCEPBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    const cep = e.target.value.replace(/\D/g, '');
-    if (cep.length === 8) {
+    const cep = typeof e.target.value === 'string' ? e.target.value.replace(/\D/g, '') : null;
+    if (cep && cep.length === 8) {
       fetchAddressByCEP(cep)
         .then((addressData) => {
           if (addressData) {
@@ -166,14 +151,14 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
     if (values.data_nascimento) values.data_nascimento = values.data_nascimento.format('YYYY-MM-DD');
     if (values.data_abertura) values.data_abertura = values.data_abertura.format('YYYY-MM-DD');
 
-    values.cpf = values.cpf.replace(/\D/g, '');
-    values.celular = values.celular.replace(/\D/g, '');
-    if (values.cnpj) values.cnpj = values.cnpj.replace(/\D/g, '');
-    if (values.fixo) values.fixo = values.fixo.replace(/\D/g, '');
-    values.cep = values.cep.replace(/\D/g, '');
-    if (values.cnae_principal) values.cnae_principal = values.cnae_principal.replace(/\D/g, '');
+    values.cpf = typeof values.cpf === 'string' ? values.cpf.replace(/\D/g, '') : null;
+    values.celular = typeof values.celular === 'string' ? values.celular.replace(/\D/g, '') : null;
+    if (values.cnpj) values.cnpj = typeof values.cnpj === 'string' ? values.cnpj.replace(/\D/g, '') : null;
+    if (values.fixo) values.fixo = typeof values.fixo === 'string' ? values.fixo.replace(/\D/g, '') : null;
+    values.cep = typeof values.cep === 'string' ? values.cep.replace(/\D/g, '') : null;
+    if (values.cnae_principal) values.cnae_principal = typeof values.cnae_principal === 'string' ? values.cnae_principal.replace(/\D/g, '') : null;
 
-    if (!isValidCPF(values.cpf)) {
+    if (values.cpf && !isValidCPF(values.cpf)) {
       message.error('CPF inválido');
       return;
     }
@@ -188,7 +173,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
       return;
     }
 
-    if (!isValidCelular(values.celular)) {
+    if (values.celular && !isValidCelular(values.celular)) {
       message.error('Celular deve conter exatamente 11 dígitos');
       return;
     }
@@ -198,7 +183,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
       return;
     }
 
-    if (!isValidCEP(values.cep)) {
+    if (values.cep && !isValidCEP(values.cep)) {
       message.error('CEP deve conter exatamente 8 dígitos');
       return;
     }
@@ -227,6 +212,21 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
           } else message.error('Erro ao criar ficha, tente novamente.');
         })
     }
+  };
+
+  const handlePJFieldChange = (e: CheckboxChangeEvent) => {
+    const PJFields: Array<string> = [
+      'nome_fantasia',
+      'cnpj',
+      'situacao_empresa',
+      'porte_empresa',
+      'data_abertura',
+      'cnae_principal',
+      'setor',
+      'tipo_vinculo'
+    ];
+    form.resetFields(PJFields);
+    setIsPJRequired(e.target.checked);
   };
 
   return (

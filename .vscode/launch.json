@@ -6,7 +6,6 @@
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "zsh",
-      "program": "${workspaceFolder}/node_modules/webpack-dev-server/bin/webpack-dev-server.js",
       "cwd": "${workspaceFolder}",
       "runtimeArgs": [
         "-c",
