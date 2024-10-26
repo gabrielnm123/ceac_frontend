@@ -248,8 +248,6 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
               validator: (_, value) => {
                 if (!isValidCPF(value)) {
                   return Promise.reject(new Error('CPF inválido'));
-                } else if (value === '___.___.___-__') {
-                  return Promise.reject(new Error('Por favor, insira o CPF'))
                 }
                 return Promise.resolve();
               },
@@ -316,8 +314,6 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
               validator: (_, value) => {
                 if (!isValidCEP(value)) {
                   return Promise.reject(new Error('CEP inválido'));
-                } else if (value === '_____-___') {
-                  return Promise.reject(new Error('Por favor, insira o CEP'))
                 }
                 return Promise.resolve();
               },
@@ -406,8 +402,6 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
               validator: (_, value) => {
                 if (!isValidCelular(value)) {
                   return Promise.reject(new Error('Celular inválido'));
-                } else if (value === '(__) _ ____-____') {
-                  return Promise.reject('Por favor, insira o número de celular')
                 }
                 return Promise.resolve();
               },
@@ -423,7 +417,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
           rules={[
             {
               validator: (_, value) => {
-                if (value) {
+                if (typeof value === 'string' && value.trim()) {
                   if (!isValidFixo(value)) {
                     return Promise.reject(new Error('Telefone fixo inválido'));
                   }
@@ -544,8 +538,6 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
               if (getIsPJRequired && value) {
                 if (!isValidCNPJ(value)) {
                   return Promise.reject(new Error('CNPJ inválido'));
-                } else if (value === '__.___.___/____-__') {
-                  return Promise.reject(new Error('Por favor, insira o CNPJ'))
                 }
               }
               return Promise.resolve();
