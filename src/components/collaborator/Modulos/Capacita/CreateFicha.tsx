@@ -100,7 +100,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
     return typeof cep === 'string' ? /^\d{8}$/.test(cep.replace(/\D/g, '')) : false;
   };
 
-  const isValidNomeCompleto = (nome_completo: string) => typeof nome_completo === 'string' && nome_completo.trim() !== ''
+  const isValidInput = (input: string) => typeof input === 'string' && input.trim() !== '';
 
   const fetchAddressByCEP = (cep: string) => {
     return axios.get(`https://viacep.com.br/ws/${cep}/json/`)
@@ -136,7 +136,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
     form.resetFields(['if_true_assistir_casa']);
     setIsOnline(value === 'S');
   }
-  
+
   const handlePJFieldChange = (e: CheckboxChangeEvent) => {
     const PJFields: Array<string> = [
       'nome_fantasia',
@@ -151,7 +151,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
     form.resetFields(PJFields);
     setIsPJRequired(e.target.checked);
   };
-  
+
   const onFinish = () => {
     const values = form.getFieldsValue()
     Object.entries(values).forEach(([key, value]) => {
@@ -226,11 +226,14 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
           label="Nome Completo"
           name="nome_completo"
           rules={[{ required: true, message: 'Por favor, insira o nome completo' },
-            {
-              validator: (_, value) => {
-
+          {
+            validator: (_, value) => {
+              if (!isValidInput(value)) {
+                return Promise.reject(new Error('Por favor, insira o nome completo'))
               }
+              return Promise.resolve()
             }
+          }
           ]}
         >
           <Input onChange={(e) => form.setFieldsValue({ nome_completo: e.target.value.toUpperCase() })} allowClear />
@@ -261,7 +264,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
           name="genero"
           rules={[{ required: true, message: 'Por favor, selecione o gênero' }]}
         >
-          <Select className="form-create-ficha-select" allowClear>
+          <Select showSearch className="form-create-ficha-select" allowClear>
             <Option value="M">MASCULINO</Option>
             <Option value="F">FEMININO</Option>
           </Select>
@@ -280,7 +283,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
           name="escolaridade"
           rules={[{ required: true, message: 'Por favor, selecione a escolaridade' }]}
         >
-          <Select className="form-create-ficha-select" allowClear>
+          <Select showSearch className="form-create-ficha-select" allowClear>
             <Option value="FUNDAMENTAL">ENSINO FUNDAMENTAL</Option>
             <Option value="MEDIO">ENSINO MÉDIO</Option>
             <Option value="GRADUACAO">GRADUAÇÃO</Option>
@@ -293,7 +296,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
           name="atividade"
           rules={[{ required: true, message: 'Por favor, selecione a atividade' }]}
         >
-          <Select className="form-create-ficha-select" allowClear>
+          <Select showSearch className="form-create-ficha-select" allowClear>
             <Option value="ARTESANATO">ARTESANATO</Option>
             <Option value="AGRICULTURA_URBANA">AGRICULTURA URBANA</Option>
             <Option value="COMERCIO">COMÉRCIO</Option>
@@ -327,7 +330,14 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
         <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
           label="Endereço Residencial"
           name="endereco"
-          rules={[{ required: true, message: 'Por favor, insira o endereço' }]}
+          rules={[{ required: true, message: 'Por favor, insira o endereço' }, {
+            validator: (_, value) => {
+              if (!isValidInput(value)) {
+                return Promise.reject('Por favor, insira o endereço');
+              }
+              return Promise.resolve();
+            }
+          }]}
         >
           <Input onChange={(e) => form.setFieldsValue({ endereco: e.target.value.toUpperCase() })} allowClear />
         </Form.Item>
@@ -339,7 +349,14 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
         <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
           label="Bairro"
           name="bairro"
-          rules={[{ required: true, message: 'Por favor, insira o bairro' }]}
+          rules={[{ required: true, message: 'Por favor, insira o bairro' }, {
+            validator: (_, value) => {
+              if (!isValidInput(value)) {
+                return Promise.reject('Por favor, insira o bairro')
+              }
+              return Promise.resolve()
+            }
+          }]}
         >
           <Input onChange={(e) => form.setFieldsValue({ bairro: e.target.value.toUpperCase() })} allowClear />
         </Form.Item>
@@ -349,7 +366,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
           name="uf"
           rules={[{ required: true, message: 'Por favor, selecione o estado' }]}
         >
-          <Select className="form-create-ficha-select" allowClear>
+          <Select showSearch className="form-create-ficha-select" allowClear>
             <Option value="AC">ACRE</Option>
             <Option value="AL">ALAGOAS</Option>
             <Option value="AP">AMAPÁ</Option>
@@ -435,7 +452,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
           name="interesse_ter_negocio"
           rules={[{ required: true, message: 'Por favor, selecione' }]}
         >
-          <Select className="form-create-ficha-select" allowClear>
+          <Select showSearch className="form-create-ficha-select" allowClear>
             <Option value="S">SIM</Option>
             <Option value="N">NÃO</Option>
           </Select>
@@ -446,7 +463,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
           name="preferencia_aula"
           rules={[{ required: true, message: 'Por favor, selecione' }]}
         >
-          <Select className="form-create-ficha-select" allowClear>
+          <Select showSearch className="form-create-ficha-select" allowClear>
             <Option value="ONLINE">ONLINE</Option>
             <Option value="PRESENCIAL">PRESENCIAL</Option>
           </Select>
@@ -457,7 +474,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
           name="meio_comunicacao_aula"
           rules={[{ required: true, message: 'Por favor, selecione' }]}
         >
-          <Select className="form-create-ficha-select" allowClear>
+          <Select showSearch className="form-create-ficha-select" allowClear>
             <Option value="WHATSAPP">WHATSAPP</Option>
             <Option value="EMAIL">EMAIL</Option>
           </Select>
@@ -468,7 +485,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
           name="assistir_online"
           rules={[{ required: true, message: 'Por favor, selecione' }]}
         >
-          <Select className="form-create-ficha-select" onChange={handleAssistirCasa} allowClear>
+          <Select showSearch className="form-create-ficha-select" onChange={handleAssistirCasa} allowClear>
             <Option value="S">SIM</Option>
             <Option value="N">NÃO</Option>
           </Select>
@@ -484,7 +501,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
             },
           ]}
         >
-          <Select className="form-create-ficha-select" disabled={!getIsOnline} allowClear>
+          <Select showSearch className="form-create-ficha-select" disabled={!getIsOnline} allowClear>
             <Option value="COMPUTADOR">COMPUTADOR</Option>
             <Option value="CELULAR">CELULAR</Option>
             <Option value="TABLET">TABLET</Option>
@@ -504,7 +521,16 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
         <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
           label="Nome Fantasia"
           name="nome_fantasia"
-          rules={[{ required: getIsPJRequired, message: 'Por favor, insira o nome fantasia' }]}
+          rules={[{ required: getIsPJRequired, message: 'Por favor, insira o nome fantasia' },
+          {
+            validator: (_, value) => {
+              if (!isValidInput(value) && getIsPJRequired) {
+                return Promise.reject('Por favor, insira o nome fantasia');
+              }
+              return Promise.resolve();
+            }
+          }
+          ]}
         >
           <Input disabled={!getIsPJRequired} allowClear />
         </Form.Item>
@@ -535,7 +561,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
           name="situacao_empresa"
           rules={[{ required: getIsPJRequired, message: 'Por favor, selecione a situação da empresa' }]}
         >
-          <Select disabled={!getIsPJRequired} className="form-create-ficha-select" allowClear>
+          <Select showSearch disabled={!getIsPJRequired} className="form-create-ficha-select" allowClear>
             <Option value="ATIVA">ATIVA</Option>
             <Option value="N_ATIVA">NÃO ATIVA</Option>
           </Select>
@@ -546,7 +572,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
           name="porte_empresa"
           rules={[{ required: getIsPJRequired, message: 'Por favor, selecione o porte da empresa' }]}
         >
-          <Select disabled={!getIsPJRequired} className="form-create-ficha-select" allowClear>
+          <Select showSearch disabled={!getIsPJRequired} className="form-create-ficha-select" allowClear>
             <Option value="MEI">MICROEMPREENDEDOR INDIVIDUAL (MEI)</Option>
             <Option value="ME">MICROEMPRESA (ME)</Option>
           </Select>
@@ -595,7 +621,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
           name="setor"
           rules={[{ required: getIsPJRequired, message: 'Por favor, selecione o setor' }]}
         >
-          <Select disabled={!getIsPJRequired} className="form-create-ficha-select" allowClear>
+          <Select showSearch disabled={!getIsPJRequired} className="form-create-ficha-select" allowClear>
             <Option value="COMERCIO">COMÉRCIO</Option>
             <Option value="SERVICO">SERVIÇO</Option>
             <Option value="AGRONEGOCIOS">AGRONEGÓCIOS</Option>
@@ -608,7 +634,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
           name="tipo_vinculo"
           rules={[{ required: getIsPJRequired, message: 'Por favor, selecione o tipo de vínculo' }]}
         >
-          <Select disabled={!getIsPJRequired} className="form-create-ficha-select" allowClear>
+          <Select showSearch disabled={!getIsPJRequired} className="form-create-ficha-select" allowClear>
             <Option value="REPRESENTANTE">REPRESENTANTE</Option>
             <Option value="RESPONSAVEL">RESPONSÁVEL</Option>
           </Select>
