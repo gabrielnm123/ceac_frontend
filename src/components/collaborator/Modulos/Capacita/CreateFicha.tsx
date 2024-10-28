@@ -41,32 +41,8 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
       })
   }, [])
 
-  const isValidCPF = (cpf: string) => {
-    if (typeof cpf === 'string') { cpf = cpf.replace(/\D/g, '') } else return false;
-    return isCPF(cpf);
-  };
-
-  const isValidCNPJ = (cnpj: string) => {
-    if (typeof cnpj === 'string') {
-      cnpj = cnpj.replace(/\D/g, '');
-      isCNPJ(cnpj)
-    } else return false
-  };
-
   const isValidCNAE = (cnae: string) => {
     return typeof cnae === 'string' ? /^\d{7}$/.test(cnae.replace(/\D/g, '')) : false;
-  };
-
-  const isValidCelular = (celular: string) => {
-    return typeof celular === 'string' ? /^\d{11}$/.test(celular.replace(/\D/g, '')) : false;
-  };
-
-  const isValidFixo = (fixo: string) => {
-    return typeof fixo === 'string' ? /^\d{10}$/.test(fixo.replace(/\D/g, '')) : false;
-  };
-
-  const isValidCEP = (cep: string) => {
-    return typeof cep === 'string' ? /^\d{8}$/.test(cep.replace(/\D/g, '')) : false;
   };
 
   const isValidInput = (input: string) => typeof input === 'string' && (input.trim() !== '' || input === '');
@@ -79,7 +55,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
         }
         return response.data;
       })
-      .catch((error) => {
+      .catch(() => {
         message.error('Erro ao buscar o endereço. Verifique o CEP.');
         return null;
       });
@@ -124,7 +100,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
   const onFinish = () => {
     const values = form.getFieldsValue()
     Object.entries(values).forEach(([key, value]) => {
-      if (!value || value === '__.___.___/____-__' || value === '(__) ____-____' || (typeof value === 'string' && value.trim() === '')) {
+      if (!value || value === '(__) ____-____' || (typeof value === 'string' && value.trim() === '')) {
         values[key] = null
       } else if (typeof value === 'string') {
         values[key] = value.trim()
@@ -134,19 +110,18 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
     if (values.data_abertura) values.data_abertura = values.data_abertura.format('YYYY-MM-DD');
 
     values.cpf = typeof values.cpf === 'string' ? values.cpf.replace(/\D/g, '') : null;
-    values.cnae_principal = typeof values.cnae_principal === 'string' ? values.cnae_principal.replace(/\D/g, '') : null;
     values.celular = typeof values.celular === 'string' ? values.celular.replace(/\D/g, '') : null;
     if (values.cnpj) values.cnpj = typeof values.cnpj === 'string' ? values.cnpj.replace(/\D/g, '') : null;
     if (values.fixo) values.fixo = typeof values.fixo === 'string' ? values.fixo.replace(/\D/g, '') : null;
     values.cep = typeof values.cep === 'string' ? values.cep.replace(/\D/g, '') : null;
     if (values.cnae_principal) values.cnae_principal = typeof values.cnae_principal === 'string' ? values.cnae_principal.replace(/\D/g, '') : null;
 
-    if (!isValidCPF(values.cpf)) {
+    if (!isCPF(values.cpf)) {
       message.error('CPF inválido');
       return null;
     }
 
-    if (!isValidCNPJ(values.cnpj) && getIsPJRequired) {
+    if (!isCNPJ(values.cnpj) && getIsPJRequired) {
       message.error('CNPJ inválido');
       return null;
     }
@@ -156,20 +131,20 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
       return null;
     }
 
-    if (!isValidCelular(values.celular) && values.celular !== null) {
+    if (!isPhone(values.celular) && values.celular !== null) {
       message.error('Celular deve conter exatamente 11 dígitos');
       return null;
     }
-    if (!isValidFixo(values.fixo) && values.fixo !== null) {
+    if (!isPhone(values.fixo) && values.fixo !== null) {
       message.error('Telefone fixo deve conter exatamente 10 dígitos');
       return null;
     }
-
-    if (!isValidCEP(values.cep)) {
+    
+    if (!isCEP(values.cep)) {
       message.error('CEP deve conter exatamente 8 dígitos');
       return null;
     }
-
+    
     if (values.comunicacao) {
       values.comunicacao = values.comunicacao === 'Sim, eu concordo.' ? 'S' : 'N';
     }
@@ -216,7 +191,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
             { required: true, message: 'Por favor, insira o CPF' },
             {
               validator: (_, value) => {
-                if (!isValidCPF(value)) {
+                if (!isCPF(value)) {
                   return Promise.reject(new Error('CPF inválido'));
                 }
                 return Promise.resolve();
@@ -282,7 +257,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
             { required: true, message: 'Por favor, insira o CEP' },
             {
               validator: (_, value) => {
-                if (!isValidCEP(value)) {
+                if (!isCEP(value)) {
                   return Promise.reject(new Error('CEP inválido'));
                 }
                 return Promise.resolve();
@@ -370,7 +345,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
             { required: true, message: 'Por favor, insira o número de celular' },
             {
               validator: (_, value) => {
-                if (!isValidCelular(value)) {
+                if (!isPhone(value)) {
                   return Promise.reject(new Error('Celular inválido'));
                 }
                 return Promise.resolve();
@@ -387,8 +362,8 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
           rules={[
             {
               validator: (_, value) => {
-                if (typeof value === 'string' && value.trim()) {
-                  if (!isValidFixo(value)) {
+                if (typeof value === 'string') {
+                  if (!isPhone(value) && value !== '(__) ____-____') {
                     return Promise.reject(new Error('Telefone fixo inválido'));
                   }
                 }
@@ -506,7 +481,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
           {
             validator: (_, value) => {
               if (getIsPJRequired && value) {
-                if (!isValidCNPJ(value)) {
+                if (!isCNPJ(value)) {
                   return Promise.reject(new Error('CNPJ inválido'));
                 }
               }

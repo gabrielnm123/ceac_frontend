@@ -5,7 +5,7 @@ import {
   FormOutlined
 } from '@ant-design/icons';
 import getMenuItem from './getMenuItem';
-import SearchFicha from '../Modulos/Capacita/SearchFicha';
+import FetchFicha from '../Modulos/Capacita/FetchFicha';
 import CreateFicha from '../Modulos/Capacita/CreateFicha';
 import type menuItem from '../types/menuItem';
 
@@ -15,7 +15,7 @@ const itemCapacita = (
   permissions: string[]
 ): menuItem[] => {
   const buscarFicha = () => {
-    setBaseContent(<SearchFicha />);
+    setBaseContent(<FetchFicha />);
     setBaseTitle('Buscar Ficha de Inscrição de Capacitação');
   };
   
@@ -33,14 +33,14 @@ const itemCapacita = (
     permissionArray.push(
       getMenuItem('Criar Ficha', 'criarFicha', <FormOutlined />, undefined, criarFicha)
     );
-    setBaseContent(<SearchFicha />);
+    setBaseContent(<FetchFicha />);
     setBaseTitle('Buscar Ficha de Inscrição de Capacitação');
   } else {
     if (permissions.includes('buscarFicha')) {
       permissionArray.push(
         getMenuItem('Buscar Ficha', 'buscarFicha', <SearchOutlined />, undefined, buscarFicha)
       );
-      setBaseContent(<SearchFicha />);
+      setBaseContent(<FetchFicha />);
       setBaseTitle('Buscar Ficha de Inscrição de Capacitação');
     }
     if (permissions.includes('criarFicha')) {

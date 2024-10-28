@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Form, Input, Button, Select, DatePicker, Table, message, Modal, Descriptions, Popconfirm, Typography } from 'antd';
 import MaskedInput from 'antd-mask-input';
 import axiosInstance from "../../../../services/axiosInstance";
-import '../../css/SearchFicha.css';
+import '../../css/FetchFicha.css';
 import dayjs from 'dayjs';
 import modulosCapacitaType from "../../types/modulosCapacita";
 import { useNavigate } from "react-router-dom";
@@ -34,7 +34,7 @@ const atividadeMap: { [key: string]: string } = {
   'SERVICO': 'SERVIÇO'
 };
 
-const SearchFicha: React.FC = () => {
+const FetchFicha: React.FC = () => {
   const [getLoading, setLoading] = useState<boolean>(false);
   const [getData, setData] = useState<any[]>([]);
   const [getModulosCapacita, setModulosCapacita] = useState<modulosCapacitaType[]>([]);
@@ -89,7 +89,7 @@ const SearchFicha: React.FC = () => {
           { title: 'Email', dataIndex: 'email', key: 'email' },
           {
             title: 'Celular', dataIndex: 'celular', key: 'celular', render: (celular: string) =>
-              celular ? celular.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3') : ''
+              celular ? celular.replace(/(\d{2})(\d{1})(\d{4})(\d{4})/, '($1) $2 $3-$4') : ''
           },
           {
             title: 'Fixo', dataIndex: 'fixo', key: 'fixo', render: (fixo: string) =>
@@ -255,41 +255,41 @@ const SearchFicha: React.FC = () => {
 
   return (
     <>
-      <div className="search-ficha">
-        <Form form={form} className="form-search-ficha" onFinish={onFinish}>
-          <div className="form-search-ficha-minus-button">
-            <Form.Item label="Nome" name="nome" className="form-search-ficha-nome form-search-ficha-item">
+      <div className="fetch-ficha">
+        <Form form={form} className="form-fetch-ficha" onFinish={onFinish}>
+          <div className="form-fetch-ficha-minus-button">
+            <Form.Item label="Nome" name="nome" className="form-fetch-ficha-nome form-fetch-ficha-item">
               <Input onChange={(e) => form.setFieldsValue({ nome: e.target.value.toUpperCase() })} allowClear />
             </Form.Item>
-            <Form.Item label="Módulo de Capacitação" name='modulo_capacita' className="form-search-ficha-modulos-capacita form-search-ficha-item">
-              <Select allowClear showSearch className="form-search-ficha-select-modulos-capacita" options={getModulosCapacita.map(
+            <Form.Item label="Módulo de Capacitação" name='modulo_capacita' className="form-fetch-ficha-modulos-capacita form-fetch-ficha-item">
+              <Select allowClear showSearch className="form-fetch-ficha-select-modulos-capacita" options={getModulosCapacita.map(
                 (modulo: modulosCapacitaType) => {
                   return { value: modulo.id, label: modulo.nome };
                 }
               )} />
             </Form.Item>
-            <Form.Item label="CPF" name="cpf" className="form-search-ficha-cpf form-search-ficha-item">
+            <Form.Item label="CPF" name="cpf" className="form-fetch-ficha-cpf form-fetch-ficha-item">
               <MaskedInput mask="000.000.000-00" allowClear />
             </Form.Item>
-            <Form.Item label="Data de Nascimento" name="data_nascimento" className="form-search-ficha-nascimento form-search-ficha-item">
+            <Form.Item label="Data de Nascimento" name="data_nascimento" className="form-fetch-ficha-nascimento form-fetch-ficha-item">
               <DatePicker format="DD/MM/YYYY" allowClear />
             </Form.Item>
-            <Form.Item label="Gênero" name="genero" className="form-search-ficha-genero form-search-ficha-item">
-              <Select allowClear showSearch className="form-search-ficha-select-genero">
+            <Form.Item label="Gênero" name="genero" className="form-fetch-ficha-genero form-fetch-ficha-item">
+              <Select allowClear showSearch className="form-fetch-ficha-select-genero">
                 <Option value="M">MASCULINO</Option>
                 <Option value="F">FEMININO</Option>
               </Select>
             </Form.Item>
-            <Form.Item label="Escolaridade" name="escolaridade" className="form-search-ficha-escolaridade form-search-ficha-item">
-              <Select allowClear showSearch className="form-search-ficha-select-escolaridade">
+            <Form.Item label="Escolaridade" name="escolaridade" className="form-fetch-ficha-escolaridade form-fetch-ficha-item">
+              <Select allowClear showSearch className="form-fetch-ficha-select-escolaridade">
                 <Option value="FUNDAMENTAL">ENSINO FUNDAMENTAL</Option>
                 <Option value="MEDIO">ENSINO MÉDIO</Option>
                 <Option value="GRADUACAO">GRADUAÇÃO</Option>
                 <Option value="POS_GRADUACAO">PÓS-GRADUAÇÃO</Option>
               </Select>
             </Form.Item>
-            <Form.Item label="UF" name="uf" className="form-search-ficha-uf form-search-ficha-item">
-              <Select allowClear showSearch className="form-search-ficha-select-uf">
+            <Form.Item label="UF" name="uf" className="form-fetch-ficha-uf form-fetch-ficha-item">
+              <Select allowClear showSearch className="form-fetch-ficha-select-uf">
                 <Option value="AC">ACRE</Option>
                 <Option value="AL">ALAGOAS</Option>
                 <Option value="AP">AMAPÁ</Option>
@@ -319,8 +319,8 @@ const SearchFicha: React.FC = () => {
                 <Option value="TO">TOCANTINS</Option>
               </Select>
             </Form.Item>
-            <Form.Item label="Atividade" name="atividade" className="form-search-ficha-atividade form-search-ficha-item">
-              <Select allowClear showSearch className="form-search-ficha-select-atividade">
+            <Form.Item label="Atividade" name="atividade" className="form-fetch-ficha-atividade form-fetch-ficha-item">
+              <Select allowClear showSearch className="form-fetch-ficha-select-atividade">
                 <Option value="ARTESANATO">ARTESANATO</Option>
                 <Option value="AGRICULTURA_URBANA">AGRICULTURA URBANA</Option>
                 <Option value="COMERCIO">COMÉRCIO</Option>
@@ -330,17 +330,17 @@ const SearchFicha: React.FC = () => {
                 <Option value="SERVICO">SERVIÇO</Option>
               </Select>
             </Form.Item>
-            <Form.Item label="Email" name="email" className="form-search-ficha-email form-search-ficha-item">
+            <Form.Item label="Email" name="email" className="form-fetch-ficha-email form-fetch-ficha-item">
               <Input type="email" allowClear />
             </Form.Item>
-            <Form.Item label="Celular" name="celular" className="form-search-ficha-celular form-search-ficha-item">
+            <Form.Item label="Celular" name="celular" className="form-fetch-ficha-celular form-fetch-ficha-item">
               <MaskedInput mask="(00) 0.0000-0000" allowClear />
             </Form.Item>
-            <Form.Item label="Fixo" name="fixo" className="form-search-ficha-fixo form-search-ficha-item">
+            <Form.Item label="Fixo" name="fixo" className="form-fetch-ficha-fixo form-fetch-ficha-item">
               <MaskedInput mask="(00) 0000-0000" allowClear />
             </Form.Item>
           </div>
-          <Form.Item className="form-search-ficha-button form-search-ficha-item">
+          <Form.Item className="form-fetch-ficha-button form-fetch-ficha-item">
             <Button type="primary" htmlType="submit" loading={getLoading}>
               Buscar
             </Button>
@@ -350,7 +350,7 @@ const SearchFicha: React.FC = () => {
           </Form.Item>
         </Form>
 
-        <div className="table-search-ficha">
+        <div className="table-fetch-ficha">
           <Table
             columns={getColumns}
             dataSource={getData}
@@ -483,4 +483,4 @@ const SearchFicha: React.FC = () => {
   );
 }
 
-export default SearchFicha;
+export default FetchFicha;
