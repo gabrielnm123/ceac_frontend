@@ -5,14 +5,13 @@
       "name": "Launch Frontend",
       "type": "node",
       "request": "launch",
-      "runtimeExecutable": "zsh",
+      "runtimeExecutable": "${env:SHELL}",
       "cwd": "${workspaceFolder}",
       "runtimeArgs": [
         "-c",
-        "source ~/.zshrc && nvm use && npm run start"
+        "source ~/.$(basename $SHELL)rc && nvm use && npm run start"
       ],
       "sourceMaps": true,
-      "console": "integratedTerminal"
     }
   ]
 }

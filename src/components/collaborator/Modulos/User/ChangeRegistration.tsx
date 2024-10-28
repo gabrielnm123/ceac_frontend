@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, message, Typography } from 'antd';
 import axiosInstance from '../../../../services/axiosInstance';
-import Cookies from 'js-cookie';
 import { logout } from '../../menuItems/itemUser';
 import { useNavigate } from 'react-router-dom';
 
@@ -24,7 +23,7 @@ const ChangeRegistration: React.FC = () => {
 
   useEffect(() => {
 
-    const userId = Cookies.get('userId');
+    const userId = localStorage.getItem('userId');
     axiosInstance.get(`/users/${userId}/`)
       .then((response) => {
         form.setFieldsValue({
@@ -90,7 +89,7 @@ const ChangeRegistration: React.FC = () => {
 
     setLoading(true);
 
-    const userId = Cookies.get('userId');
+    const userId = localStorage.getItem('userId');
     axiosInstance.post(`users/${userId}/check-password/`, {
       password: values.currentPassword,
     })

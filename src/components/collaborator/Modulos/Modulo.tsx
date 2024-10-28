@@ -15,7 +15,7 @@ const Modulo: React.FC = () => {
   const navigate = useNavigate();
   const perfisNamePermissions = perfisObject();
   const perfisNames = Object.keys(perfisNamePermissions);
-  const perfilName = Cookies.get('perfilName')!;
+  const perfilName = localStorage.getItem('perfilName')!;
   const permissions = perfisNamePermissions[perfilName];
   const user = itemUser(setBaseContent, setBaseTitle);
 

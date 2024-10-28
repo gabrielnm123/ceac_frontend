@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "./axiosInstance";
-import Cookies from "js-cookie";
 
 const perfisObject = () => {
   const [getPerfis, setPerfis] = useState<{ [key: string]: Array<string> } | { [key: string]: null }>({ 'null': null });
 
   useEffect(() => {
-    axiosInstance.get(`users/${Cookies.get('userId')}/`)
+    axiosInstance.get(`users/${localStorage.getItem('userId')}/`)
       .then(user => {
         const perfisLinks = user.data.groups;
         const perfisNamePermissions: { [key: string]: Array<string> } = {};

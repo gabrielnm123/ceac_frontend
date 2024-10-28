@@ -32,7 +32,7 @@ const Login: React.FC = () => {
         axiosInstance.get('current_user/')
           .then((userResponse) => {
             const userId = userResponse.data.id;
-            Cookies.set('userId', userId);
+            localStorage.setItem('userId', userId);
             navigate('/colaborador/perfil');
           })
           .catch(() => {

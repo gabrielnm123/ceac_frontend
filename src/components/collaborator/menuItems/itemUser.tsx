@@ -14,9 +14,8 @@ const logout = () => {
   const refreshToken = Cookies.get('refresh_token');
   Cookies.remove('refresh_token');
   Cookies.remove('access_token');
-  Cookies.remove('headers');
-  Cookies.remove('userId');
-  Cookies.remove('perfilName');
+  localStorage.removeItem('userId');
+  localStorage.removeItem('perfilName');
   axiosInstance.post('token/invalidate/', { refresh: refreshToken }).catch(() => {})
 };
 
