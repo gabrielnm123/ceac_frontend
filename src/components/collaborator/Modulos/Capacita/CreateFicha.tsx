@@ -9,6 +9,7 @@ import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 import { logout } from "../../menuItems/itemUser";
 import { useNavigate } from "react-router-dom";
 import createFichaProps from "../../types/createFichaProps";
+import { isCPF, isCNPJ, isPhone, isCEP } from 'brazilian-values';
 
 const { Option } = Select;
 const { Title, Text } = Typography;
@@ -16,7 +17,6 @@ const { Title, Text } = Typography;
 const CreateFicha: React.FC<createFichaProps> = (props) => {
   if (props.form) {
     var form = props.form;
-    var formOrigin = form.getFieldsValue()
   } else {
     var [form] = Form.useForm();
   }
@@ -43,44 +43,13 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
 
   const isValidCPF = (cpf: string) => {
     if (typeof cpf === 'string') { cpf = cpf.replace(/\D/g, '') } else return false;
-    if (typeof cpf === 'string' && (cpf.length !== 11 || /(\d)\1{10}/.test(cpf))) return false;
-    let soma = 0;
-    for (let i = 0; i < 9; i++) soma += parseInt(cpf[i]) * (10 - i);
-    let resto = 11 - (soma % 11);
-    if (resto === 10 || resto === 11) resto = 0;
-    if (resto !== parseInt(cpf[9])) return false;
-    soma = 0;
-    for (let i = 0; i < 10; i++) soma += parseInt(cpf[i]) * (11 - i);
-    resto = 11 - (soma % 11);
-    if (resto === 10 || resto === 11) resto = 0;
-    return resto === parseInt(cpf[10]);
+    return isCPF(cpf);
   };
 
   const isValidCNPJ = (cnpj: string) => {
     if (typeof cnpj === 'string') {
       cnpj = cnpj.replace(/\D/g, '');
-      if (cnpj.length !== 14 || /(\d)\1{13}/.test(cnpj)) return false;
-      let tamanho = cnpj.length - 2;
-      let numeros = cnpj.substring(0, tamanho);
-      let digitos = cnpj.substring(tamanho);
-      let soma = 0;
-      let pos = tamanho - 7;
-      for (let i = tamanho; i >= 1; i--) {
-        soma += parseInt(numeros[tamanho - i]) * pos--;
-        if (pos < 2) pos = 9;
-      }
-      let resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
-      if (resultado !== parseInt(digitos[0])) return false;
-      tamanho = tamanho + 1;
-      numeros = cnpj.substring(0, tamanho);
-      soma = 0;
-      pos = tamanho - 7;
-      for (let i = tamanho; i >= 1; i--) {
-        soma += parseInt(numeros[tamanho - i]) * pos--;
-        if (pos < 2) pos = 9;
-      }
-      resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
-      return resultado === parseInt(digitos[1]);
+      isCNPJ(cnpj)
     } else return false
   };
 
@@ -165,6 +134,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
     if (values.data_abertura) values.data_abertura = values.data_abertura.format('YYYY-MM-DD');
 
     values.cpf = typeof values.cpf === 'string' ? values.cpf.replace(/\D/g, '') : null;
+    values.cnae_principal = typeof values.cnae_principal === 'string' ? values.cnae_principal.replace(/\D/g, '') : null;
     values.celular = typeof values.celular === 'string' ? values.celular.replace(/\D/g, '') : null;
     if (values.cnpj) values.cnpj = typeof values.cnpj === 'string' ? values.cnpj.replace(/\D/g, '') : null;
     if (values.fixo) values.fixo = typeof values.fixo === 'string' ? values.fixo.replace(/\D/g, '') : null;
@@ -173,31 +143,31 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
 
     if (!isValidCPF(values.cpf)) {
       message.error('CPF inválido');
-      return;
+      return null;
     }
 
     if (!isValidCNPJ(values.cnpj) && getIsPJRequired) {
       message.error('CNPJ inválido');
-      return;
+      return null;
     }
 
     if (!isValidCNAE(values.cnae_principal) && getIsPJRequired) {
       message.error('CNAE deve conter exatamente 7 dígitos');
-      return;
+      return null;
     }
 
     if (!isValidCelular(values.celular) && values.celular !== null) {
       message.error('Celular deve conter exatamente 11 dígitos');
-      return;
+      return null;
     }
     if (!isValidFixo(values.fixo) && values.fixo !== null) {
       message.error('Telefone fixo deve conter exatamente 10 dígitos');
-      return;
+      return null;
     }
 
     if (!isValidCEP(values.cep)) {
       message.error('CEP deve conter exatamente 8 dígitos');
-      return;
+      return null;
     }
 
     if (values.comunicacao) {
@@ -605,7 +575,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
           },
           ]}
         >
-          <Input disabled={!getIsPJRequired} allowClear />
+          <MaskedInput disabled={!getIsPJRequired} mask="0000-00/0" allowClear />
         </Form.Item>
 
         <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
