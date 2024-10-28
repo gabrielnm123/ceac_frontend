@@ -10,7 +10,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/gabrielnm123/SGCEAC.git"
+    "url": "http://github.com/gabrielnm123/ceac_backend"
   },
   "keywords": [
     "curso",

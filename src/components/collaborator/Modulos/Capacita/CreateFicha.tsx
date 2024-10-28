@@ -575,7 +575,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
           },
           ]}
         >
-          <MaskedInput disabled={!getIsPJRequired} mask="0000-00/0" allowClear />
+          <MaskedInput disabled={!getIsPJRequired} mask="0000-0/00" allowClear />
         </Form.Item>
 
         <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"

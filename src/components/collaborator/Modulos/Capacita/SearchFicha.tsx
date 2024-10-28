@@ -182,10 +182,11 @@ const SearchFicha: React.FC = () => {
       data_nascimento: dayjs(getSelectedFicha.data_nascimento),
       data_abertura: getSelectedFicha.data_abertura ? dayjs(getSelectedFicha.data_abertura) : null,
       cpf: getSelectedFicha.cpf ? getSelectedFicha.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : '',
-      celular: getSelectedFicha.celular ? getSelectedFicha.celular.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3') : '',
+      celular: getSelectedFicha.celular ? getSelectedFicha.celular.replace(/(\d{2})(\d{1})(\d{4})(\d{4})/, '($1) $2 $3-$4') : '',
       fixo: getSelectedFicha.fixo ? getSelectedFicha.fixo.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3') : '',
       cep: getSelectedFicha.cep ? getSelectedFicha.cep.replace(/(\d{5})(\d{3})/, '$1-$2') : '',
       cnpj: getSelectedFicha.cnpj ? getSelectedFicha.cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5') : '',
+      cnae_principal: getSelectedFicha.cnae_principal ? getSelectedFicha.cnae_principal.replace(/(\d{4})(\d{1})(\d{2})/, '$1-$2/$3') : ''
     });
     setIsEditingFicha(true);
   };
@@ -401,7 +402,7 @@ const SearchFicha: React.FC = () => {
               </Descriptions.Item>
               <Descriptions.Item label="UF">{getSelectedFicha.uf}</Descriptions.Item>
               <Descriptions.Item label="Celular">
-                {getSelectedFicha.celular.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3')}
+                {getSelectedFicha.celular.replace(/(\d{2})(\d{1})(\d{4})(\d{4})/, '($1) $2 $3-$4')}
               </Descriptions.Item>
               {getSelectedFicha.fixo && (
                 <Descriptions.Item label="Fixo">
@@ -446,7 +447,9 @@ const SearchFicha: React.FC = () => {
                 </Descriptions.Item>
               )}
               {getSelectedFicha.cnae_principal && (
-                <Descriptions.Item label="CNAE Principal">{getSelectedFicha.cnae_principal}</Descriptions.Item>
+                <Descriptions.Item label="CNAE Principal">
+                  {getSelectedFicha.cnae_principal.replace(/(\d{4})(\d{1})(\d{2})/, '$1-$2/$3')}
+                </Descriptions.Item>
               )}
               {getSelectedFicha.setor && (
                 <Descriptions.Item label="Setor">{getSelectedFicha.setor}</Descriptions.Item>
