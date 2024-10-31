@@ -4,7 +4,7 @@ import React, { useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { Form, Input, Button, message } from 'antd';
 import './css/Login.css';
-import axiosInstance from "../../services/axiosInstance";
+import axiosInstance from "./services/axiosInstance";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();

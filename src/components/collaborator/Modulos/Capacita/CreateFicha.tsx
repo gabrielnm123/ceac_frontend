@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Form, Input, Button, Select, DatePicker, Typography, message, Checkbox, Popconfirm } from 'antd';
 import MaskedInput from 'antd-mask-input';
 import axios from 'axios';
-import axiosInstance from "../../../../services/axiosInstance";
+import axiosInstance from "../../services/axiosInstance";
 import '../../css/CreateFicha.css';
 import modulosCapacitaType from "../../types/modulosCapacita";
 import type { CheckboxChangeEvent } from 'antd/es/checkbox';

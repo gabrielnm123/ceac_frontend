@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, message, Typography } from 'antd';
-import axiosInstance from '../../../../services/axiosInstance';
+import axiosInstance from '../../services/axiosInstance';
 import { logout } from '../../menuItems/itemUser';
 import { useNavigate } from 'react-router-dom';
 

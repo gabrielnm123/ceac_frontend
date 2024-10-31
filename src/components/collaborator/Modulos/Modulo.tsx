@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import perfisObject from "../../../services/perfisObject";
+import perfisObject from "../services/perfisObject";
 import { useNavigate } from "react-router-dom";
 import Base from "../Base";
 import { itemUser, logout } from "../menuItems/itemUser";
 import itemCapacita from "../menuItems/itemCapacita";
 import type menuItem from "../types/menuItem";
 import Cookies from "js-cookie";
-import axiosInstance from "../../../services/axiosInstance";
+import axiosInstance from "../services/axiosInstance";
 
 const Modulo: React.FC = () => {
   const [getItems, setItems] = useState<Array<menuItem>>();

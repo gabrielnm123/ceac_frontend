@@ -7,7 +7,7 @@ import {
 } from '@ant-design/icons';
 import getMenuItem from './getMenuItem';
 import ChangeRegistration from '../Modulos/User/ChangeRegistration';
-import axiosInstance from '../../../services/axiosInstance';
+import axiosInstance from '../services/axiosInstance';
 import Cookies from 'js-cookie';
 
 const logout = () => {
