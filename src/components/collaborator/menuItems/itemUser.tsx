@@ -11,12 +11,13 @@ import axiosInstance from '../../../services/axiosInstance';
 import Cookies from 'js-cookie';
 
 const logout = () => {
-  const refreshToken = Cookies.get('refresh_token');
-  Cookies.remove('refresh_token');
-  Cookies.remove('access_token');
   localStorage.removeItem('userId');
   localStorage.removeItem('perfilName');
-  axiosInstance.post('token/invalidate/', { refresh: refreshToken }).catch(() => {})
+  axiosInstance.post('logout/')
+  .then(() => {
+    // Redireciona o usuário para a página de login ou inicial
+    window.location.href = '/colaborador/login';
+  })
 };
 
 const itemUser = (

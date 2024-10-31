@@ -1,53 +1,49 @@
+// /mnt/data/Login.tsx
+
 import React, { useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { Form, Input, Button, message } from 'antd';
-import './css/Login.css'
+import './css/Login.css';
 import axiosInstance from "../../services/axiosInstance";
-import Cookies from "js-cookie";
-import { logout } from "./menuItems/itemUser";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
-  
+
   useEffect(() => {
-    const refreshToken = Cookies.get('refresh_token')
-    if (refreshToken) {
-      axiosInstance.post('token/verify/', {token: refreshToken})
-        .then(() => {
-          navigate('/colaborador/perfil');
-        })
-        .catch(() => {})
-    } else {
-      logout();
-      navigate('/colaborador/login');
-    }
     document.title = 'Autenticação';
   }, []);
 
   const onFinish = (values: object) => {
-    axiosInstance.post(`token/`, values)
-      .then((response) => {
-        Cookies.set('access_token', response.data.access);
-        Cookies.set('refresh_token', response.data.refresh);
-        axiosInstance.get('current_user/')
-          .then((userResponse) => {
-            const userId = userResponse.data.id;
-            localStorage.setItem('userId', userId);
-            navigate('/colaborador/perfil');
+    // Antes de tudo, obtenha o token CSRF
+    axiosInstance.get('csrf/')
+      .then(() => {
+        // Agora, faça a requisição de login
+        axiosInstance.post('token/', values)
+          .then(() => {
+            // Após o login bem-sucedido, obter o usuário atual
+            axiosInstance.get('current_user/')
+              .then((userResponse) => {
+                const userId = userResponse.data.id;
+                localStorage.setItem('userId', userId);
+                navigate('/colaborador/perfil');
+              })
+              .catch(() => {
+                message.error('Um erro ocorreu ao obter as informações do usuário.');
+              });
           })
           .catch(() => {
-            message.error('Um erro ocorreu ao obter as informações do usuário.');
-          })
+            message.error('Usuário ou senha inválida(s)!');
+          });
       })
-      .catch (() => {
-      message.error('Usuário ou senha inválida(s)!');
-    })
+      .catch(() => {
+        message.error('Não foi possível obter o token CSRF.');
+      });
   };
 
   const onFinishFailed = () => {
     message.error('Um erro ocorreu, tente novamente!');
   };
-  
+
   return (
     <Form
       className="form-login"

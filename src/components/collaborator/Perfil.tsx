@@ -12,20 +12,20 @@ const Perfil: React.FC = () => {
   const perfisNames = Object.keys(perfisNamePermissions);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const refreshToken = Cookies.get('refresh_token');
-    document.title = 'Perfil';
-    if (refreshToken) {
-      axiosInstance.post('token/verify/', { token: refreshToken })
-        .catch(() => {
-          logout();
-          navigate('/colaborador/login');
-        })
-    } else {
-      logout();
-      navigate('/colaborador/login')
-    }
-  }, [])
+  // useEffect(() => {
+  //   const refreshToken = Cookies.get('refresh_token');
+  //   document.title = 'Perfil';
+  //   if (refreshToken) {
+  //     axiosInstance.post('token/verify/', { token: refreshToken })
+  //       .catch(() => {
+  //         logout();
+  //         navigate('/colaborador/login');
+  //       })
+  //   } else {
+  //     logout();
+  //     navigate('/colaborador/login')
+  //   }
+  // }, [])
 
   const selectPerfil = (event: React.MouseEvent<HTMLElement>, link: { title: React.ReactNode }) => {
     localStorage.setItem('perfilName', link.title as string);
