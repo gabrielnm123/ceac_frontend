@@ -24,6 +24,16 @@ axiosInstance.interceptors.request.use(config => {
   return config;
 });
 
+const logout = () => {
+  localStorage.removeItem('userId');
+  localStorage.removeItem('perfilName');
+  axiosInstance.post('logout/')
+    .then(() => {
+      // Redireciona o usuário para a página de login ou inicial
+      window.location.href = '/colaborador/login';
+    })
+};
+
 // Interceptor de resposta para lidar com erros 401 e tentar renovar o token
 axiosInstance.interceptors.response.use(
   response => response,
@@ -34,14 +44,12 @@ axiosInstance.interceptors.response.use(
       try {
         await axiosInstance.post('token/refresh/');
         return axiosInstance(originalRequest);
-      } catch (refreshError) {
-        // Redirecionar para a página de login ou lidar com o erro de outra forma
-        window.location.href = '/colaborador/login';
-        return Promise.reject(refreshError);
+      } catch (refreshError) { // se eu tirar refreshError daqui da erro! pq?
+        logout();
       }
     }
     return Promise.reject(error);
   }
 );
 
-export default axiosInstance;
+export { axiosInstance, logout };

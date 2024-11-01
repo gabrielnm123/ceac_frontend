@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Form, Input, Button, Select, DatePicker, Table, message, Modal, Descriptions, Popconfirm, Typography } from 'antd';
 import MaskedInput from 'antd-mask-input';
-import axiosInstance from "../../services/axiosInstance";
+import { axiosInstance } from "../../services/axiosInstance";
 import '../../css/FetchFicha.css';
 import dayjs from 'dayjs';
 import modulosCapacitaType from "../../types/modulosCapacita";
-import { useNavigate } from "react-router-dom";
-import { logout } from "../../menuItems/itemUser";
 import CreateFicha from "./CreateFicha";
 
 const { Option } = Select;
@@ -44,7 +42,6 @@ const FetchFicha: React.FC = () => {
   const [getVisibleFicha, setVisibleFicha] = useState<boolean>(false);
   const [getSelectedFicha, setSelectedFicha] = useState<any>(null);
   const [getIsEditingFicha, setIsEditingFicha] = useState<boolean>(false);
-  const navigate = useNavigate();
 
   useEffect(() => {
     axiosInstance.get('capacita/modulos_capacita/')
@@ -99,10 +96,7 @@ const FetchFicha: React.FC = () => {
         setColumns(columns);
       })
       .catch((error) => {
-        if (error.response && error.response.status === 401) {
-          logout();
-          navigate('/colaborador/login');
-        } else message.error('Erro ao carregar os módulos de aprendizagem, tente novamente.');
+        message.error('Erro ao carregar os módulos de aprendizagem, tente novamente.');
       })
 
     axiosInstance.get('capacita/fichas/')
@@ -110,10 +104,7 @@ const FetchFicha: React.FC = () => {
         setData(response.data);
       })
       .catch(error => {
-        if (error.response && error.response.status === 401) {
-          logout();
-          navigate('/colaborador/login');
-        } else message.error('Erro ao carregar fichas, recarregue a página.');
+        message.error('Erro ao carregar fichas, recarregue a página.');
       })
   }, []);
 
@@ -125,10 +116,7 @@ const FetchFicha: React.FC = () => {
         setVisibleFicha(true);
       })
       .catch((error) => {
-        if (error.response && error.response.status === 401) {
-          logout();
-          navigate('/colaborador/login');
-        } else message.error('Erro ao carregar a ficha, tente novamente.');
+        message.error('Erro ao carregar a ficha, tente novamente.');
       })
       .finally(() => {
         setLoading(false);
@@ -149,10 +137,7 @@ const FetchFicha: React.FC = () => {
         document.body.removeChild(link);
       })
       .catch((error) => {
-        if (error.response && error.response.status === 401) {
-          logout();
-          navigate('/colaborador/login');
-        } else message.error('Erro ao baixar a ficha, tente novamente.');
+        message.error('Erro ao baixar a ficha, tente novamente.');
       })
   }
 
@@ -164,10 +149,7 @@ const FetchFicha: React.FC = () => {
         onFinish(form.getFieldsValue());
       })
       .catch((error) => {
-        if (error.response && error.response.status === 401) {
-          logout();
-          navigate('/colaborador/login');
-        } else message.error(`Erro ao deletar a ficha do(a) ${getSelectedFicha.nome_completo}. Tente novamente.`);
+        message.error(`Erro ao deletar a ficha do(a) ${getSelectedFicha.nome_completo}. Tente novamente.`);
       })
   }
 
@@ -201,10 +183,7 @@ const FetchFicha: React.FC = () => {
         onFinish(form.getFieldsValue());
       })
       .catch((error) => {
-        if (error.response && error.response.status === 401) {
-          logout();
-          navigate('/colaborador/login');
-        } else message.error('Erro ao editar ficha, tente novamente.');
+        message.error('Erro ao editar ficha, tente novamente.');
       })
       .finally(() => {
         setLoading(false);
@@ -243,10 +222,7 @@ const FetchFicha: React.FC = () => {
         }
       })
       .catch((error) => {
-        if (error.response && error.response.status === 401) {
-          logout();
-          navigate('/colaborador/login');
-        } else message.error('Erro ao buscar ficha, tente novamente.');
+        message.error('Erro ao buscar ficha, tente novamente.');
       })
       .finally(() => {
         setLoading(false);

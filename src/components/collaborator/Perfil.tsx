@@ -2,33 +2,13 @@ import React, { useEffect } from "react";
 import { Form, Anchor } from 'antd';
 import perfisObject from "./services/perfisObject";
 import './css/Perfil.css';
-import Cookies from "js-cookie";
-import { useNavigate } from "react-router-dom";
-import axiosInstance from "./services/axiosInstance";
-import { logout } from "./menuItems/itemUser";
 
 const Perfil: React.FC = () => {
   const perfisNamePermissions = perfisObject();
   const perfisNames = Object.keys(perfisNamePermissions);
-  const navigate = useNavigate();
 
   useEffect(() => {
-    const refreshToken = Cookies.get('refresh_token');
     document.title = 'Perfil';
-    if (refreshToken) {
-      axiosInstance.post('token/verify/', { token: refreshToken })
-        .catch((error) => {
-          console.log('erro no verificação do refreshToken:\n')
-          console.log(error)
-          // logout();
-          // navigate('/colaborador/login');
-        })
-    } else {
-      console.log('\n\nrefreshToken:\n')
-      console.log(refreshToken)
-      // logout();
-      // navigate('/colaborador/login')
-    }
   }, [])
 
   const selectPerfil = (event: React.MouseEvent<HTMLElement>, link: { title: React.ReactNode }) => {

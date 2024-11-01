@@ -2,11 +2,9 @@ import React, { useEffect, useState } from "react";
 import perfisObject from "../services/perfisObject";
 import { useNavigate } from "react-router-dom";
 import Base from "../Base";
-import { itemUser, logout } from "../menuItems/itemUser";
+import { itemUser } from "../menuItems/itemUser";
 import itemCapacita from "../menuItems/itemCapacita";
 import type menuItem from "../types/menuItem";
-import Cookies from "js-cookie";
-import axiosInstance from "../services/axiosInstance";
 
 const Modulo: React.FC = () => {
   const [getItems, setItems] = useState<Array<menuItem>>();
@@ -20,18 +18,7 @@ const Modulo: React.FC = () => {
   const user = itemUser(setBaseContent, setBaseTitle);
 
   useEffect(() => {
-    const refreshToken = Cookies.get('refresh_token');
     document.title = getBaseTitle;
-    if (refreshToken) {
-      axiosInstance.post('token/verify/', { token: refreshToken })
-        .catch(() => {
-          logout();
-          navigate('/colaborador/login');
-        })
-    } else {
-      logout();
-      navigate('/colaborador/login')
-    }
   }, [getBaseContent, getBaseTitle, getItems])
 
   useEffect(() => {

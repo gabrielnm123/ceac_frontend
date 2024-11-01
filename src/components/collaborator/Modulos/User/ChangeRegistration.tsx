@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Input, Button, message, Typography } from 'antd';
-import axiosInstance from '../../services/axiosInstance';
-import { logout } from '../../menuItems/itemUser';
-import { useNavigate } from 'react-router-dom';
+import { axiosInstance } from '../../services/axiosInstance';
 
 interface FormValues {
   email: string;
@@ -19,7 +17,6 @@ const ChangeRegistration: React.FC = () => {
   const [getLoading, setLoading] = useState<boolean>(false);
   const [getPasswordMessage, setPasswordMessage] = useState<string>('');
   const [form] = Form.useForm();
-  const navigate = useNavigate();
 
   useEffect(() => {
 
@@ -33,10 +30,7 @@ const ChangeRegistration: React.FC = () => {
         });
       })
       .catch((error) => {
-        if (error.response && error.response.status === 401) {
-          logout();
-          navigate('/colaborador/login');
-        } else message.error('Erro ao carregar dados do usuário.');
+        message.error('Erro ao carregar dados do usuário.');
       })
   }, [form]);
 
@@ -110,20 +104,14 @@ const ChangeRegistration: React.FC = () => {
 
         axiosInstance.put(`users/${userId}/`, updateData)
           .catch(error => {
-            if (error.response && error.response.status === 401) {
-              logout();
-              navigate('/colaborador/login');
-            } else message.error('Erro ao atualizar dados do usuário, tente novamente.');
+            message.error('Erro ao atualizar dados do usuário, tente novamente.');
           })
 
         message.success('Cadastro alterado com sucesso!');
       })
 
       .catch((error) => {
-        if (error.response && error.response.status === 401) {
-          logout();
-          navigate('/colaborador/login');
-        } else message.error('Erro ao alterar cadastro, tente novamente.');
+        message.error('Erro ao alterar cadastro, tente novamente.');
       })
       .finally(() => {
         setLoading(false);

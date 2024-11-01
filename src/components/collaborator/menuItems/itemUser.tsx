@@ -7,18 +7,17 @@ import {
 } from '@ant-design/icons';
 import getMenuItem from './getMenuItem';
 import ChangeRegistration from '../Modulos/User/ChangeRegistration';
-import axiosInstance from '../services/axiosInstance';
-import Cookies from 'js-cookie';
+import { logout } from '../services/axiosInstance';
 
-const logout = () => {
-  localStorage.removeItem('userId');
-  localStorage.removeItem('perfilName');
-  axiosInstance.post('logout/')
-  .then(() => {
-    // Redireciona o usuário para a página de login ou inicial
-    window.location.href = '/colaborador/login';
-  })
-};
+// const logout = () => {
+//   localStorage.removeItem('userId');
+//   localStorage.removeItem('perfilName');
+//   axiosInstance.post('logout/')
+//     .then(() => {
+//       // Redireciona o usuário para a página de login ou inicial
+//       window.location.href = '/colaborador/login';
+//     })
+// };
 
 const itemUser = (
   setBaseContent: React.Dispatch<React.SetStateAction<React.ReactNode>>,

@@ -1,10 +1,8 @@
-// /mnt/data/Login.tsx
-
 import React, { useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { Form, Input, Button, message } from 'antd';
 import './css/Login.css';
-import axiosInstance from "./services/axiosInstance";
+import { axiosInstance } from "./services/axiosInstance";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -14,29 +12,21 @@ const Login: React.FC = () => {
   }, []);
 
   const onFinish = (values: object) => {
-    // Antes de tudo, obtenha o token CSRF
-    axiosInstance.get('csrf/')
+    axiosInstance.post('token/', values)
       .then(() => {
-        // Agora, faça a requisição de login
-        axiosInstance.post('token/', values)
-          .then(() => {
-            // Após o login bem-sucedido, obter o usuário atual
-            axiosInstance.get('current_user/')
-              .then((userResponse) => {
-                const userId = userResponse.data.id;
-                localStorage.setItem('userId', userId);
-                navigate('/colaborador/perfil');
-              })
-              .catch(() => {
-                message.error('Um erro ocorreu ao obter as informações do usuário.');
-              });
+        // Após o login bem-sucedido, obter o usuário atual
+        axiosInstance.get('current_user/')
+          .then((userResponse) => {
+            const userId = userResponse.data.id;
+            localStorage.setItem('userId', userId);
+            navigate('/colaborador/perfil');
           })
           .catch(() => {
-            message.error('Usuário ou senha inválida(s)!');
+            message.error('Um erro ocorreu ao obter id do usuário.');
           });
       })
       .catch(() => {
-        message.error('Não foi possível obter o token CSRF.');
+        message.error('Usuário ou senha inválida(s)!');
       });
   };
 
@@ -48,7 +38,7 @@ const Login: React.FC = () => {
     <Form
       className="form-login"
       onFinish={onFinish}
-      onFinishFailed={onFinishFailed} 
+      onFinishFailed={onFinishFailed}
     >
       <Form.Item
         className="username-login"

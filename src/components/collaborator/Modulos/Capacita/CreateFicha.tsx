@@ -2,12 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Form, Input, Button, Select, DatePicker, Typography, message, Checkbox, Popconfirm } from 'antd';
 import MaskedInput from 'antd-mask-input';
 import axios from 'axios';
-import axiosInstance from "../../services/axiosInstance";
+import { axiosInstance } from "../../services/axiosInstance";
 import '../../css/CreateFicha.css';
 import modulosCapacitaType from "../../types/modulosCapacita";
 import type { CheckboxChangeEvent } from 'antd/es/checkbox';
-import { logout } from "../../menuItems/itemUser";
-import { useNavigate } from "react-router-dom";
 import createFichaProps from "../../types/createFichaProps";
 import { isCPF, isCNPJ, isPhone, isCEP } from 'brazilian-values';
 
@@ -23,7 +21,6 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
   const [getIsOnline, setIsOnline] = useState<boolean>(form.getFieldsValue().assistir_online === 'S');
   const [getIsPJRequired, setIsPJRequired] = useState<boolean>(false);
   const [getModulosCapacita, setModulosCapacita] = useState<Array<modulosCapacitaType> | []>([])
-  const navigate = useNavigate();
 
   useEffect(() => {
     if (props.form && form.getFieldsValue().nome_fantasia) {
@@ -34,10 +31,7 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
         setModulosCapacita(response.data)
       })
       .catch((error) => {
-        if (error.response && error.response.status === 401) {
-          logout();
-          navigate('/colaborador/login');
-        } else message.error('Erro ao carregar os módulos da capacitação, recarregue a página.');
+        message.error('Erro ao carregar os módulos da capacitação, recarregue a página.');
       })
   }, [])
 
@@ -139,12 +133,12 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
       message.error('Telefone fixo deve conter exatamente 10 dígitos');
       return null;
     }
-    
+
     if (!isCEP(values.cep)) {
       message.error('CEP deve conter exatamente 8 dígitos');
       return null;
     }
-    
+
     if (values.comunicacao) {
       values.comunicacao = values.comunicacao === 'Sim, eu concordo.' ? 'S' : 'N';
     }
@@ -155,11 +149,8 @@ const CreateFicha: React.FC<createFichaProps> = (props) => {
         .then(() => {
           message.success('Ficha criada com sucesso!');
         })
-        .catch((error) => {
-          if (error.response && error.response.status === 401) {
-            logout();
-            navigate('/colaborador/login');
-          } else message.error('Erro ao criar ficha, tente novamente.');
+        .catch(() => {
+          message.error('Erro ao criar ficha, tente novamente.');
         })
     }
   };

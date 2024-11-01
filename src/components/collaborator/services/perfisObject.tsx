@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import axiosInstance from "./axiosInstance";
+import { axiosInstance } from "./axiosInstance";
 
 const perfisObject = () => {
   const [getPerfis, setPerfis] = useState<{ [key: string]: Array<string> } | { [key: string]: null }>({ 'null': null });
