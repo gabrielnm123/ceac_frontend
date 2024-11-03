@@ -34,22 +34,23 @@ const logout = () => {
     })
 };
 
-// Interceptor de resposta para lidar com erros 401 e tentar renovar o token
 axiosInstance.interceptors.response.use(
   response => response,
   async error => {
     const originalRequest = error.config;
-    if (error.response && error.response.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
+
+    if (error.response && error.response.status === 401 && !originalRequest.url.includes('token/refresh/')) {
       try {
         await axiosInstance.post('token/refresh/');
         return axiosInstance(originalRequest);
-      } catch (refreshError) { // se eu tirar refreshError daqui da erro! pq?
+      } catch {
         logout();
       }
     }
+
     return Promise.reject(error);
   }
 );
+
 
 export { axiosInstance, logout };
