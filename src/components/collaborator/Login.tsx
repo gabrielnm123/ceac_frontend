@@ -9,6 +9,10 @@ const Login: React.FC = () => {
 
   useEffect(() => {
     document.title = 'Autenticação';
+    axiosInstance.post('token/refresh/verify/')
+      .then(() => {
+        navigate('/colaborador/perfil');
+      })
   }, []);
 
   const onFinish = (values: object) => {

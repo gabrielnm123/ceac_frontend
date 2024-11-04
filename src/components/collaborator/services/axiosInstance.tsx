@@ -27,25 +27,23 @@ axiosInstance.interceptors.request.use(config => {
 const logout = () => {
   localStorage.removeItem('userId');
   localStorage.removeItem('perfilName');
-  axiosInstance.post('logout/')
-    .then(() => {
-      // Redireciona o usuário para a página de login ou inicial
-      window.location.href = '/colaborador/login';
-    })
+  axiosInstance.post('logout/');
+  window.location.href = '/colaborador/login';
 };
 
 axiosInstance.interceptors.response.use(
   response => response,
-  async error => {
+  error => {
     const originalRequest = error.config;
 
     if (error.response && error.response.status === 401 && !originalRequest.url.includes('token/refresh/')) {
-      try {
-        await axiosInstance.post('token/refresh/');
-        return axiosInstance(originalRequest);
-      } catch {
-        logout();
-      }
+      axiosInstance.post('token/refresh/')
+        .then((response) => {
+          return axiosInstance(originalRequest);
+        })
+        .catch((error) => {
+          logout();
+        })
     }
 
     return Promise.reject(error);

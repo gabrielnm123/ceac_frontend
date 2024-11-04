@@ -11,6 +11,7 @@ import 'dayjs/locale/pt-br';
 const App: React.FC = () => {
   const [getBaseContent, setBaseContent] = useState<React.ReactNode>(<Perfil />);
   const [getBaseTitle, setBaseTitle] = useState<string>('Perfil');
+  const perfilName = localStorage.getItem('perfilName')
 
   useEffect(() => {
     document.documentElement.lang = 'pt-BR';
@@ -27,7 +28,9 @@ const App: React.FC = () => {
       <Routes>
         <Route path='colaborador/login' element={<Base content={<Login />} title='Autenticação' />} />
         <Route path='colaborador/perfil' element={<Base content={getBaseContent} title={getBaseTitle} menuItem={itemUser(setBaseContent, setBaseTitle)} />} />
-        <Route path={`colaborador/${localStorage.getItem('perfilName')}`} element={<Modulo />} />
+        {
+          perfilName ? <Route path={`colaborador/${perfilName}`} element={<Modulo />} /> : null
+        }
         <Route path="*" element={<Navigate to="colaborador/perfil" />} />
       </Routes>
     </BrowserRouter>
