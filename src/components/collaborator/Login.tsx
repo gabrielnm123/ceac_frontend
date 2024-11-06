@@ -13,12 +13,14 @@ const Login: React.FC = () => {
       .then(() => {
         navigate('/colaborador/perfil');
       })
+      .catch((error) => {
+        if (error.status && error.status === 400) return
+      })
   }, []);
 
   const onFinish = (values: object) => {
     axiosInstance.post('token/', values)
       .then(() => {
-        // Após o login bem-sucedido, obter o usuário atual
         axiosInstance.get('current_user/')
           .then((userResponse) => {
             const userId = userResponse.data.id;
