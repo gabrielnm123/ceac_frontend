@@ -1,64 +1,64 @@
-.fetch-ficha {
+.search-ficha {
   display: flex;
   flex-direction: column;
 }
 
-.form-fetch-ficha {
+.form-search-ficha {
   display: flex;
   flex-direction: column;
 }
 
-.form-fetch-ficha-minus-button {
+.form-search-ficha-minus-button {
   display: flex;
   flex-wrap: wrap;
   flex-direction: row;
 }
 
-.form-fetch-ficha-button {
+.form-search-ficha-button {
   align-self: center;
 }
 
-.form-fetch-ficha-item{
+.form-search-ficha-item{
   margin: 5px;
 }
 
-.form-fetch-ficha-select-modulos-capacita{
+.form-search-ficha-select-modulos-capacita{
   min-width: 232px;
 }
 
-.form-fetch-ficha-select-genero{
+.form-search-ficha-select-genero{
   min-width: 115px;
 }
 
-.form-fetch-ficha-cpf{
+.form-search-ficha-cpf{
   max-width: 160px;
 }
 
-.form-fetch-ficha-select-escolaridade{
+.form-search-ficha-select-escolaridade{
   min-width: 185px;
 }
 
-.form-fetch-ficha-select-uf{
+.form-search-ficha-select-uf{
   min-width: 200px;
 }
 
-.form-fetch-ficha-select-atividade {
+.form-search-ficha-select-atividade {
   min-width: 200px;
 }
 
-.form-fetch-ficha-email {
+.form-search-ficha-email {
   min-width: 200px;
 }
 
-.form-fetch-ficha-contato {
+.form-search-ficha-contato {
   max-width: 200px;
 }
 
-.table-fetch-ficha {
+.table-search-ficha {
   margin-top: 20px;
 }
 
-.form-fetch-ficha-nascimento {
+.form-search-ficha-nascimento {
   max-width: 260px;
 }
 
