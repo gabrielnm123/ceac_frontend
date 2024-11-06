@@ -4,10 +4,10 @@ import { useNavigate } from "react-router-dom";
 import Base from "../Base";
 import { itemUser } from "../menuItems/itemUser";
 import itemCapacita from "../menuItems/itemCapacita";
-import type menuItem from "../types/menuItem";
+import type menuItemType from "../types/menuItem";
 
 const Modulo: React.FC = () => {
-  const [getItems, setItems] = useState<Array<menuItem>>();
+  const [getItems, setItems] = useState<Array<menuItemType>>();
   const [getBaseContent, setBaseContent] = useState<null | React.ReactNode>(null);
   const [getBaseTitle, setBaseTitle] = useState<string>(String);
   const navigate = useNavigate();

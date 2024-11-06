@@ -1,8 +1,8 @@
 import { FormInstance } from 'antd';
 
-type createFichaProps = {
+type createFichaPropsType = {
   form?: FormInstance;
   funcEditing?: (values: object) => void;
 }
 
-export default createFichaProps;
+export default createFichaPropsType;

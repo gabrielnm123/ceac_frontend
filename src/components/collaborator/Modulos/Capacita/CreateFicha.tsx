@@ -6,13 +6,13 @@ import { axiosInstance } from "../../services/axiosInstance";
 import '../../css/CreateFicha.css';
 import modulosCapacitaType from "../../types/modulosCapacita";
 import type { CheckboxChangeEvent } from 'antd/es/checkbox';
-import createFichaProps from "../../types/createFichaProps";
+import type createFichaPropsType from "../../types/createFichaProps";
 import { isCPF, isCNPJ, isPhone, isCEP } from 'brazilian-values';
 
 const { Option } = Select;
 const { Title, Text } = Typography;
 
-const CreateFicha: React.FC<createFichaProps> = (props) => {
+const CreateFicha: React.FC<createFichaPropsType> = (props) => {
   if (props.form) {
     var form = props.form;
   } else {

@@ -7,13 +7,13 @@ import {
 import getMenuItem from './getMenuItem';
 import SearchFicha from '../Modulos/Capacita/SearchFicha';
 import CreateFicha from '../Modulos/Capacita/CreateFicha';
-import type menuItem from '../types/menuItem';
+import type menuItemType from '../types/menuItem';
 
 const itemCapacita = (
   setBaseContent: React.Dispatch<React.SetStateAction<React.ReactNode>>,
   setBaseTitle: React.Dispatch<React.SetStateAction<string>>,
   permissions: string[]
-): menuItem[] => {
+): menuItemType[] => {
   const buscarFicha = () => {
     setBaseContent(<SearchFicha />);
     setBaseTitle('Buscar Ficha de Inscrição de Capacitação');
@@ -24,7 +24,7 @@ const itemCapacita = (
     setBaseTitle('Criar Ficha de Inscrição de Capacitação');
   };
   
-  const permissionArray: menuItem[] = [];
+  const permissionArray: menuItemType[] = [];
   
   if (permissions.includes('SUPER USUÁRIO')) {
     permissionArray.push(
