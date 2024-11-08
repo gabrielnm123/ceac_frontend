@@ -38,10 +38,10 @@ axiosInstance.interceptors.response.use(
 
     if (error.response && error.response.status === 401 && !originalRequest.url.includes('token/refresh/')) {
       axiosInstance.post('token/refresh/')
-        .then((response) => {
+        .then(() => {
           return axiosInstance(originalRequest);
         })
-        .catch((error) => {
+        .catch(() => {
           logout();
         })
     }

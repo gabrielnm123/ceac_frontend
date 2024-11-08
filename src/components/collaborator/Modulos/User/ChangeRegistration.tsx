@@ -29,7 +29,7 @@ const ChangeRegistration: React.FC = () => {
           last_name: response.data.last_name.toUpperCase(),
         });
       })
-      .catch((error) => {
+      .catch(() => {
         message.error('Erro ao carregar dados do usuário.');
       })
   }, [form]);
@@ -103,14 +103,14 @@ const ChangeRegistration: React.FC = () => {
         };
 
         axiosInstance.put(`users/${userId}/`, updateData)
-          .catch(error => {
+          .catch(() => {
             message.error('Erro ao atualizar dados do usuário, tente novamente.');
           })
 
         message.success('Cadastro alterado com sucesso!');
       })
 
-      .catch((error) => {
+      .catch(() => {
         message.error('Erro ao alterar cadastro, tente novamente.');
       })
       .finally(() => {

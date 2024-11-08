@@ -30,7 +30,7 @@ const CreateFicha: React.FC<createFichaPropsType> = (props) => {
       .then(response => {
         setModulosCapacita(response.data)
       })
-      .catch((error) => {
+      .catch(() => {
         message.error('Erro ao carregar os módulos da capacitação, recarregue a página.');
       })
   }, [])

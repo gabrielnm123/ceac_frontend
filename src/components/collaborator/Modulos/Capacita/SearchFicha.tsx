@@ -95,7 +95,7 @@ const SearchFicha: React.FC = () => {
         ];
         setColumns(columns);
       })
-      .catch((error) => {
+      .catch(() => {
         message.error('Erro ao carregar os módulos de aprendizagem, tente novamente.');
       })
 
@@ -103,7 +103,7 @@ const SearchFicha: React.FC = () => {
       .then((response) => {
         setData(response.data);
       })
-      .catch(error => {
+      .catch(() => {
         message.error('Erro ao carregar fichas, recarregue a página.');
       })
   }, []);
@@ -115,7 +115,7 @@ const SearchFicha: React.FC = () => {
         setSelectedFicha(response.data);
         setVisibleFicha(true);
       })
-      .catch((error) => {
+      .catch(() => {
         message.error('Erro ao carregar a ficha, tente novamente.');
       })
       .finally(() => {
@@ -136,7 +136,7 @@ const SearchFicha: React.FC = () => {
         link.click();
         document.body.removeChild(link);
       })
-      .catch((error) => {
+      .catch(() => {
         message.error('Erro ao baixar a ficha, tente novamente.');
       })
   }
@@ -148,7 +148,7 @@ const SearchFicha: React.FC = () => {
         setVisibleFicha(false)
         onFinish(form.getFieldsValue());
       })
-      .catch((error) => {
+      .catch(() => {
         message.error(`Erro ao deletar a ficha do(a) ${getSelectedFicha.nome_completo}. Tente novamente.`);
       })
   }
@@ -182,7 +182,7 @@ const SearchFicha: React.FC = () => {
         handleOpenFicha(getSelectedFicha.id);
         onFinish(form.getFieldsValue());
       })
-      .catch((error) => {
+      .catch(() => {
         message.error('Erro ao editar ficha, tente novamente.');
       })
       .finally(() => {
@@ -221,7 +221,7 @@ const SearchFicha: React.FC = () => {
           message.success('Busca realizada com sucesso!');
         }
       })
-      .catch((error) => {
+      .catch(() => {
         message.error('Erro ao buscar ficha, tente novamente.');
       })
       .finally(() => {
