@@ -23,6 +23,7 @@ const CreateFicha: React.FC<createFichaPropsType> = (props) => {
   const [getModulosCapacita, setModulosCapacita] = useState<Array<modulosCapacitaType> | []>([])
 
   useEffect(() => {
+    setIsOnline(form.getFieldValue('assistir_online') === 'S')
     if (props.form && form.getFieldsValue().nome_fantasia) {
       setIsPJRequired(true);
     }
@@ -33,7 +34,7 @@ const CreateFicha: React.FC<createFichaPropsType> = (props) => {
       .catch(() => {
         message.error('Erro ao carregar os módulos da capacitação, recarregue a página.');
       })
-  }, [])
+  }, [form.getFieldValue('assistir_online'), form.getFieldsValue().nome_fantasia])
 
   const isValidCNAE = (cnae: string) => {
     return typeof cnae === 'string' ? /^\d{7}$/.test(cnae.replace(/\D/g, '')) : false;
