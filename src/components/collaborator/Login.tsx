@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
 import { Form, Input, Button, message } from 'antd';
 import './css/Login.css';
-import { axiosInstance } from "./services/axiosInstance";
+import axiosInstance from "./services/axiosInstance";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -22,14 +22,14 @@ const Login: React.FC = () => {
     axiosInstance.post('token/', values)
       .then(() => {
         axiosInstance.get('current_user/')
-          .then((userResponse) => {
-            const userId = userResponse.data.id;
-            localStorage.setItem('userId', userId);
-            navigate('/colaborador/perfil');
-          })
-          .catch(() => {
-            message.error('Um erro ocorreu ao obter id do usuário.');
-          });
+        .then((userResponse) => {
+          const userId = userResponse.data.id;
+          localStorage.setItem('userId', userId);
+          navigate('/colaborador/perfil');
+        })
+        .catch(() => {
+          message.error('Um erro ocorreu ao obter id do usuário.');
+        });
       })
       .catch(() => {
         message.error('Usuário ou senha inválida(s)!');

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { axiosInstance } from "./axiosInstance";
-import { logout } from "./axiosInstance";
+import axiosInstance from "./axiosInstance";
+import logout from "./logout";
 
 const perfisObject = () => {
   const [getPerfis, setPerfis] = useState<{ [key: string]: Array<string> } | { [key: string]: null }>({ 'null': null });
@@ -38,7 +38,7 @@ const perfisObject = () => {
               }
               setPerfis(perfisNamePermissions);
             });
-        })
+        });
     } else {
       logout();
     }

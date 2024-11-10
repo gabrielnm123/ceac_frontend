@@ -1,4 +1,5 @@
 import axios from "axios";
+import logout from "./logout";
 
 const url = process.env.REACT_APP_URL || 'http://localhost:8002/api/';
 
@@ -24,24 +25,18 @@ axiosInstance.interceptors.request.use(config => {
   return config;
 });
 
-const logout = () => {
-  localStorage.removeItem('userId');
-  localStorage.removeItem('perfilName');
-  axiosInstance.post('logout/');
-  window.location.href = '/colaborador/login';
-};
-
 axiosInstance.interceptors.response.use(
   response => response,
   error => {
     const originalRequest = error.config;
-
+    
     if (error.response && error.response.status === 401 && !originalRequest.url.includes('token/refresh/')) {
       axiosInstance.post('token/refresh/')
         .then(() => {
           return axiosInstance(originalRequest);
         })
         .catch(() => {
+          console.log('entrou no ultimo catch')
           logout();
         })
     }
@@ -51,4 +46,4 @@ axiosInstance.interceptors.response.use(
 );
 
 
-export { axiosInstance, logout };
+export default axiosInstance;

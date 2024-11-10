@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Form, Input, Button, Select, DatePicker, Table, message, Modal, Descriptions, Popconfirm, Typography } from 'antd';
 import MaskedInput from 'antd-mask-input';
-import { axiosInstance } from "../../services/axiosInstance";
+import axiosInstance from "../../services/axiosInstance";
 import '../../css/SearchFicha.css';
 import dayjs from 'dayjs';
 import modulosCapacitaType from "../../types/modulosCapacita";
