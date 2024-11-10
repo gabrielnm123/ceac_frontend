@@ -4,7 +4,7 @@ const logout = () => {
   localStorage.removeItem('userId');
   localStorage.removeItem('perfilName');
   if (window.location.pathname !== '/colaborador/login') {
-    axiosInstance.post('logout/');
+    axiosInstance.post('token/logout/');
     window.location.href = '/colaborador/login';
   }
 };
