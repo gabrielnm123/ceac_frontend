@@ -33,7 +33,10 @@ const atividadeMap: { [key: string]: string } = {
 };
 
 const SearchFicha: React.FC = () => {
-  const [getLoading, setLoading] = useState<boolean>(false);
+  const [getLoadingSearchFicha, setLoadingSearchFicha] = useState<boolean>(false);
+  const [getLoadinDowloading, setLoadingDowloading] = useState(false);
+  const [getLoadingEditing, setLoadingEditing] = useState(false);
+  const [getLoadingDelete, setLoadingDelete] = useState(false);
   const [getData, setData] = useState<any[]>([]);
   const [getModulosCapacita, setModulosCapacita] = useState<modulosCapacitaType[]>([]);
   const [getColumns, setColumns] = useState<undefined | Array<Object>>(undefined);
@@ -111,15 +114,11 @@ const SearchFicha: React.FC = () => {
   const handleOpenFicha = (id: number) => {
     axiosInstance.get(`capacita/fichas/${id}`)
       .then((response) => {
-        setLoading(true);
         setSelectedFicha(response.data);
         setVisibleFicha(true);
       })
       .catch(() => {
         message.error('Erro ao carregar a ficha, tente novamente.');
-      })
-      .finally(() => {
-        setLoading(false);
       })
   };
 
@@ -174,7 +173,6 @@ const SearchFicha: React.FC = () => {
   };
 
   const onEditFinish = (values: any) => {
-    setLoading(true);
     axiosInstance.put(`capacita/fichas/${getSelectedFicha.id}/`, values)
       .then(() => {
         message.success('Ficha editada com sucesso!');
@@ -185,12 +183,10 @@ const SearchFicha: React.FC = () => {
       .catch(() => {
         message.error('Erro ao editar ficha, tente novamente.');
       })
-      .finally(() => {
-        setLoading(false);
-      });
   };
 
   const onFinish = (values: any) => {
+    setLoadingSearchFicha(true);
     if (values.data_nascimento) {
       values.data_nascimento = values.data_nascimento.format('YYYY-MM-DD');
     }
@@ -211,7 +207,6 @@ const SearchFicha: React.FC = () => {
       Object.entries(values).filter(([_, v]) => v != null && v !== "")
     );
 
-    setLoading(true);
     axiosInstance.get('capacita/fichas/', { params: cleanedValues })
       .then((response) => {
         setData(response.data);
@@ -225,7 +220,7 @@ const SearchFicha: React.FC = () => {
         message.error('Erro ao buscar ficha, tente novamente.');
       })
       .finally(() => {
-        setLoading(false);
+        setLoadingSearchFicha(false);
       })
   };
 
@@ -317,7 +312,7 @@ const SearchFicha: React.FC = () => {
             </Form.Item>
           </div>
           <Form.Item className="form-search-ficha-button form-search-ficha-item">
-            <Button type="primary" htmlType="submit" loading={getLoading}>
+            <Button type="primary" htmlType="submit" loading={getLoadingSearchFicha}>
               Buscar
             </Button>
             <Button className="limpar-button" onClick={onReset}>

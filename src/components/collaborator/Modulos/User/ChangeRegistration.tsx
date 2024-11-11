@@ -71,6 +71,7 @@ const ChangeRegistration: React.FC = () => {
   };
 
   const onFinish = (values: FormValues) => {
+    setLoading(true);
     if (values.password && values.password !== values.confirmPassword) {
       message.error('As senhas não coincidem!');
       return;
@@ -81,7 +82,6 @@ const ChangeRegistration: React.FC = () => {
       return;
     }
 
-    setLoading(true);
 
     const userId = localStorage.getItem('userId');
     axiosInstance.post(`users/${userId}/check-password/`, {

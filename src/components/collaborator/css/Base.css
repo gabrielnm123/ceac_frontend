@@ -42,7 +42,7 @@
 }
 
 .content-div1-base {
-  display: flex;
+  display: block;
   align-self: center;
   padding: 24px;
   min-width: 25%;

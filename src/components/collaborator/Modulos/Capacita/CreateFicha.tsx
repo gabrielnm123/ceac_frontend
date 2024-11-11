@@ -21,6 +21,7 @@ const CreateFicha: React.FC<createFichaPropsType> = (props) => {
   const [getIsOnline, setIsOnline] = useState<boolean>(form.getFieldsValue().assistir_online === 'S');
   const [getIsPJRequired, setIsPJRequired] = useState<boolean>(false);
   const [getModulosCapacita, setModulosCapacita] = useState<Array<modulosCapacitaType> | []>([])
+  const [getLoading, setLoading] = useState(false);
 
   useEffect(() => {
     setIsOnline(form.getFieldValue('assistir_online') === 'S')
@@ -93,6 +94,7 @@ const CreateFicha: React.FC<createFichaPropsType> = (props) => {
   };
 
   const onFinish = () => {
+    setLoading(true)
     const values = form.getFieldsValue()
     Object.entries(values).forEach(([key, value]) => {
       if (!value || value === '(__) ____-____' || (typeof value === 'string' && value.trim() === '')) {
@@ -145,6 +147,7 @@ const CreateFicha: React.FC<createFichaPropsType> = (props) => {
     }
     if (props.funcEditing) {
       props.funcEditing(values);
+      setLoading(false);
     } else {
       axiosInstance.post('capacita/fichas/', values)
         .then(() => {
@@ -153,6 +156,7 @@ const CreateFicha: React.FC<createFichaPropsType> = (props) => {
         .catch(() => {
           message.error('Erro ao criar ficha, tente novamente.');
         })
+        .finally(() => setLoading(false))
     }
   };
 
@@ -586,8 +590,8 @@ const CreateFicha: React.FC<createFichaPropsType> = (props) => {
               okText="Sim"
               cancelText="Não"
             >
-              <Button type="primary">Editar</Button>
-            </Popconfirm> : <Button type="primary" htmlType="submit">Criar</Button>
+              <Button type="primary" loading={getLoading}>Editar</Button>
+            </Popconfirm> : <Button type="primary" htmlType="submit" loading={getLoading}>Criar</Button>
           }
         </Form.Item>
       </div>
