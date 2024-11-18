@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Form, Input, Button, Select, DatePicker, Table, message, Modal, Descriptions, Popconfirm, Typography } from 'antd';
+import { Form, Input, Button, Select, DatePicker, Table, message, Modal, Descriptions, Popconfirm, Typography, Spin } from 'antd';
 import MaskedInput from 'antd-mask-input';
 import axiosInstance from "../../services/axiosInstance";
 import '../../css/SearchFicha.css';
@@ -34,6 +34,7 @@ const atividadeMap: { [key: string]: string } = {
 
 const SearchFicha: React.FC = () => {
   const [getLoadingSearchFicha, setLoadingSearchFicha] = useState<boolean>(false);
+  const [getLoadingSelectFicha, setLoadingSelectFicha] = useState<boolean>(false);
   const [getLoadinDowloading, setLoadingDowloading] = useState(false);
   const [getLoadingEditing, setLoadingEditing] = useState(false);
   const [getLoadingDelete, setLoadingDelete] = useState(false);
@@ -53,9 +54,15 @@ const SearchFicha: React.FC = () => {
         const columns = [
           {
             title: 'Nome', dataIndex: 'nome_completo', key: 'nome_completo', render: (text: string, record: any) => (
-              <a onClick={() => handleOpenFicha(record.id)}>
-                {text}
-              </a>
+              <Spin spinning={getLoadingSelectFicha} tip='Carregando...'>
+                <a onClick={() => {
+                  setLoadingSelectFicha(true)
+                  handleOpenFicha(record.id)
+                  setLoadingSelectFicha(false)
+                }}>
+                  {text}
+                </a>
+              </Spin>
             )
           },
           {
@@ -123,6 +130,7 @@ const SearchFicha: React.FC = () => {
   };
 
   const dowloadFicha = () => {
+    setLoadingDowloading(true)
     axiosInstance.get(`capacita/fichas/${getSelectedFicha.id}/download`, {
       responseType: 'blob'
     })
@@ -138,9 +146,11 @@ const SearchFicha: React.FC = () => {
       .catch(() => {
         message.error('Erro ao baixar a ficha, tente novamente.');
       })
+    setLoadingDowloading(false)
   }
 
   const deleteFicha = () => {
+    setLoadingDelete(true);
     axiosInstance.delete(`capacita/fichas/${getSelectedFicha.id}/`)
       .then(() => {
         message.success(`Ficha do(a) ${getSelectedFicha.nome_completo} deletada com sucesso.`)
@@ -150,13 +160,11 @@ const SearchFicha: React.FC = () => {
       .catch(() => {
         message.error(`Erro ao deletar a ficha do(a) ${getSelectedFicha.nome_completo}. Tente novamente.`);
       })
+    setLoadingDelete(false);
   }
 
-  const onReset = () => {
-    form.resetFields();
-  };
-
   const editingFicha = () => {
+    setLoadingEditing(true);
     form2.resetFields()
     form2.setFieldsValue({
       ...getSelectedFicha,
@@ -170,6 +178,11 @@ const SearchFicha: React.FC = () => {
       cnae_principal: getSelectedFicha.cnae_principal ? getSelectedFicha.cnae_principal.replace(/(\d{4})(\d{1})(\d{2})/, '$1-$2/$3') : ''
     });
     setIsEditingFicha(true);
+    setLoadingEditing(false);
+  };
+
+  const onReset = () => {
+    form.resetFields();
   };
 
   const onEditFinish = (values: any) => {
@@ -322,12 +335,14 @@ const SearchFicha: React.FC = () => {
         </Form>
 
         <div className="table-search-ficha">
-          <Table
-            columns={getColumns}
-            dataSource={getData}
-            rowKey="id"
-            pagination={{ pageSize: 10 }}
-          />
+          <Spin spinning={getLoadingSearchFicha} tip='Carregando...'>
+            <Table
+              columns={getColumns}
+              dataSource={getData}
+              rowKey="id"
+              pagination={{ pageSize: 10 }}
+            />
+          </Spin>
         </div>
       </div>
 
@@ -337,109 +352,111 @@ const SearchFicha: React.FC = () => {
         footer={null}
       >
         {getSelectedFicha && (
-          <div className="modal-ficha">
-            <div className="button-ficha-description">
-              <Button className="dowload-ficha" type="primary" onClick={dowloadFicha}>Baixar Ficha</Button>
-              <Button className="edit-ficha" onClick={editingFicha}>Editar Ficha</Button>
-              <Popconfirm
-                title="Tem certeza que deseja deletar esta ficha?"
-                onConfirm={deleteFicha}
-                okText="Sim"
-                cancelText="Não"
-              >
-                <Button className="delete-ficha">Deletar Ficha</Button>
-              </Popconfirm>
-            </div>
-            <Title className="modal-title" level={2}>Dados Pessoais</Title>
-            <Descriptions bordered column={1} layout="horizontal">
+          <Spin spinning={getLoadinDowloading || getLoadingEditing || getLoadingDelete} tip='Carregando...'>
+            <div className="modal-ficha">
+              <div className="button-ficha-description">
+                <Button className="dowload-ficha" type="primary" onClick={dowloadFicha}>Baixar Ficha</Button>
+                <Button className="edit-ficha" onClick={editingFicha}>Editar Ficha</Button>
+                <Popconfirm
+                  title="Tem certeza que deseja deletar esta ficha?"
+                  onConfirm={deleteFicha}
+                  okText="Sim"
+                  cancelText="Não"
+                >
+                  <Button className="delete-ficha">Deletar Ficha</Button>
+                </Popconfirm>
+              </div>
+              <Title className="modal-title" level={2}>Dados Pessoais</Title>
+              <Descriptions bordered column={1} layout="horizontal">
 
-              <Descriptions.Item label="Nome">{getSelectedFicha.nome_completo}</Descriptions.Item>
-              <Descriptions.Item label="CPF">
-                {getSelectedFicha.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')}
-              </Descriptions.Item>
-              <Descriptions.Item label="Gênero">{generoMap[getSelectedFicha.genero]}</Descriptions.Item>
-              <Descriptions.Item label="Data de Nascimento">
-                {dayjs(getSelectedFicha.data_nascimento).format('DD/MM/YYYY').toUpperCase()}
-              </Descriptions.Item>
-              <Descriptions.Item label="Escolaridade">{escolaridadeMap[getSelectedFicha.escolaridade]}</Descriptions.Item>
-              <Descriptions.Item label="Atividade">{atividadeMap[getSelectedFicha.atividade]}</Descriptions.Item>
-              <Descriptions.Item label="Endereço">{getSelectedFicha.endereco}</Descriptions.Item>
-              {getSelectedFicha.complemento && (
-                <Descriptions.Item label="Complemento">{getSelectedFicha.complemento}</Descriptions.Item>
-              )}
-              <Descriptions.Item label="Bairro">{getSelectedFicha.bairro}</Descriptions.Item>
-              <Descriptions.Item label="CEP">
-                {getSelectedFicha.cep.replace(/(\d{5})(\d{3})/, '$1-$2')}
-              </Descriptions.Item>
-              <Descriptions.Item label="UF">{getSelectedFicha.uf}</Descriptions.Item>
-              <Descriptions.Item label="Celular">
-                {getSelectedFicha.celular.replace(/(\d{2})(\d{1})(\d{4})(\d{4})/, '($1) $2 $3-$4')}
-              </Descriptions.Item>
-              {getSelectedFicha.fixo && (
-                <Descriptions.Item label="Fixo">
-                  {getSelectedFicha.fixo.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3')}
+                <Descriptions.Item label="Nome">{getSelectedFicha.nome_completo}</Descriptions.Item>
+                <Descriptions.Item label="CPF">
+                  {getSelectedFicha.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')}
                 </Descriptions.Item>
-              )}
-              <Descriptions.Item label="Email">{getSelectedFicha.email.toLowerCase()}</Descriptions.Item>
-              <Descriptions.Item label="Interesse em ter negócio">
-                {getSelectedFicha.interesse_ter_negocio === 'S' ? 'SIM' : 'NÃO'}
-              </Descriptions.Item>
-              <Descriptions.Item label="Preferência de Aula">{getSelectedFicha.preferencia_aula}</Descriptions.Item>
-              <Descriptions.Item label="Meio de Comunicação de Aula">{getSelectedFicha.meio_comunicacao_aula}</Descriptions.Item>
-              <Descriptions.Item label="Assistir Online">{getSelectedFicha.assistir_online === 'S' ? 'SIM' : 'NÃO'}</Descriptions.Item>
-              {getSelectedFicha.assistir_online === 'S' && getSelectedFicha.if_true_assistir_casa && (
-                <Descriptions.Item label="Se assistir em casa, como?">{getSelectedFicha.if_true_assistir_casa}</Descriptions.Item>
-              )}
-            </Descriptions>
+                <Descriptions.Item label="Gênero">{generoMap[getSelectedFicha.genero]}</Descriptions.Item>
+                <Descriptions.Item label="Data de Nascimento">
+                  {dayjs(getSelectedFicha.data_nascimento).format('DD/MM/YYYY').toUpperCase()}
+                </Descriptions.Item>
+                <Descriptions.Item label="Escolaridade">{escolaridadeMap[getSelectedFicha.escolaridade]}</Descriptions.Item>
+                <Descriptions.Item label="Atividade">{atividadeMap[getSelectedFicha.atividade]}</Descriptions.Item>
+                <Descriptions.Item label="Endereço">{getSelectedFicha.endereco}</Descriptions.Item>
+                {getSelectedFicha.complemento && (
+                  <Descriptions.Item label="Complemento">{getSelectedFicha.complemento}</Descriptions.Item>
+                )}
+                <Descriptions.Item label="Bairro">{getSelectedFicha.bairro}</Descriptions.Item>
+                <Descriptions.Item label="CEP">
+                  {getSelectedFicha.cep.replace(/(\d{5})(\d{3})/, '$1-$2')}
+                </Descriptions.Item>
+                <Descriptions.Item label="UF">{getSelectedFicha.uf}</Descriptions.Item>
+                <Descriptions.Item label="Celular">
+                  {getSelectedFicha.celular.replace(/(\d{2})(\d{1})(\d{4})(\d{4})/, '($1) $2 $3-$4')}
+                </Descriptions.Item>
+                {getSelectedFicha.fixo && (
+                  <Descriptions.Item label="Fixo">
+                    {getSelectedFicha.fixo.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3')}
+                  </Descriptions.Item>
+                )}
+                <Descriptions.Item label="Email">{getSelectedFicha.email.toLowerCase()}</Descriptions.Item>
+                <Descriptions.Item label="Interesse em ter negócio">
+                  {getSelectedFicha.interesse_ter_negocio === 'S' ? 'SIM' : 'NÃO'}
+                </Descriptions.Item>
+                <Descriptions.Item label="Preferência de Aula">{getSelectedFicha.preferencia_aula}</Descriptions.Item>
+                <Descriptions.Item label="Meio de Comunicação de Aula">{getSelectedFicha.meio_comunicacao_aula}</Descriptions.Item>
+                <Descriptions.Item label="Assistir Online">{getSelectedFicha.assistir_online === 'S' ? 'SIM' : 'NÃO'}</Descriptions.Item>
+                {getSelectedFicha.assistir_online === 'S' && getSelectedFicha.if_true_assistir_casa && (
+                  <Descriptions.Item label="Se assistir em casa, como?">{getSelectedFicha.if_true_assistir_casa}</Descriptions.Item>
+                )}
+              </Descriptions>
 
-            {getSelectedFicha.nome_fantasia && (
-              <Title className="modal-title" level={2}>Dados Jurídicos</Title>
-            )}
-            <Descriptions bordered column={1} layout="horizontal">
               {getSelectedFicha.nome_fantasia && (
-                <Descriptions.Item label="Nome Fantasia">{getSelectedFicha.nome_fantasia}</Descriptions.Item>
+                <Title className="modal-title" level={2}>Dados Jurídicos</Title>
               )}
-              {getSelectedFicha.cnpj && (
-                <Descriptions.Item label="CNPJ">
-                  {getSelectedFicha.cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5')}
-                </Descriptions.Item>
-              )}
-              {getSelectedFicha.situacao_empresa && (
-                <Descriptions.Item label="Situação da Empresa">
-                  {getSelectedFicha.situacao_empresa === 'ATIVA' ? 'ATIVA' : 'NÃO ATIVA'}
-                </Descriptions.Item>
-              )}
-              {getSelectedFicha.porte_empresa && (
-                <Descriptions.Item label="Porte da Empresa">{getSelectedFicha.porte_empresa}</Descriptions.Item>
-              )}
-              {getSelectedFicha.data_abertura && (
-                <Descriptions.Item label="Data de Abertura">
-                  {dayjs(getSelectedFicha.data_abertura).format('DD/MM/YYYY').toUpperCase()}
-                </Descriptions.Item>
-              )}
-              {getSelectedFicha.cnae_principal && (
-                <Descriptions.Item label="CNAE Principal">
-                  {getSelectedFicha.cnae_principal.replace(/(\d{4})(\d{1})(\d{2})/, '$1-$2/$3')}
-                </Descriptions.Item>
-              )}
-              {getSelectedFicha.setor && (
-                <Descriptions.Item label="Setor">{getSelectedFicha.setor}</Descriptions.Item>
-              )}
-              {getSelectedFicha.tipo_vinculo && (
-                <Descriptions.Item label="Tipo de Vínculo">{getSelectedFicha.tipo_vinculo}</Descriptions.Item>
-              )}
-            </Descriptions>
+              <Descriptions bordered column={1} layout="horizontal">
+                {getSelectedFicha.nome_fantasia && (
+                  <Descriptions.Item label="Nome Fantasia">{getSelectedFicha.nome_fantasia}</Descriptions.Item>
+                )}
+                {getSelectedFicha.cnpj && (
+                  <Descriptions.Item label="CNPJ">
+                    {getSelectedFicha.cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5')}
+                  </Descriptions.Item>
+                )}
+                {getSelectedFicha.situacao_empresa && (
+                  <Descriptions.Item label="Situação da Empresa">
+                    {getSelectedFicha.situacao_empresa === 'ATIVA' ? 'ATIVA' : 'NÃO ATIVA'}
+                  </Descriptions.Item>
+                )}
+                {getSelectedFicha.porte_empresa && (
+                  <Descriptions.Item label="Porte da Empresa">{getSelectedFicha.porte_empresa}</Descriptions.Item>
+                )}
+                {getSelectedFicha.data_abertura && (
+                  <Descriptions.Item label="Data de Abertura">
+                    {dayjs(getSelectedFicha.data_abertura).format('DD/MM/YYYY').toUpperCase()}
+                  </Descriptions.Item>
+                )}
+                {getSelectedFicha.cnae_principal && (
+                  <Descriptions.Item label="CNAE Principal">
+                    {getSelectedFicha.cnae_principal.replace(/(\d{4})(\d{1})(\d{2})/, '$1-$2/$3')}
+                  </Descriptions.Item>
+                )}
+                {getSelectedFicha.setor && (
+                  <Descriptions.Item label="Setor">{getSelectedFicha.setor}</Descriptions.Item>
+                )}
+                {getSelectedFicha.tipo_vinculo && (
+                  <Descriptions.Item label="Tipo de Vínculo">{getSelectedFicha.tipo_vinculo}</Descriptions.Item>
+                )}
+              </Descriptions>
 
-            <Title className="modal-title" level={2}>Módulo de Capacitação</Title>
-            <Descriptions bordered column={1} layout="horizontal">
-              {getModulosCapacita.find((modulo) => modulo.id === getSelectedFicha.modulo_capacita)?.nome && (
-                <Descriptions.Item label="Módulo de Capacitação">
-                  {getModulosCapacita.find((modulo) => modulo.id === getSelectedFicha.modulo_capacita)?.nome.split(": ").join(": ")}
-                </Descriptions.Item>
-              )}
-            </Descriptions>
+              <Title className="modal-title" level={2}>Módulo de Capacitação</Title>
+              <Descriptions bordered column={1} layout="horizontal">
+                {getModulosCapacita.find((modulo) => modulo.id === getSelectedFicha.modulo_capacita)?.nome && (
+                  <Descriptions.Item label="Módulo de Capacitação">
+                    {getModulosCapacita.find((modulo) => modulo.id === getSelectedFicha.modulo_capacita)?.nome.split(": ").join(": ")}
+                  </Descriptions.Item>
+                )}
+              </Descriptions>
 
-          </div>
+            </div>
+          </Spin>
         )}
       </Modal>
       <Modal
