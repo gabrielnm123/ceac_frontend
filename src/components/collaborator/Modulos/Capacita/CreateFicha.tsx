@@ -191,7 +191,7 @@ const CreateFicha: React.FC<createFichaPropsType> = (props) => {
             }
             ]}
           >
-            <Input onChange={(e) => form.setFieldsValue({ nome_completo: e.target.value.toUpperCase() })} allowClear />
+            <Input onChange={(e) => form.setFieldValue('nome_completo', e.target.value.toUpperCase())} allowClear />
           </Form.Item>
 
           <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
@@ -290,11 +290,11 @@ const CreateFicha: React.FC<createFichaPropsType> = (props) => {
               }
             }]}
           >
-            <Input onChange={(e) => form.setFieldsValue({ endereco: e.target.value.toUpperCase() })} allowClear />
+            <Input onChange={(e) => form.setFieldValue('endereco', e.target.value.toUpperCase())} allowClear />
           </Form.Item>
 
           <Form.Item validateTrigger="onBlur" className="form-create-ficha-item" label="Complemento" name="complemento">
-            <Input onChange={(e) => { if (e.target.value) { form.setFieldsValue({ complemento: e.target.value.toUpperCase() }) } }} allowClear />
+            <Input onChange={(e) => { if (e.target.value) { form.setFieldValue('complemento', e.target.value.toUpperCase()) } }} allowClear />
           </Form.Item>
 
           <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
@@ -309,7 +309,7 @@ const CreateFicha: React.FC<createFichaPropsType> = (props) => {
               }
             }]}
           >
-            <Input onChange={(e) => form.setFieldsValue({ bairro: e.target.value.toUpperCase() })} allowClear />
+            <Input onChange={(e) => form.setFieldValue('bairro', e.target.value.toUpperCase())} allowClear />
           </Form.Item>
 
           <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
@@ -393,7 +393,7 @@ const CreateFicha: React.FC<createFichaPropsType> = (props) => {
               { type: 'email', message: 'Por favor, insira um e-mail válido' },
             ]}
           >
-            <Input onChange={(e) => form.setFieldsValue({ email: e.target.value.toLowerCase() })} allowClear />
+            <Input onChange={(e) => form.setFieldValue('email', e.target.value.toLowerCase())} allowClear />
           </Form.Item>
 
           <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
@@ -481,7 +481,7 @@ const CreateFicha: React.FC<createFichaPropsType> = (props) => {
             }
             ]}
           >
-            <Input onChange={(e) => form.setFieldsValue({ nome_fantasia: e.target.value.toUpperCase() })} disabled={!getIsPJRequired} allowClear />
+            <Input onChange={(e) => form.setFieldValue('nome_fantasia',  e.target.value.toUpperCase())} disabled={!getIsPJRequired} allowClear />
           </Form.Item>
 
           <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"

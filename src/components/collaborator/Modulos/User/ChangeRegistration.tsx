@@ -137,14 +137,14 @@ const ChangeRegistration: React.FC = () => {
           name="first_name"
           rules={[{ required: true, message: 'Por favor, insira seu primeiro nome!' }]}
         >
-          <Input placeholder="Primeiro Nome" onChange={(e) => form.setFieldsValue({ first_name: e.target.value.toUpperCase() })} />
+          <Input placeholder="Primeiro Nome" onChange={(e) => form.setFieldValue('first_name', e.target.value.toUpperCase())} />
         </Form.Item>
         <Form.Item
           label="Sobrenome"
           name="last_name"
           rules={[{ required: true, message: 'Por favor, insira seu sobrenome!' }]}
         >
-          <Input placeholder="Sobrenome" onChange={(e) => form.setFieldsValue({ last_name: e.target.value.toUpperCase() })} />
+          <Input placeholder="Sobrenome" onChange={(e) => form.setFieldValue('last_name', e.target.value.toUpperCase())} />
         </Form.Item>
         <Form.Item
           label="Senha Atual"
@@ -168,7 +168,6 @@ const ChangeRegistration: React.FC = () => {
           <Input.Password
             placeholder="Nova senha (opcional)"
             onChange={(e) => {
-              form.setFieldsValue({ password: e.target.value });
               form.validateFields(['password']);
             }}
           />

@@ -243,7 +243,7 @@ const SearchFicha: React.FC = () => {
         <Form form={form} className="form-search-ficha" onFinish={onFinish}>
           <div className="form-search-ficha-minus-button">
             <Form.Item label="Nome" name="nome" className="form-search-ficha-nome form-search-ficha-item">
-              <Input onChange={(e) => form.setFieldsValue({ nome: e.target.value.toUpperCase() })} allowClear />
+              <Input onChange={(e) => form.setFieldValue('nome', e.target.value.toUpperCase())} allowClear />
             </Form.Item>
             <Form.Item label="Módulo de Capacitação" name='modulo_capacita' className="form-search-ficha-modulos-capacita form-search-ficha-item">
               <Select allowClear showSearch className="form-search-ficha-select-modulos-capacita" options={getModulosCapacita.map(
