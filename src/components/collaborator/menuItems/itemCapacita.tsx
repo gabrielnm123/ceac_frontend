@@ -14,44 +14,63 @@ const itemCapacita = (
   setBaseTitle: React.Dispatch<React.SetStateAction<string>>,
   permissions: string[]
 ): menuItemType[] => {
-  const buscarFicha = () => {
+  const searchFicha = () => {
     setBaseContent(<SearchFicha />);
     setBaseTitle('Buscar Ficha de Inscrição de Capacitação');
   };
-  
-  const criarFicha = () => {
+
+  const createFicha = () => {
     setBaseContent(<CreateFicha />);
     setBaseTitle('Criar Ficha de Inscrição de Capacitação');
   };
-  
-  const permissionArray: menuItemType[] = [];
-  
+
+  const items: menuItemType[] = [];
+
+  // switch (true) {
+  //   case permissions.includes('SUPER USUÁRIO'):
+  //     items.push(
+  //       getMenuItem('Buscar Ficha', 'searchFicha', <SearchOutlined />, undefined, searchFicha)
+  //     );
+  //     items.push(
+  //       getMenuItem('Criar Ficha', 'createFicha', <FormOutlined />, undefined, createFicha)
+  //     );
+  //     setBaseContent(<SearchFicha />);
+  //     setBaseTitle('Buscar Ficha de Inscrição de Capacitação');
+  //     break;
+
+  //   case 
+  // }
+
   if (permissions.includes('SUPER USUÁRIO')) {
-    permissionArray.push(
-      getMenuItem('Buscar Ficha', 'buscarFicha', <SearchOutlined />, undefined, buscarFicha)
+    items.push(
+      getMenuItem('Buscar Ficha', 'searchFicha', <SearchOutlined />, undefined, searchFicha)
     );
-    permissionArray.push(
-      getMenuItem('Criar Ficha', 'criarFicha', <FormOutlined />, undefined, criarFicha)
+    items.push(
+      getMenuItem('Criar Ficha', 'createFicha', <FormOutlined />, undefined, createFicha)
     );
     setBaseContent(<SearchFicha />);
     setBaseTitle('Buscar Ficha de Inscrição de Capacitação');
   } else {
-    if (permissions.includes('buscarFicha')) {
-      permissionArray.push(
-        getMenuItem('Buscar Ficha', 'buscarFicha', <SearchOutlined />, undefined, buscarFicha)
+    if (permissions.includes('searchFicha')) {
+      items.push(
+        getMenuItem('Buscar Ficha', 'searchFicha', <SearchOutlined />, undefined, searchFicha)
       );
       setBaseContent(<SearchFicha />);
       setBaseTitle('Buscar Ficha de Inscrição de Capacitação');
     }
-    if (permissions.includes('criarFicha')) {
-      permissionArray.push(
-        getMenuItem('Criar Ficha', 'criarFicha', <FormOutlined />, undefined, criarFicha)
+    if (permissions.includes('createFicha')) {
+      items.push(
+        getMenuItem('Criar Ficha', 'createFicha', <FormOutlined />, undefined, createFicha)
       );
+      if (!permissions.includes('searchFicha')) {
+        setBaseContent(<CreateFicha />);
+        setBaseTitle('Criar Ficha de Inscrição de Capacitação');
+      };
     }
   }
 
   return [
-    getMenuItem('Capacita', 'capacita', <ReadOutlined />, permissionArray)
+    getMenuItem('Capacita', 'capacita', <ReadOutlined />, items)
   ];
 };
 

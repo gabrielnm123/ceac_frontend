@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Base from "../Base";
 import { itemUser } from "../menuItems/itemUser";
 import itemCapacita from "../menuItems/itemCapacita";
+import itemAdministrator from "../menuItems/itemAdministrator";
 import type menuItemType from "../types/menuItem";
 
 const Modulo: React.FC = () => {
@@ -15,22 +16,23 @@ const Modulo: React.FC = () => {
   const perfisNames = Object.keys(perfisNamePermissions);
   const perfilName = localStorage.getItem('perfilName')!;
   const permissions = perfisNamePermissions[perfilName];
-  const user = itemUser(setBaseContent, setBaseTitle);
-
+  
   useEffect(() => {
     document.title = getBaseTitle;
   }, [getBaseContent, getBaseTitle, getItems])
-
+  
   useEffect(() => {
     if (!perfisNames.includes(perfilName) && perfisNames[0] !== 'null') {
       navigate('/colaborador/perfil');
     }
   }, [perfisNamePermissions]);
-
+  
   useEffect(() => {
     if (permissions) {
+      const user = itemUser(setBaseContent, setBaseTitle);
       const capacita = itemCapacita(setBaseContent, setBaseTitle, permissions);
-      const items = user.concat(capacita);
+      const administrator = itemAdministrator(setBaseContent, setBaseTitle, permissions)
+      const items = user.concat(capacita).concat(administrator);
       setItems(items);
     }
   }, [permissions]);

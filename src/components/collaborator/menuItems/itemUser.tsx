@@ -20,7 +20,7 @@ const itemUser = (
   }
 
   return [
-    getMenuItem('Operador', 'operador', <UserOutlined />, [
+    getMenuItem('Operador', 'operator', <UserOutlined />, [
       getMenuItem('Alterar Cadastro', 'changeRegistration', <EditOutlined />, undefined, changeRegistration),
       getMenuItem(<a href='/colaborador/perfil'>Alterar Perfil</a>, 'perfil', <IdcardOutlined />, undefined),
       getMenuItem(<a href='/colaborador/login'>Sair</a>, 'sair', <LogoutOutlined />, undefined, logout),
