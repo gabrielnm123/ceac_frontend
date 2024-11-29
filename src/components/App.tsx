@@ -7,6 +7,7 @@ import Modulo from './collaborator/Modulos/Modulo';
 import { itemUser } from './collaborator/menuItems/itemUser';
 import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br';
+import { SpinningProvider } from './collaborator/Provider/Spinning';
 
 const App: React.FC = () => {
   const [getBaseContent, setBaseContent] = useState<React.ReactNode>(<Perfil />);
@@ -25,14 +26,16 @@ const App: React.FC = () => {
 
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path='colaborador/login' element={<Base content={<Login />} title='Autenticação' />} />
-        <Route path='colaborador/perfil' element={<Base content={getBaseContent} title={getBaseTitle} menuItem={itemUser(setBaseContent, setBaseTitle)} />} />
-        {
-          perfilName ? <Route path={`colaborador/${perfilName}`} element={<Modulo />} /> : null
-        }
-        <Route path="*" element={<Navigate to="colaborador/perfil" />} />
-      </Routes>
+      <SpinningProvider>
+        <Routes>
+          <Route path='colaborador/login' element={<Base content={<Login />} title='Autenticação' />} />
+          <Route path='colaborador/perfil' element={<Base content={getBaseContent} title={getBaseTitle} menuItem={itemUser(setBaseContent, setBaseTitle)} />} />
+          {
+            perfilName ? <Route path={`colaborador/${perfilName}`} element={<Modulo />} /> : null
+          }
+          <Route path="*" element={<Navigate to="colaborador/perfil" />} />
+        </Routes>
+      </SpinningProvider>
     </BrowserRouter>
   );
 };
