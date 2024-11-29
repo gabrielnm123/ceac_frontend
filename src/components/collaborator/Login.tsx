@@ -1,16 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import { Form, Input, Button, message, Spin } from 'antd';
+import { Form, Input, Button, message } from 'antd';
 import './css/Login.css';
 import axiosInstance from "./services/axiosInstance";
+import { useSpinning } from "./Provider/Spinning";
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const [getLoadingButton, setLoadingButton] = useState(false);
-  const [getLoadingPage, setLoadingPage] = useState(false);
+  const { setSpinning } = useSpinning();
 
   useEffect(() => {
-    setLoadingPage(true);
+    setSpinning(true);
     document.title = 'Autenticação';
     axiosInstance.post('token/refresh/verify/')
       .then(() => {
@@ -19,11 +20,12 @@ const Login: React.FC = () => {
       .catch((error) => {
         if (error.status && error.status === 400) return
       })
-      .finally(() => setLoadingPage(false));
+      .finally(() => setSpinning(false));
   }, []);
 
   const onFinish = (values: object) => {
-    setLoadingButton(true)
+    setLoadingButton(true);
+    setSpinning(true);
     axiosInstance.post('token/', values)
       .then(() => {
         axiosInstance.get('current_user/')
@@ -39,7 +41,7 @@ const Login: React.FC = () => {
       .catch(() => {
         message.error('Usuário ou senha inválida(s)!');
       })
-      .finally(() => setLoadingButton(false))
+      .finally(() => { setLoadingButton(false); setSpinning(false); })
   };
 
   const onFinishFailed = () => {
@@ -47,35 +49,33 @@ const Login: React.FC = () => {
   };
 
   return (
-    <Spin spinning={getLoadingButton || getLoadingPage} tip='Carregando...' >
-      <Form
-        className="form-login"
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
+    <Form
+      className="form-login"
+      onFinish={onFinish}
+      onFinishFailed={onFinishFailed}
+    >
+      <Form.Item
+        className="username-login"
+        name="username"
+        rules={[{ required: true, message: 'Insira seu nome de usuário!' }]}
+        label="Usuário"
       >
-        <Form.Item
-          className="username-login"
-          name="username"
-          rules={[{ required: true, message: 'Insira seu nome de usuário!' }]}
-          label="Usuário"
-        >
-          <Input placeholder="Nome de usuário" />
-        </Form.Item>
-        <Form.Item
-          className="password-login"
-          name="password"
-          rules={[{ required: true, message: 'Insira sua senha!' }]}
-          label="Senha"
-        >
-          <Input.Password placeholder="Senha" />
-        </Form.Item>
-        <Form.Item className="button-login">
-          <Button type="primary" htmlType="submit" loading={getLoadingButton} >
-            Entrar
-          </Button>
-        </Form.Item>
-      </Form>
-    </Spin>
+        <Input placeholder="Nome de usuário" />
+      </Form.Item>
+      <Form.Item
+        className="password-login"
+        name="password"
+        rules={[{ required: true, message: 'Insira sua senha!' }]}
+        label="Senha"
+      >
+        <Input.Password placeholder="Senha" />
+      </Form.Item>
+      <Form.Item className="button-login">
+        <Button type="primary" htmlType="submit" loading={getLoadingButton} >
+          Entrar
+        </Button>
+      </Form.Item>
+    </Form>
   );
 };
 
