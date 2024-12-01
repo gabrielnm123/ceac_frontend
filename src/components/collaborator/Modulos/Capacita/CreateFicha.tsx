@@ -133,21 +133,25 @@ const CreateFicha: React.FC<createFichaPropsType> = (props) => {
     }
 
     if (!isValidCNAE(values.cnae_principal) && getIsPJRequired) {
-      message.error('CNAE deve conter exatamente 7 dígitos');
+      message.error('CNAE inválido');
+      setLoading(false);
       return null;
     }
-
+    
     if (!isPhone(values.celular) && values.celular !== null) {
-      message.error('Celular deve conter exatamente 11 dígitos');
+      message.error('Celular inválido');
+      setLoading(false);
       return null;
     }
     if (!isPhone(values.fixo) && values.fixo !== null) {
-      message.error('Telefone fixo deve conter exatamente 10 dígitos');
+      message.error('Telefone inválido');
+      setLoading(false);
       return null;
     }
-
+    
     if (!isCEP(values.cep)) {
-      message.error('CEP deve conter exatamente 8 dígitos');
+      message.error('CEP inválidoj');
+      setLoading(false);
       return null;
     }
 
