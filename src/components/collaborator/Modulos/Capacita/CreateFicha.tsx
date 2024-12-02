@@ -102,7 +102,7 @@ const CreateFicha: React.FC<createFichaPropsType> = (props) => {
     setIsPJRequired(e.target.checked);
   };
 
-  const onFinish = () => {
+  const onFinish = async () => {
     setLoading(true)
     const values = form.getFieldsValue()
     Object.entries(values).forEach(([key, value]) => {
@@ -132,7 +132,9 @@ const CreateFicha: React.FC<createFichaPropsType> = (props) => {
       return null;
     }
 
-    if (!isValidCNAE(values.cnae_principal) && getIsPJRequired) {
+    const validCNAE = await isValidCNAE(values.cnae_principal);
+
+    if (!validCNAE && getIsPJRequired) {
       message.error('CNAE inválido');
       setLoading(false);
       return null;
@@ -553,9 +555,10 @@ const CreateFicha: React.FC<createFichaPropsType> = (props) => {
             name="cnae_principal"
             rules={[{ required: getIsPJRequired, message: 'Por favor, insira o CNAE Principal' },
             {
-              validator: (_, value) => {
+              validator: async (_, value) => {
                 if (getIsPJRequired && value) {
-                  if (!isValidCNAE(value)) {
+                  const validCNAE = await isValidCNAE(value)
+                  if (!validCNAE) {
                     return Promise.reject(new Error('CNAE inválido'));
                   }
                 }
