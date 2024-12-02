@@ -19,7 +19,6 @@ const ChangeRegistration: React.FC = () => {
   const [form] = Form.useForm();
 
   useEffect(() => {
-
     const userId = localStorage.getItem('userId');
     axiosInstance.get(`/users/${userId}/`)
       .then((response) => {
@@ -82,8 +81,8 @@ const ChangeRegistration: React.FC = () => {
       return;
     }
 
-
     const userId = localStorage.getItem('userId');
+
     axiosInstance.post(`users/${userId}/check-password/`, {
       password: values.currentPassword,
     })

@@ -142,7 +142,7 @@ const SearchFicha: React.FC = () => {
       .catch(() => {
         message.error('Erro ao baixar a ficha, tente novamente.');
       })
-    setSpinning(false)
+      .finally(() => setSpinning(false));
   }
 
   const deleteFicha = () => {
@@ -156,7 +156,7 @@ const SearchFicha: React.FC = () => {
       .catch(() => {
         message.error(`Erro ao deletar a ficha do(a) ${getSelectedFicha.nome_completo}. Tente novamente.`);
       })
-    setSpinning(false);
+      .finally(() => setSpinning(false))
   }
 
   const editingFicha = () => {
@@ -178,7 +178,9 @@ const SearchFicha: React.FC = () => {
   };
 
   const onReset = () => {
+    setSpinning(true);
     form.resetFields();
+    setSpinning(false);
   };
 
   const onEditFinish = (values: any) => {
