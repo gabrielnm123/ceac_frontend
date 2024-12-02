@@ -35,22 +35,22 @@ const CreateFicha: React.FC<createFichaPropsType> = (props) => {
       .catch(() => {
         message.error('Erro ao carregar os módulos da capacitação, recarregue a página.');
       })
-    }, [props.form ? form.getFieldValue('id') : null])
-    
-    const isValidCNAE = (cnae: string) => {
-      if (typeof cnae === 'string' && /^\d{7}$/.test(cnae.replace(/\D/g, ''))) {
-        axios.get(`https://servicodados.ibge.gov.br/api/v2/cnae/subclasses/${cnae.replace(/\D/g, '')}`)
-          .then(value => {
-            return Boolean(value.data.length)
-          })
-          .catch(() => {
-            message.error('Não foi possível verificar o CNAE. Prossiga apenas se tiver certeza da validade do código.')
-            return true
-          })
-      } else return false
-    };
-    
-    const isValidInput = (input: string) => typeof input === 'string' && (input.trim() !== '' || input === '');
+  }, [props.form ? form.getFieldValue('id') : null])
+
+  const isValidCNAE = (cnae: string) => {
+    if (/^\d{7}$/.test(cnae.replace(/\D/g, ''))) {
+      return axios.get(`https://servicodados.ibge.gov.br/api/v2/cnae/subclasses/${cnae.replace(/\D/g, '')}`)
+        .then(value => {
+          return Boolean(value.data.length)
+        })
+        .catch(() => {
+          message.error('Não foi possível verificar o CNAE. Prossiga apenas se tiver certeza da validade do código.')
+          return true
+        })
+    } else return Promise.resolve(false);
+  };
+
+  const isValidInput = (input: string) => typeof input === 'string' && (input.trim() !== '' || input === '');
 
   const fetchAddressByCEP = (cep: string) => {
     return axios.get(`https://viacep.com.br/ws/${cep}/json/`)
@@ -137,7 +137,7 @@ const CreateFicha: React.FC<createFichaPropsType> = (props) => {
       setLoading(false);
       return null;
     }
-    
+
     if (!isPhone(values.celular) && values.celular !== null) {
       message.error('Celular inválido');
       setLoading(false);
@@ -148,7 +148,7 @@ const CreateFicha: React.FC<createFichaPropsType> = (props) => {
       setLoading(false);
       return null;
     }
-    
+
     if (!isCEP(values.cep)) {
       message.error('CEP inválidoj');
       setLoading(false);
@@ -485,7 +485,7 @@ const CreateFicha: React.FC<createFichaPropsType> = (props) => {
             }
             ]}
           >
-            <Input onChange={(e) => form.setFieldValue('nome_fantasia',  e.target.value.toUpperCase())} disabled={!getIsPJRequired} allowClear />
+            <Input onChange={(e) => form.setFieldValue('nome_fantasia', e.target.value.toUpperCase())} disabled={!getIsPJRequired} allowClear />
           </Form.Item>
 
           <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
