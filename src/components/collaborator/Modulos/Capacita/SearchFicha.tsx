@@ -350,7 +350,7 @@ const SearchFicha: React.FC = () => {
         footer={null}
       >
         {getSelectedFicha && (
-          <div className="modal-ficha">
+          <div className="modal-ficha-internal">
             <div className="button-ficha-description">
               <Button className="dowload-ficha" type="primary" onClick={dowloadFicha}>Baixar Ficha</Button>
               <Button className="edit-ficha" onClick={editingFicha}>Editar Ficha</Button>
@@ -364,89 +364,89 @@ const SearchFicha: React.FC = () => {
               </Popconfirm>
             </div>
             <Title className="modal-title" level={2}>Dados Pessoais</Title>
-            <Descriptions bordered column={1} layout="horizontal">
+            <Descriptions column={2} layout="horizontal">
 
-              <Descriptions.Item label="Nome">{getSelectedFicha.nome_completo}</Descriptions.Item>
-              <Descriptions.Item label="CPF">
+              <Descriptions.Item className="descriptions-item-search-ficha"  label="Nome">{getSelectedFicha.nome_completo}</Descriptions.Item>
+              <Descriptions.Item className="descriptions-item-search-ficha" label="CPF">
                 {getSelectedFicha.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')}
               </Descriptions.Item>
-              <Descriptions.Item label="Gênero">{generoMap[getSelectedFicha.genero]}</Descriptions.Item>
-              <Descriptions.Item label="Data de Nascimento">
+              <Descriptions.Item className="descriptions-item-search-ficha" label="Gênero">{generoMap[getSelectedFicha.genero]}</Descriptions.Item>
+              <Descriptions.Item className="descriptions-item-search-ficha" label="Data de Nascimento">
                 {dayjs(getSelectedFicha.data_nascimento).format('DD/MM/YYYY').toUpperCase()}
               </Descriptions.Item>
-              <Descriptions.Item label="Escolaridade">{escolaridadeMap[getSelectedFicha.escolaridade]}</Descriptions.Item>
-              <Descriptions.Item label="Atividade">{atividadeMap[getSelectedFicha.atividade]}</Descriptions.Item>
-              <Descriptions.Item label="Endereço">{getSelectedFicha.endereco}</Descriptions.Item>
+              <Descriptions.Item className="descriptions-item-search-ficha" label="Escolaridade">{escolaridadeMap[getSelectedFicha.escolaridade]}</Descriptions.Item>
+              <Descriptions.Item className="descriptions-item-search-ficha" label="Atividade">{atividadeMap[getSelectedFicha.atividade]}</Descriptions.Item>
+              <Descriptions.Item className="descriptions-item-search-ficha" label="Endereço">{getSelectedFicha.endereco}</Descriptions.Item>
               {getSelectedFicha.complemento && (
-                <Descriptions.Item label="Complemento">{getSelectedFicha.complemento}</Descriptions.Item>
+                <Descriptions.Item className="descriptions-item-search-ficha" label="Complemento">{getSelectedFicha.complemento}</Descriptions.Item>
               )}
-              <Descriptions.Item label="Bairro">{getSelectedFicha.bairro}</Descriptions.Item>
-              <Descriptions.Item label="CEP">
+              <Descriptions.Item className="descriptions-item-search-ficha" label="Bairro">{getSelectedFicha.bairro}</Descriptions.Item>
+              <Descriptions.Item className="descriptions-item-search-ficha" label="CEP">
                 {getSelectedFicha.cep.replace(/(\d{5})(\d{3})/, '$1-$2')}
               </Descriptions.Item>
-              <Descriptions.Item label="UF">{getSelectedFicha.uf}</Descriptions.Item>
-              <Descriptions.Item label="Celular">
+              <Descriptions.Item className="descriptions-item-search-ficha" label="UF">{getSelectedFicha.uf}</Descriptions.Item>
+              <Descriptions.Item className="descriptions-item-search-ficha" label="Celular">
                 {getSelectedFicha.celular.replace(/(\d{2})(\d{1})(\d{4})(\d{4})/, '($1) $2 $3-$4')}
               </Descriptions.Item>
               {getSelectedFicha.fixo && (
-                <Descriptions.Item label="Fixo">
+                <Descriptions.Item className="descriptions-item-search-ficha" label="Fixo">
                   {getSelectedFicha.fixo.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3')}
                 </Descriptions.Item>
               )}
-              <Descriptions.Item label="Email">{getSelectedFicha.email.toLowerCase()}</Descriptions.Item>
-              <Descriptions.Item label="Interesse em ter negócio">
+              <Descriptions.Item className="descriptions-item-search-ficha" label="Email">{getSelectedFicha.email.toLowerCase()}</Descriptions.Item>
+              <Descriptions.Item className="descriptions-item-search-ficha" label="Interesse em ter negócio">
                 {getSelectedFicha.interesse_ter_negocio === 'S' ? 'SIM' : 'NÃO'}
               </Descriptions.Item>
-              <Descriptions.Item label="Preferência de Aula">{getSelectedFicha.preferencia_aula}</Descriptions.Item>
-              <Descriptions.Item label="Meio de Comunicação de Aula">{getSelectedFicha.meio_comunicacao_aula}</Descriptions.Item>
-              <Descriptions.Item label="Assistir Online">{getSelectedFicha.assistir_online === 'S' ? 'SIM' : 'NÃO'}</Descriptions.Item>
+              <Descriptions.Item className="descriptions-item-search-ficha" label="Preferência de Aula">{getSelectedFicha.preferencia_aula}</Descriptions.Item>
+              <Descriptions.Item className="descriptions-item-search-ficha" label="Meio de Comunicação de Aula">{getSelectedFicha.meio_comunicacao_aula}</Descriptions.Item>
+              <Descriptions.Item className="descriptions-item-search-ficha" label="Assistir Online">{getSelectedFicha.assistir_online === 'S' ? 'SIM' : 'NÃO'}</Descriptions.Item>
               {getSelectedFicha.assistir_online === 'S' && getSelectedFicha.if_true_assistir_casa && (
-                <Descriptions.Item label="Se assistir em casa, como?">{getSelectedFicha.if_true_assistir_casa}</Descriptions.Item>
+                <Descriptions.Item className="descriptions-item-search-ficha" label="Se assistir em casa, como?">{getSelectedFicha.if_true_assistir_casa}</Descriptions.Item>
               )}
             </Descriptions>
 
             {getSelectedFicha.nome_fantasia && (
               <Title className="modal-title" level={2}>Dados Jurídicos</Title>
             )}
-            <Descriptions bordered column={1} layout="horizontal">
+            <Descriptions column={2} layout="horizontal">
               {getSelectedFicha.nome_fantasia && (
-                <Descriptions.Item label="Nome Fantasia">{getSelectedFicha.nome_fantasia}</Descriptions.Item>
+                <Descriptions.Item className="descriptions-item-search-ficha" label="Nome Fantasia">{getSelectedFicha.nome_fantasia}</Descriptions.Item>
               )}
               {getSelectedFicha.cnpj && (
-                <Descriptions.Item label="CNPJ">
+                <Descriptions.Item className="descriptions-item-search-ficha" label="CNPJ">
                   {getSelectedFicha.cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5')}
                 </Descriptions.Item>
               )}
               {getSelectedFicha.situacao_empresa && (
-                <Descriptions.Item label="Situação da Empresa">
+                <Descriptions.Item className="descriptions-item-search-ficha" label="Situação da Empresa">
                   {getSelectedFicha.situacao_empresa === 'ATIVA' ? 'ATIVA' : 'NÃO ATIVA'}
                 </Descriptions.Item>
               )}
               {getSelectedFicha.porte_empresa && (
-                <Descriptions.Item label="Porte da Empresa">{getSelectedFicha.porte_empresa}</Descriptions.Item>
+                <Descriptions.Item className="descriptions-item-search-ficha" label="Porte da Empresa">{getSelectedFicha.porte_empresa}</Descriptions.Item>
               )}
               {getSelectedFicha.data_abertura && (
-                <Descriptions.Item label="Data de Abertura">
+                <Descriptions.Item className="descriptions-item-search-ficha" label="Data de Abertura">
                   {dayjs(getSelectedFicha.data_abertura).format('DD/MM/YYYY').toUpperCase()}
                 </Descriptions.Item>
               )}
               {getSelectedFicha.cnae_principal && (
-                <Descriptions.Item label="CNAE Principal">
+                <Descriptions.Item className="descriptions-item-search-ficha" label="CNAE Principal">
                   {getSelectedFicha.cnae_principal.replace(/(\d{4})(\d{1})(\d{2})/, '$1-$2/$3')}
                 </Descriptions.Item>
               )}
               {getSelectedFicha.setor && (
-                <Descriptions.Item label="Setor">{getSelectedFicha.setor}</Descriptions.Item>
+                <Descriptions.Item className="descriptions-item-search-ficha" label="Setor">{getSelectedFicha.setor}</Descriptions.Item>
               )}
               {getSelectedFicha.tipo_vinculo && (
-                <Descriptions.Item label="Tipo de Vínculo">{getSelectedFicha.tipo_vinculo}</Descriptions.Item>
+                <Descriptions.Item className="descriptions-item-search-ficha" label="Tipo de Vínculo">{getSelectedFicha.tipo_vinculo}</Descriptions.Item>
               )}
             </Descriptions>
 
             <Title className="modal-title" level={2}>Módulo de Capacitação</Title>
-            <Descriptions bordered column={1} layout="horizontal">
+            <Descriptions column={2} layout="horizontal">
               {getModulosCapacita.find((modulo) => modulo.id === getSelectedFicha.modulo_capacita)?.nome && (
-                <Descriptions.Item label="Módulo de Capacitação">
+                <Descriptions.Item className="descriptions-item-search-ficha" label="Módulo de Capacitação">
                   {getModulosCapacita.find((modulo) => modulo.id === getSelectedFicha.modulo_capacita)?.nome.split(": ").join(": ")}
                 </Descriptions.Item>
               )}
