@@ -9,7 +9,7 @@ import CreateFicha from "./CreateFicha";
 import { useSpinning } from "../../Provider/Spinning";
 
 const { Option } = Select;
-const { Title } = Typography
+const { Title, Text } = Typography
 
 const escolaridadeMap: { [key: string]: string } = {
   'FUNDAMENTAL': 'ENSINO FUNDAMENTAL',
@@ -366,42 +366,44 @@ const SearchFicha: React.FC = () => {
             <Title className="modal-title" level={2}>Dados Pessoais</Title>
             <Descriptions column={2} layout="horizontal">
 
-              <Descriptions.Item className="descriptions-item-search-ficha"  label="Nome">{getSelectedFicha.nome_completo}</Descriptions.Item>
+              <Descriptions.Item className="descriptions-item-search-ficha" label="Nome"><Text ellipsis={{ tooltip: true }}>{getSelectedFicha.nome_completo}</Text></Descriptions.Item>
               <Descriptions.Item className="descriptions-item-search-ficha" label="CPF">
-                {getSelectedFicha.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')}
+                <Text ellipsis={{ tooltip: true }}>{getSelectedFicha.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')}</Text>
               </Descriptions.Item>
-              <Descriptions.Item className="descriptions-item-search-ficha" label="Gênero">{generoMap[getSelectedFicha.genero]}</Descriptions.Item>
+              <Descriptions.Item className="descriptions-item-search-ficha" label="Gênero"><Text ellipsis={{ tooltip: true }}>{generoMap[getSelectedFicha.genero]}</Text></Descriptions.Item>
               <Descriptions.Item className="descriptions-item-search-ficha" label="Data de Nascimento">
-                {dayjs(getSelectedFicha.data_nascimento).format('DD/MM/YYYY').toUpperCase()}
+                <Text ellipsis={{ tooltip: true }}>{dayjs(getSelectedFicha.data_nascimento).format('DD/MM/YYYY').toUpperCase()}</Text>
               </Descriptions.Item>
-              <Descriptions.Item className="descriptions-item-search-ficha" label="Escolaridade">{escolaridadeMap[getSelectedFicha.escolaridade]}</Descriptions.Item>
-              <Descriptions.Item className="descriptions-item-search-ficha" label="Atividade">{atividadeMap[getSelectedFicha.atividade]}</Descriptions.Item>
-              <Descriptions.Item className="descriptions-item-search-ficha" label="Endereço">{getSelectedFicha.endereco}</Descriptions.Item>
+              <Descriptions.Item className="descriptions-item-search-ficha" label="Escolaridade"><Text ellipsis={{ tooltip: true }}>{escolaridadeMap[getSelectedFicha.escolaridade]}</Text></Descriptions.Item>
+              <Descriptions.Item className="descriptions-item-search-ficha" label="Atividade"><Text ellipsis={{ tooltip: true }}>{atividadeMap[getSelectedFicha.atividade]}</Text></Descriptions.Item>
+              <Descriptions.Item className="descriptions-item-search-ficha" label="Endereço"><Text ellipsis={{ tooltip: true }}>{getSelectedFicha.endereco}</Text></Descriptions.Item>
               {getSelectedFicha.complemento && (
-                <Descriptions.Item className="descriptions-item-search-ficha" label="Complemento">{getSelectedFicha.complemento}</Descriptions.Item>
+                <Descriptions.Item className="descriptions-item-search-ficha" label="Complemento"><Text ellipsis={{ tooltip: true }}>{getSelectedFicha.complemento}</Text></Descriptions.Item>
               )}
-              <Descriptions.Item className="descriptions-item-search-ficha" label="Bairro">{getSelectedFicha.bairro}</Descriptions.Item>
+              <Descriptions.Item className="descriptions-item-search-ficha" label="Bairro"><Text ellipsis={{ tooltip: true }}>{getSelectedFicha.bairro}</Text></Descriptions.Item>
               <Descriptions.Item className="descriptions-item-search-ficha" label="CEP">
-                {getSelectedFicha.cep.replace(/(\d{5})(\d{3})/, '$1-$2')}
+                <Text ellipsis={{ tooltip: true }}>{getSelectedFicha.cep.replace(/(\d{5})(\d{3})/, '$1-$2')}</Text>
               </Descriptions.Item>
-              <Descriptions.Item className="descriptions-item-search-ficha" label="UF">{getSelectedFicha.uf}</Descriptions.Item>
+              <Descriptions.Item className="descriptions-item-search-ficha" label="UF"><Text ellipsis={{ tooltip: true }}>{getSelectedFicha.uf}</Text></Descriptions.Item>
               <Descriptions.Item className="descriptions-item-search-ficha" label="Celular">
-                {getSelectedFicha.celular.replace(/(\d{2})(\d{1})(\d{4})(\d{4})/, '($1) $2 $3-$4')}
+                <Text ellipsis={{ tooltip: true }}>{getSelectedFicha.celular.replace(/(\d{2})(\d{1})(\d{4})(\d{4})/, '($1) $2 $3-$4')}</Text>
               </Descriptions.Item>
               {getSelectedFicha.fixo && (
                 <Descriptions.Item className="descriptions-item-search-ficha" label="Fixo">
-                  {getSelectedFicha.fixo.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3')}
+                  <Text ellipsis={{ tooltip: true }}>
+                    {getSelectedFicha.fixo.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3')}
+                  </Text>
                 </Descriptions.Item>
               )}
-              <Descriptions.Item className="descriptions-item-search-ficha" label="Email">{getSelectedFicha.email.toLowerCase()}</Descriptions.Item>
+              <Descriptions.Item className="descriptions-item-search-ficha" label="Email"><Text ellipsis={{ tooltip: true }}>{getSelectedFicha.email.toLowerCase()}</Text></Descriptions.Item>
               <Descriptions.Item className="descriptions-item-search-ficha" label="Interesse em ter negócio">
-                {getSelectedFicha.interesse_ter_negocio === 'S' ? 'SIM' : 'NÃO'}
+                <Text ellipsis={{ tooltip: true }}>{getSelectedFicha.interesse_ter_negocio === 'S' ? 'SIM' : 'NÃO'}</Text>
               </Descriptions.Item>
-              <Descriptions.Item className="descriptions-item-search-ficha" label="Preferência de Aula">{getSelectedFicha.preferencia_aula}</Descriptions.Item>
-              <Descriptions.Item className="descriptions-item-search-ficha" label="Meio de Comunicação de Aula">{getSelectedFicha.meio_comunicacao_aula}</Descriptions.Item>
-              <Descriptions.Item className="descriptions-item-search-ficha" label="Assistir Online">{getSelectedFicha.assistir_online === 'S' ? 'SIM' : 'NÃO'}</Descriptions.Item>
+              <Descriptions.Item className="descriptions-item-search-ficha" label="Preferência de Aula"><Text ellipsis={{ tooltip: true }}>{getSelectedFicha.preferencia_aula}</Text></Descriptions.Item>
+              <Descriptions.Item className="descriptions-item-search-ficha" label="Meio de Comunicação de Aula"><Text ellipsis={{ tooltip: true }}>{getSelectedFicha.meio_comunicacao_aula}</Text></Descriptions.Item>
+              <Descriptions.Item className="descriptions-item-search-ficha" label="Assistir Online"><Text ellipsis={{ tooltip: true }}>{getSelectedFicha.assistir_online === 'S' ? 'SIM' : 'NÃO'}</Text></Descriptions.Item>
               {getSelectedFicha.assistir_online === 'S' && getSelectedFicha.if_true_assistir_casa && (
-                <Descriptions.Item className="descriptions-item-search-ficha" label="Se assistir em casa, como?">{getSelectedFicha.if_true_assistir_casa}</Descriptions.Item>
+                <Descriptions.Item className="descriptions-item-search-ficha" label="Se assistir em casa, como?"><Text ellipsis={{ tooltip: true }}>{getSelectedFicha.if_true_assistir_casa}</Text></Descriptions.Item>
               )}
             </Descriptions>
 
@@ -410,36 +412,36 @@ const SearchFicha: React.FC = () => {
             )}
             <Descriptions column={2} layout="horizontal">
               {getSelectedFicha.nome_fantasia && (
-                <Descriptions.Item className="descriptions-item-search-ficha" label="Nome Fantasia">{getSelectedFicha.nome_fantasia}</Descriptions.Item>
+                <Descriptions.Item className="descriptions-item-search-ficha" label="Nome Fantasia"><Text ellipsis={{ tooltip: true }}>{getSelectedFicha.nome_fantasia}</Text></Descriptions.Item>
               )}
               {getSelectedFicha.cnpj && (
                 <Descriptions.Item className="descriptions-item-search-ficha" label="CNPJ">
-                  {getSelectedFicha.cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5')}
+                  <Text ellipsis={{ tooltip: true }}>{getSelectedFicha.cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5')}</Text>
                 </Descriptions.Item>
               )}
               {getSelectedFicha.situacao_empresa && (
                 <Descriptions.Item className="descriptions-item-search-ficha" label="Situação da Empresa">
-                  {getSelectedFicha.situacao_empresa === 'ATIVA' ? 'ATIVA' : 'NÃO ATIVA'}
+                  <Text ellipsis={{ tooltip: true }}>{getSelectedFicha.situacao_empresa === 'ATIVA' ? 'ATIVA' : 'NÃO ATIVA'}</Text>
                 </Descriptions.Item>
               )}
               {getSelectedFicha.porte_empresa && (
-                <Descriptions.Item className="descriptions-item-search-ficha" label="Porte da Empresa">{getSelectedFicha.porte_empresa}</Descriptions.Item>
+                <Descriptions.Item className="descriptions-item-search-ficha" label="Porte da Empresa"><Text ellipsis={{ tooltip: true }}>{getSelectedFicha.porte_empresa}</Text></Descriptions.Item>
               )}
               {getSelectedFicha.data_abertura && (
                 <Descriptions.Item className="descriptions-item-search-ficha" label="Data de Abertura">
-                  {dayjs(getSelectedFicha.data_abertura).format('DD/MM/YYYY').toUpperCase()}
+                  <Text ellipsis={{ tooltip: true }}>{dayjs(getSelectedFicha.data_abertura).format('DD/MM/YYYY').toUpperCase()}</Text>
                 </Descriptions.Item>
               )}
               {getSelectedFicha.cnae_principal && (
                 <Descriptions.Item className="descriptions-item-search-ficha" label="CNAE Principal">
-                  {getSelectedFicha.cnae_principal.replace(/(\d{4})(\d{1})(\d{2})/, '$1-$2/$3')}
+                  <Text ellipsis={{ tooltip: true }}>{getSelectedFicha.cnae_principal.replace(/(\d{4})(\d{1})(\d{2})/, '$1-$2/$3')}</Text>
                 </Descriptions.Item>
               )}
               {getSelectedFicha.setor && (
-                <Descriptions.Item className="descriptions-item-search-ficha" label="Setor">{getSelectedFicha.setor}</Descriptions.Item>
+                <Descriptions.Item className="descriptions-item-search-ficha" label="Setor"><Text ellipsis={{ tooltip: true }}>{getSelectedFicha.setor}</Text></Descriptions.Item>
               )}
               {getSelectedFicha.tipo_vinculo && (
-                <Descriptions.Item className="descriptions-item-search-ficha" label="Tipo de Vínculo">{getSelectedFicha.tipo_vinculo}</Descriptions.Item>
+                <Descriptions.Item className="descriptions-item-search-ficha" label="Tipo de Vínculo"><Text ellipsis={{ tooltip: true }}>{getSelectedFicha.tipo_vinculo}</Text></Descriptions.Item>
               )}
             </Descriptions>
 
@@ -447,7 +449,7 @@ const SearchFicha: React.FC = () => {
             <Descriptions column={2} layout="horizontal">
               {getModulosCapacita.find((modulo) => modulo.id === getSelectedFicha.modulo_capacita)?.nome && (
                 <Descriptions.Item className="descriptions-item-search-ficha" label="Módulo de Capacitação">
-                  {getModulosCapacita.find((modulo) => modulo.id === getSelectedFicha.modulo_capacita)?.nome.split(": ").join(": ")}
+                  <Text ellipsis={{ tooltip: true }}>{getModulosCapacita.find((modulo) => modulo.id === getSelectedFicha.modulo_capacita)?.nome.split(": ").join(": ")}</Text>
                 </Descriptions.Item>
               )}
             </Descriptions>
