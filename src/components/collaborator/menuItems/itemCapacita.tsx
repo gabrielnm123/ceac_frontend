@@ -26,21 +26,6 @@ const itemCapacita = (
 
   const items: menuItemType[] = [];
 
-  // switch (true) {
-  //   case permissions.includes('SUPER USUÁRIO'):
-  //     items.push(
-  //       getMenuItem('Buscar Ficha', 'searchFicha', <SearchOutlined />, undefined, searchFicha)
-  //     );
-  //     items.push(
-  //       getMenuItem('Criar Ficha', 'createFicha', <FormOutlined />, undefined, createFicha)
-  //     );
-  //     setBaseContent(<SearchFicha />);
-  //     setBaseTitle('Buscar Ficha de Inscrição de Capacitação');
-  //     break;
-
-  //   case 
-  // }
-
   if (permissions.includes('SUPER USUÁRIO')) {
     items.push(
       getMenuItem('Buscar Ficha', 'searchFicha', <SearchOutlined />, undefined, searchFicha)
