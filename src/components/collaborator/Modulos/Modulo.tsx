@@ -37,8 +37,14 @@ const Modulo: React.FC = () => {
     if (permissions) {
       const user = itemUser(setBaseContent, setBaseTitle);
       const capacita = itemCapacita(setBaseContent, setBaseTitle, permissions);
-      const administrator = itemAdministrator(setBaseContent, setBaseTitle, permissions)
-      const items = capacita.concat(administrator).concat(user);
+      const administrator = itemAdministrator(setBaseContent, setBaseTitle, permissions);
+      const itemsList = [user, capacita, administrator];
+      const items: menuItemType[] = [];
+      for (const item of itemsList) {
+        if (item) {
+          items.push(item);
+        }
+      }
       setItems(items);
 
       switch (true) {

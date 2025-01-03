@@ -13,7 +13,7 @@ const itemCapacita = (
   setBaseContent: React.Dispatch<React.SetStateAction<React.ReactNode>>,
   setBaseTitle: React.Dispatch<React.SetStateAction<string>>,
   permissions: string[]
-): menuItemType[] => {
+): menuItemType | null => {
   const searchFicha = () => {
     setBaseContent(<SearchFicha />);
     setBaseTitle('Gerenciar Fichas de Inscrição de Capacitação');
@@ -26,28 +26,27 @@ const itemCapacita = (
 
   const items: menuItemType[] = [];
 
-  switch (true) {
-    case permissions.includes('SUPER USUÁRIO'):
+  if (permissions.includes('SUPER USUÁRIO')) {
+    items.push(
+      getMenuItem('Gerenciar Fichas', 'searchFicha', <UnorderedListOutlined />, undefined, searchFicha)
+    );
+    items.push(
+      getMenuItem('Criar Ficha', 'createFicha', <FormOutlined />, undefined, createFicha)
+    );
+  } else {
+    if (permissions.includes('searchFicha')) {
       items.push(
         getMenuItem('Gerenciar Fichas', 'searchFicha', <UnorderedListOutlined />, undefined, searchFicha)
       );
+    }
+    if (permissions.includes('createFicha')) {
       items.push(
         getMenuItem('Criar Ficha', 'createFicha', <FormOutlined />, undefined, createFicha)
       );
-      break;
-    case permissions.includes('searchFicha'):
-      items.push(
-        getMenuItem('Gerenciar Fichas', 'searchFicha', <UnorderedListOutlined />, undefined, searchFicha)
-      );
-    case permissions.includes('createFicha'):
-      items.push(
-        getMenuItem('Criar Ficha', 'createFicha', <FormOutlined />, undefined, createFicha)
-      );
+    }
   }
 
-  return [
-    getMenuItem('Capacita', 'capacita', <ReadOutlined />, items)
-  ];
+  return items.length ? getMenuItem('Capacita', 'capacita', <ReadOutlined />, items) : null;
 };
 
 export default itemCapacita;

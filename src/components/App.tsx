@@ -29,7 +29,7 @@ const App: React.FC = () => {
       <SpinningProvider>
         <Routes>
           <Route path='colaborador/login' element={<Base content={<Login />} title='Autenticação' />} />
-          <Route path='colaborador/perfil' element={<Base content={getBaseContent} title={getBaseTitle} menuItem={itemUser(setBaseContent, setBaseTitle)} />} />
+          <Route path='colaborador/perfil' element={<Base content={getBaseContent} title={getBaseTitle} menuItem={[itemUser(setBaseContent, setBaseTitle)]} />} />
           {
             perfilName ? <Route path={`colaborador/${perfilName}`} element={<Modulo />} /> : null
           }

@@ -8,24 +8,23 @@ import {
 import getMenuItem from './getMenuItem';
 import ChangeRegistration from '../Modulos/User/ChangeRegistration';
 import logout from '../services/logout';
+import type menuItemType from '../types/menuItem';
 
 const itemUser = (
   setBaseContent: React.Dispatch<React.SetStateAction<React.ReactNode>>,
   setBaseTitle: React.Dispatch<React.SetStateAction<string>>,
-) => {
+): menuItemType => {
 
   const changeRegistration = () => {
     setBaseContent(<ChangeRegistration />);
     setBaseTitle('Altere seu Cadastro');
   }
 
-  return [
-    getMenuItem('Operador', 'operator', <UserOutlined />, [
-      getMenuItem('Alterar Cadastro', 'changeRegistration', <EditOutlined />, undefined, changeRegistration),
-      getMenuItem(<a href='/colaborador/perfil'>Alterar Perfil</a>, 'perfil', <IdcardOutlined />, undefined),
-      getMenuItem(<a href='/colaborador/login'>Sair</a>, 'sair', <LogoutOutlined />, undefined, logout),
-    ])
-  ]
+  return getMenuItem('Operador', 'operator', <UserOutlined />, [
+    getMenuItem('Alterar Cadastro', 'changeRegistration', <EditOutlined />, undefined, changeRegistration),
+    getMenuItem(<a href='/colaborador/perfil'>Alterar Perfil</a>, 'perfil', <IdcardOutlined />, undefined),
+    getMenuItem(<a href='/colaborador/login'>Sair</a>, 'sair', <LogoutOutlined />, undefined, logout),
+  ])
 }
 
 export default itemUser;
