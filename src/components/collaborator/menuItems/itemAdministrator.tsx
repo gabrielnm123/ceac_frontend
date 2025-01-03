@@ -1,10 +1,8 @@
 import React from "react";
 import {
   UserAddOutlined,
-  UserDeleteOutlined,
   UserOutlined,
   UsergroupAddOutlined,
-  UsergroupDeleteOutlined,
   SettingOutlined,
   TeamOutlined
 } from '@ant-design/icons'
@@ -54,7 +52,7 @@ const itemAdministrator = (
         getMenuItem('Gerenciar Perfis', 'searchPerfil', <TeamOutlined />, undefined, searchPerfil)
       );
       items.push(
-        getMenuItem('Criar Perfil', 'createPerfil', <SettingOutlined />, undefined, createPerfil)
+        getMenuItem('Criar Perfil', 'createPerfil', <UsergroupAddOutlined />, undefined, createPerfil)
       );
       break;
     case permissions.includes('searchUser'):
@@ -71,7 +69,7 @@ const itemAdministrator = (
       );
     case permissions.includes('createPerfil'):
       items.push(
-        getMenuItem('Criar Perfil', 'createPerfil', <SettingOutlined />, undefined, createPerfil)
+        getMenuItem('Criar Perfil', 'createPerfil', <UsergroupAddOutlined />, undefined, createPerfil)
       );
   }
 

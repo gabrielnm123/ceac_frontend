@@ -7,6 +7,7 @@ import dayjs from 'dayjs';
 import modulosCapacitaType from "../../types/modulosCapacita";
 import CreateFicha from "./CreateFicha";
 import { useSpinning } from "../../Provider/Spinning";
+import { SearchOutlined, ClearOutlined, DownloadOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
 
 const { Option } = Select;
 const { Title, Text } = Typography
@@ -325,10 +326,10 @@ const SearchFicha: React.FC = () => {
             </Form.Item>
           </div>
           <Form.Item className="form-search-ficha-button form-search-ficha-item">
-            <Button type="primary" htmlType="submit" loading={getLoadingSearchFicha}>
+            <Button type="primary" htmlType="submit" loading={getLoadingSearchFicha} icon={<SearchOutlined />}>
               Buscar
             </Button>
-            <Button className="limpar-button" onClick={onReset}>
+            <Button className="limpar-button" onClick={onReset} icon={<ClearOutlined />}>
               Limpar
             </Button>
           </Form.Item>
@@ -352,15 +353,15 @@ const SearchFicha: React.FC = () => {
         {getSelectedFicha && (
           <div className="modal-ficha-internal">
             <div className="button-ficha-description">
-              <Button className="dowload-ficha" type="primary" onClick={dowloadFicha}>Baixar Ficha</Button>
-              <Button className="edit-ficha" onClick={editingFicha}>Editar Ficha</Button>
+              <Button className="dowload-ficha" color="primary" variant="filled" onClick={dowloadFicha} icon={<DownloadOutlined />  }>Baixar Ficha</Button>
+              <Button className="edit-ficha" color="default" variant="filled" onClick={editingFicha} icon={<EditOutlined />}>Editar Ficha</Button>
               <Popconfirm
                 title="Tem certeza que deseja deletar esta ficha?"
                 onConfirm={deleteFicha}
                 okText="Sim"
                 cancelText="Não"
               >
-                <Button className="delete-ficha">Deletar Ficha</Button>
+                <Button className="delete-ficha" color="danger" variant="filled" icon={<DeleteOutlined />}>Deletar Ficha</Button>
               </Popconfirm>
             </div>
             <Title className="modal-title" level={2}>Dados Pessoais</Title>

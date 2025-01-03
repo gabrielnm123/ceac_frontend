@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   ReadOutlined,
-  SearchOutlined,
+  UnorderedListOutlined,
   FormOutlined
 } from '@ant-design/icons';
 import getMenuItem from './getMenuItem';
@@ -29,7 +29,7 @@ const itemCapacita = (
   switch (true) {
     case permissions.includes('SUPER USUÁRIO'):
       items.push(
-        getMenuItem('Gerenciar Fichas', 'searchFicha', <SearchOutlined />, undefined, searchFicha)
+        getMenuItem('Gerenciar Fichas', 'searchFicha', <UnorderedListOutlined />, undefined, searchFicha)
       );
       items.push(
         getMenuItem('Criar Ficha', 'createFicha', <FormOutlined />, undefined, createFicha)
@@ -37,7 +37,7 @@ const itemCapacita = (
       break;
     case permissions.includes('searchFicha'):
       items.push(
-        getMenuItem('Gerenciar Fichas', 'searchFicha', <SearchOutlined />, undefined, searchFicha)
+        getMenuItem('Gerenciar Fichas', 'searchFicha', <UnorderedListOutlined />, undefined, searchFicha)
       );
     case permissions.includes('createFicha'):
       items.push(

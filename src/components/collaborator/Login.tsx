@@ -4,6 +4,7 @@ import { Form, Input, Button, message } from 'antd';
 import './css/Login.css';
 import axiosInstance from "./services/axiosInstance";
 import { useSpinning } from "./Provider/Spinning";
+import { LoginOutlined } from '@ant-design/icons';
 
 const Login: React.FC = () => {
   const navigate = useNavigate();
@@ -71,7 +72,7 @@ const Login: React.FC = () => {
         <Input.Password placeholder="Senha" />
       </Form.Item>
       <Form.Item className="button-login">
-        <Button type="primary" htmlType="submit" loading={getLoadingButton} >
+        <Button type="primary" htmlType="submit" loading={getLoadingButton} icon={<LoginOutlined />}>
           Entrar
         </Button>
       </Form.Item>
