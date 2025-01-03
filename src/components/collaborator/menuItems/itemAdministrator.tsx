@@ -25,12 +25,38 @@ const itemAdministrator = (
     setBaseTitle('Buscar Perfil de Operadores')
   };
 
+  const createPerfil = () => {
+    setBaseContent(<CreatePerfil />)
+    setBaseTitle('Criar Perfil de Operadores')
+  };
+
+  const searchUser = () => {
+    setBaseContent(<SearchUser />)
+    setBaseTitle('Buscar Operadores')
+  };
+
+  const createUser = () => {
+    setBaseContent(<CreateUser />)
+    setBaseTitle('Criar Operadores')
+  };
+
   const items: menuItemType[] = [];
 
   if (permissions.includes('SUPER USUÁRIO')) {
     items.push(
+      getMenuItem('Buscar Operadores', 'searchUser', <UserOutlined />, undefined, searchUser)
+    );
+    items.push(
+      getMenuItem('Criar Operadores', 'createUser', <UserAddOutlined />, undefined, createUser)
+    );
+    items.push(
       getMenuItem('Buscar Perfil', 'searchPerfil', <TeamOutlined />, undefined, searchPerfil)
     );
+    items.push(
+      getMenuItem('Criar Perfil', 'createPerfil', <SettingOutlined />, undefined, createPerfil)
+    );
+    // setBaseContent(<SearchUser />);
+    // setBaseTitle('Buscar Operadores');  
   } else {
     if (permissions.includes('searchPerfil')) {
       items.push(
