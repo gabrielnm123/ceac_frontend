@@ -20,9 +20,19 @@ const itemAdministrator = (
   setBaseTitle: React.Dispatch<React.SetStateAction<string>>,
   permissions: string[]
 ): menuItemType[] => {
+  const searchUser = () => {
+    setBaseContent(<SearchUser />)
+    setBaseTitle('Gerenciar Operadores')
+  };
+
+  const createUser = () => {
+    setBaseContent(<CreateUser />)
+    setBaseTitle('Criar Operador')
+  };
+
   const searchPerfil = () => {
     setBaseContent(<SearchPerfil />)
-    setBaseTitle('Buscar Perfil de Operadores')
+    setBaseTitle('Gerenciar Perfis de Operadores')
   };
 
   const createPerfil = () => {
@@ -30,40 +40,40 @@ const itemAdministrator = (
     setBaseTitle('Criar Perfil de Operadores')
   };
 
-  const searchUser = () => {
-    setBaseContent(<SearchUser />)
-    setBaseTitle('Buscar Operadores')
-  };
-
-  const createUser = () => {
-    setBaseContent(<CreateUser />)
-    setBaseTitle('Criar Operadores')
-  };
-
   const items: menuItemType[] = [];
 
-  if (permissions.includes('SUPER USUÁRIO')) {
-    items.push(
-      getMenuItem('Buscar Operadores', 'searchUser', <UserOutlined />, undefined, searchUser)
-    );
-    items.push(
-      getMenuItem('Criar Operadores', 'createUser', <UserAddOutlined />, undefined, createUser)
-    );
-    items.push(
-      getMenuItem('Buscar Perfil', 'searchPerfil', <TeamOutlined />, undefined, searchPerfil)
-    );
-    items.push(
-      getMenuItem('Criar Perfil', 'createPerfil', <SettingOutlined />, undefined, createPerfil)
-    );
-    // setBaseContent(<SearchUser />);
-    // setBaseTitle('Buscar Operadores');  
-  } else {
-    if (permissions.includes('searchPerfil')) {
+  switch (true) {
+    case permissions.includes('SUPER USUÁRIO'):
       items.push(
-        getMenuItem('Buscar Perfil', 'searchPerfil', <TeamOutlined />, undefined, searchPerfil)
+        getMenuItem('Gerenciar Operadores', 'searchUser', <UserOutlined />, undefined, searchUser)
       );
-    }
-  };
+      items.push(
+        getMenuItem('Criar Operador', 'createUser', <UserAddOutlined />, undefined, createUser)
+      );
+      items.push(
+        getMenuItem('Gerenciar Perfis', 'searchPerfil', <TeamOutlined />, undefined, searchPerfil)
+      );
+      items.push(
+        getMenuItem('Criar Perfil', 'createPerfil', <SettingOutlined />, undefined, createPerfil)
+      );
+      break;
+    case permissions.includes('searchUser'):
+      items.push(
+        getMenuItem('Gerenciar Operadores', 'searchUser', <UserOutlined />, undefined, searchUser)
+      );
+    case permissions.includes('createUser'):
+      items.push(
+        getMenuItem('Criar Operador', 'createUser', <UserAddOutlined />, undefined, createUser)
+      );
+    case permissions.includes('searchPerfil'):
+      items.push(
+        getMenuItem('Gerenciar Perfis', 'searchPerfil', <TeamOutlined />, undefined, searchPerfil)
+      );
+    case permissions.includes('createPerfil'):
+      items.push(
+        getMenuItem('Criar Perfil', 'createPerfil', <SettingOutlined />, undefined, createPerfil)
+      );
+  }
 
   return [
     getMenuItem('Administrador', 'administrator', <SettingOutlined />, items)
