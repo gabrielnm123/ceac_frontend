@@ -8,6 +8,7 @@ import modulosCapacitaType from "../../types/modulosCapacita";
 import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 import type createFichaPropsType from "../../types/createFichaProps";
 import { isCPF, isCNPJ, isPhone, isCEP } from 'brazilian-values';
+import { EditOutlined, FileAddOutlined, ClearOutlined } from '@ant-design/icons';
 
 const { Option } = Select;
 const { Title, Text } = Typography;
@@ -611,10 +612,10 @@ const CreateFicha: React.FC<createFichaPropsType> = (props) => {
                 okText="Sim"
                 cancelText="Não"
               >
-                <Button type="primary" loading={getLoading}>Editar</Button>
-              </Popconfirm> : <Button type="primary" htmlType="submit" loading={getLoading}>Criar</Button>
+                <Button type="primary" loading={getLoading} icon={<EditOutlined />}>Editar</Button>
+              </Popconfirm> : <Button type="primary" htmlType="submit" loading={getLoading} icon={<FileAddOutlined />}>Criar</Button>
             }
-            <Button className="limpar-button" onClick={onReset}>Limpar</Button>
+            <Button className="limpar-button" onClick={onReset} icon={<ClearOutlined />}>Limpar</Button>
           </Form.Item>
         </div>
       </Form>
