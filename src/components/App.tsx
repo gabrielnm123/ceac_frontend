@@ -4,7 +4,7 @@ import Base from './collaborator/Base';
 import Login from './collaborator/Login';
 import Perfil from './collaborator/Perfil';
 import Modulo from './collaborator/Modulos/Modulo';
-import { itemUser } from './collaborator/menuItems/itemUser';
+import itemUser from './collaborator/menuItems/itemUser';
 import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br';
 import { SpinningProvider } from './collaborator/Provider/Spinning';

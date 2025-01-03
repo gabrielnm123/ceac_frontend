@@ -28,4 +28,4 @@ const itemUser = (
   ]
 }
 
-export { itemUser, logout };
+export default itemUser;

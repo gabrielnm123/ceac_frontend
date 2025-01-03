@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import perfisObject from "../services/perfisObject";
 import { useNavigate } from "react-router-dom";
 import Base from "../Base";
-import { itemUser } from "../menuItems/itemUser";
+import itemUser from "../menuItems/itemUser";
 import itemCapacita from "../menuItems/itemCapacita";
 import itemAdministrator from "../menuItems/itemAdministrator";
 import type menuItemType from "../types/menuItem";
