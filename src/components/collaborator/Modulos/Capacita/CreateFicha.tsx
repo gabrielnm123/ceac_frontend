@@ -4,9 +4,8 @@ import MaskedInput from 'antd-mask-input';
 import axios from 'axios';
 import axiosInstance from "../../services/axiosInstance";
 import '../../css/Modulos/Capacita/CreateFicha.css';
-import modulosCapacitaType from "../../types/modulosCapacita";
 import type { CheckboxChangeEvent } from 'antd/es/checkbox';
-import type createFichaPropsType from "../../types/createFichaProps";
+import type { createFichaPropsType, modulosCapacitaType } from "../../types";
 import { isCPF, isCNPJ, isPhone, isCEP } from 'brazilian-values';
 import { EditOutlined, FileAddOutlined, ClearOutlined } from '@ant-design/icons';
 

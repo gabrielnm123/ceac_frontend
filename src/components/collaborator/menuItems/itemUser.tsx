@@ -5,26 +5,42 @@ import {
   IdcardOutlined,
   EditOutlined,
 } from '@ant-design/icons';
-import getMenuItem from './getMenuItem';
 import ChangeRegistration from '../Modulos/User/ChangeRegistration';
 import logout from '../services/logout';
-import type menuItemType from '../types/menuItem';
+import type { menuItemType } from '../types';
 
 const itemUser = (
   setBaseContent: React.Dispatch<React.SetStateAction<React.ReactNode>>,
   setBaseTitle: React.Dispatch<React.SetStateAction<string>>,
 ): menuItemType => {
 
-  const changeRegistration = () => {
-    setBaseContent(<ChangeRegistration />);
-    setBaseTitle('Altere seu Cadastro');
-  }
-
-  return getMenuItem('Operador', 'operator', <UserOutlined />, [
-    getMenuItem('Alterar Cadastro', 'changeRegistration', <EditOutlined />, undefined, changeRegistration),
-    getMenuItem(<a href='/colaborador/perfil'>Alterar Perfil</a>, 'perfil', <IdcardOutlined />, undefined),
-    getMenuItem(<a href='/colaborador/login'>Sair</a>, 'sair', <LogoutOutlined />, undefined, logout),
-  ])
-}
+  return {
+    label: 'Operador',
+    key: 'operator',
+    icon: <UserOutlined />,
+    children: [
+      {
+        label: 'Alterar Cadastro',
+        key: 'changeRegistration',
+        icon: <EditOutlined />,
+        onClick: () => {
+          setBaseContent(<ChangeRegistration />);
+          setBaseTitle('Altere seu Cadastro');
+        },
+      },
+      {
+        label: <a href='/colaborador/perfil'>Alterar Perfil</a>,
+        key: 'perfil',
+        icon: <IdcardOutlined />,
+      },
+      {
+        label: <a href='/colaborador/login'>Sair</a>,
+        key: 'sair',
+        icon: <LogoutOutlined />,
+        onClick: logout,
+      },
+    ],
+  };
+};
 
 export default itemUser;

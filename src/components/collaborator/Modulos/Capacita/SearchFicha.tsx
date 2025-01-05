@@ -4,7 +4,7 @@ import MaskedInput from 'antd-mask-input';
 import axiosInstance from "../../services/axiosInstance";
 import '../../css/Modulos/Capacita/SearchFicha.css';
 import dayjs from 'dayjs';
-import modulosCapacitaType from "../../types/modulosCapacita";
+import type { modulosCapacitaType } from "../../types";
 import CreateFicha from "./CreateFicha";
 import { useSpinning } from "../../Provider/Spinning";
 import { SearchOutlined, ClearOutlined, DownloadOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';

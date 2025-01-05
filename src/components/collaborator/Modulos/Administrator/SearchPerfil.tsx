@@ -3,7 +3,7 @@ import { Form, Input, Button, Select, DatePicker, Table, message, Modal, Descrip
 import MaskedInput from 'antd-mask-input';
 import axiosInstance from "../../services/axiosInstance";
 import dayjs from 'dayjs';
-import modulosCapacitaType from "../../types/modulosCapacita";
+import type { modulosCapacitaType } from "../../types";
 import { formToJSON } from "axios";
 
 const SearchPerfil = () => {

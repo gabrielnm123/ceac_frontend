@@ -1,7 +1,7 @@
 import React from 'react';
 import './css/Base.css'
 import { Layout, Menu, theme, Typography, Spin } from 'antd';
-import type basePropsType from './types/baseProps';
+import type { basePropsType } from './types';
 import { useSpinning } from './Provider/Spinning';
 
 const Base: React.FC<basePropsType> = (props) => {

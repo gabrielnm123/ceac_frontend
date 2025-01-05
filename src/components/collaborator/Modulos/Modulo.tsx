@@ -5,7 +5,7 @@ import Base from "../Base";
 import itemUser from "../menuItems/itemUser";
 import itemCapacita from "../menuItems/itemCapacita";
 import itemAdministrator from "../menuItems/itemAdministrator";
-import type menuItemType from "../types/menuItem";
+import type { menuItemType } from "../types";
 import SearchFicha from "./Capacita/SearchFicha";
 import CreateFicha from "./Capacita/CreateFicha";
 import SearchUser from "./Administrator/SearchUser";

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
-import type spinningContextType from "../types/spinningContextType";
+import type { spinningContextType } from "../types";
 
 const SpinningContext = createContext<spinningContextType>({
   getSpinning: false,
