@@ -19,18 +19,21 @@ const ChangeRegistration: React.FC = () => {
   const [form] = Form.useForm();
 
   useEffect(() => {
-    const userId = localStorage.getItem('userId');
-    axiosInstance.get(`/users/${userId}/`)
-      .then((response) => {
+    const fetchUserData = async () => {
+      try {
+        const userId = localStorage.getItem('userId');
+        const response = await axiosInstance.get(`/users/${userId}/`);
         form.setFieldsValue({
           email: response.data.email,
           first_name: response.data.first_name.toUpperCase(),
           last_name: response.data.last_name.toUpperCase(),
         });
-      })
-      .catch(() => {
+      } catch {
         message.error('Erro ao carregar dados do usuário.');
-      })
+      }
+    };
+
+    fetchUserData();
   }, [form]);
 
   const validatePassword = (_: any, value: string | undefined) => {
@@ -69,7 +72,7 @@ const ChangeRegistration: React.FC = () => {
     });
   };
 
-  const onFinish = (values: FormValues) => {
+  const onFinish = async (values: FormValues) => {
     setLoading(true);
     if (values.password && values.password !== values.confirmPassword) {
       message.error('As senhas não coincidem!');
@@ -81,40 +84,33 @@ const ChangeRegistration: React.FC = () => {
       return;
     }
 
-    const userId = localStorage.getItem('userId');
+    try {
+      const userId = localStorage.getItem('userId');
+      const passwordCheckResponse = await axiosInstance.post(`users/${userId}/check-password/`, {
+        password: values.currentPassword,
+      });
 
-    axiosInstance.post(`users/${userId}/check-password/`, {
-      password: values.currentPassword,
-    })
-      .then((passwordCheckResponse) => {
-        if (!passwordCheckResponse.data.valid) {
-          message.error('Senha atual incorreta. Por favor, tente novamente.');
-          setLoading(false);
-          return;
-        }
-
-        const updateData = {
-          email: values.email,
-          username: values.email,
-          first_name: values.first_name?.toUpperCase(),
-          last_name: values.last_name?.toUpperCase(),
-          ...(values.password && { password: values.password }),
-        };
-
-        axiosInstance.put(`users/${userId}/`, updateData)
-          .catch(() => {
-            message.error('Erro ao atualizar dados do usuário, tente novamente.');
-          })
-
-        message.success('Cadastro alterado com sucesso!');
-      })
-
-      .catch(() => {
-        message.error('Erro ao alterar cadastro, tente novamente.');
-      })
-      .finally(() => {
+      if (!passwordCheckResponse.data.valid) {
+        message.error('Senha atual incorreta. Por favor, tente novamente.');
         setLoading(false);
-      })
+        return;
+      }
+
+      const updateData = {
+        email: values.email,
+        username: values.email,
+        first_name: values.first_name?.toUpperCase(),
+        last_name: values.last_name?.toUpperCase(),
+        ...(values.password && { password: values.password }),
+      };
+
+      await axiosInstance.put(`users/${userId}/`, updateData);
+      message.success('Cadastro alterado com sucesso!');
+    } catch {
+      message.error('Erro ao alterar cadastro, tente novamente.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

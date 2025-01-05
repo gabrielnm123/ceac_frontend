@@ -10,17 +10,16 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.response.use(
   response => response,
-  error => {
+  async error => {
     const originalRequest = error.config;
 
     if (error.response && error.response.status === 401 && !originalRequest.url.includes('token/refresh/')) {
-      return axiosInstance.post('token/refresh/')
-        .then(() => {
-          return axiosInstance(originalRequest);
-        })
-        .catch(() => {
-          logout();
-        });
+      try {
+        await axiosInstance.post('token/refresh/');
+        return axiosInstance(originalRequest);
+      } catch {
+        logout();
+      }
     }
 
     return Promise.reject(error);

@@ -7,41 +7,41 @@ const perfisObject = () => {
   const userId = localStorage.getItem('userId');
 
   useEffect(() => {
-    if (userId) {
-      axiosInstance.get(`users/${userId}/`)
-        .then(user => {
+    const fetchPerfisData = async () => {
+      if (userId) {
+        try {
+          const user = await axiosInstance.get(`users/${userId}/`);
           const perfisLinks = user.data.groups;
           const perfisNamePermissions: { [key: string]: Array<string> } = {};
 
-          const fetchPerfis = perfisLinks.map((perfilLink: string) => {
-            return axiosInstance.get(perfilLink)
-              .then(perfil => {
-                const permissionCodeName: Array<string> = [];
-                const fetchPermissions = perfil.data.permissions.map((permission: string) => {
-                  return axiosInstance.get(permission)
-                    .then(response => {
-                      permissionCodeName.push(response.data.codename);
-                    });
-                });
+          const fetchPerfis = perfisLinks.map(async (perfilLink: string) => {
+            const perfil = await axiosInstance.get(perfilLink);
+            const permissionCodeName: Array<string> = [];
+            const fetchPermissions = perfil.data.permissions.map(async (permission: string) => {
+              const response = await axiosInstance.get(permission);
+              permissionCodeName.push(response.data.codename);
+            });
 
-                return Promise.all(fetchPermissions)
-                  .then(() => {
-                    perfisNamePermissions[perfil.data.name] = permissionCodeName;
-                  });
-              });
+            await Promise.all(fetchPermissions);
+            perfisNamePermissions[perfil.data.name] = permissionCodeName;
           });
 
-          Promise.all(fetchPerfis)
-            .then(() => {
-              if (user.data.is_superuser) {
-                perfisNamePermissions['SUPER USUÁRIO'] = ['SUPER USUÁRIO'];
-              }
-              setPerfis(perfisNamePermissions);
-            });
-        });
-    } else {
-      logout();
-    }
+          await Promise.all(fetchPerfis);
+
+          if (user.data.is_superuser) {
+            perfisNamePermissions['SUPER USUÁRIO'] = ['SUPER USUÁRIO'];
+          }
+
+          setPerfis(perfisNamePermissions);
+        } catch {
+          logout();
+        }
+      } else {
+        logout();
+      }
+    };
+
+    fetchPerfisData();
   }, []);
 
   return getPerfis;

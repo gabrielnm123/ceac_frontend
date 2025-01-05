@@ -1,10 +1,10 @@
 import axiosInstance from "./axiosInstance";
 
-const logout = () => {
+const logout = async () => {
   localStorage.removeItem('userId');
   localStorage.removeItem('perfilName');
   if (window.location.pathname !== '/colaborador/login') {
-    axiosInstance.post('token/logout/');
+    await axiosInstance.post('token/logout/');
     window.location.href = '/colaborador/login';
   }
 };

@@ -24,61 +24,59 @@ const CreateFicha: React.FC<createFichaPropsType> = (props) => {
   const [getLoading, setLoading] = useState(false);
 
   useEffect(() => {
-    setIsOnline(form.getFieldValue('assistir_online') === 'S')
-    if (props.form && form.getFieldsValue().nome_fantasia) {
-      setIsPJRequired(true);
-    }
-    axiosInstance.get('capacita/modulos_capacita/')
-      .then(response => {
-        setModulosCapacita(response.data)
-      })
-      .catch(() => {
+    const fetchData = async () => {
+      try {
+        setIsOnline(form.getFieldValue('assistir_online') === 'S');
+        if (props.form && form.getFieldsValue().nome_fantasia) {
+          setIsPJRequired(true);
+        }
+        const response = await axiosInstance.get('capacita/modulos_capacita/');
+        setModulosCapacita(response.data);
+      } catch {
         message.error('Erro ao carregar os módulos da capacitação, recarregue a página.');
-      })
-  }, [props.form ? form.getFieldValue('id') : null])
+      }
+    };
+    fetchData();
+  }, [props.form ? form.getFieldValue('id') : null]);
 
-  const isValidCNAE = (cnae: string) => {
+  const isValidCNAE = async (cnae: string) => {
     if (/^\d{7}$/.test(cnae.replace(/\D/g, ''))) {
-      return axios.get(`https://servicodados.ibge.gov.br/api/v2/cnae/subclasses/${cnae.replace(/\D/g, '')}`)
-        .then(value => {
-          return Boolean(value.data.length)
-        })
-        .catch(() => {
-          message.error('Não foi possível verificar o CNAE. Prossiga apenas se tiver certeza da validade do código.')
-          return true
-        })
+      try {
+        const value = await axios.get(`https://servicodados.ibge.gov.br/api/v2/cnae/subclasses/${cnae.replace(/\D/g, '')}`);
+        return Boolean(value.data.length);
+      } catch {
+        message.error('Não foi possível verificar o CNAE. Prossiga apenas se tiver certeza da validade do código.');
+        return true;
+      }
     } else return Promise.resolve(false);
   };
 
   const isValidInput = (input: string) => typeof input === 'string' && (input.trim() !== '' || input === '');
 
-  const fetchAddressByCEP = (cep: string) => {
-    return axios.get(`https://viacep.com.br/ws/${cep}/json/`)
-      .then((response) => {
-        if (response.data.erro) {
-          throw new Error('CEP não encontrado');
-        }
-        return response.data;
-      })
-      .catch(() => {
-        message.error('Erro ao buscar o endereço. Verifique o CEP.');
-        return null;
-      });
+  const fetchAddressByCEP = async (cep: string) => {
+    try {
+      const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
+      if (response.data.erro) {
+        throw new Error('CEP não encontrado');
+      }
+      return response.data;
+    } catch {
+      message.error('Erro ao buscar o endereço. Verifique o CEP.');
+      return null;
+    }
   };
 
-  const handleCEPBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+  const handleCEPBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
     const cep = typeof e.target.value === 'string' ? e.target.value.replace(/\D/g, '') : null;
     if (cep && cep.length === 8) {
-      fetchAddressByCEP(cep)
-        .then((addressData) => {
-          if (addressData) {
-            form.setFieldsValue({
-              endereco: addressData.logradouro.toUpperCase(),
-              bairro: addressData.bairro.toUpperCase(),
-              uf: addressData.uf,
-            });
-          }
-        })
+      const addressData = await fetchAddressByCEP(cep);
+      if (addressData) {
+        form.setFieldsValue({
+          endereco: addressData.logradouro.toUpperCase(),
+          bairro: addressData.bairro.toUpperCase(),
+          uf: addressData.uf,
+        });
+      }
     }
   };
 
@@ -164,14 +162,14 @@ const CreateFicha: React.FC<createFichaPropsType> = (props) => {
       props.funcEditing(values);
       setLoading(false);
     } else {
-      axiosInstance.post('capacita/fichas/', values)
-        .then(() => {
-          message.success('Ficha criada com sucesso!');
-        })
-        .catch(() => {
-          message.error('Erro ao criar ficha, tente novamente.');
-        })
-        .finally(() => setLoading(false))
+      try {
+        await axiosInstance.post('capacita/fichas/', values);
+        message.success('Ficha criada com sucesso!');
+      } catch {
+        message.error('Erro ao criar ficha, tente novamente.');
+      } finally {
+        setLoading(false);
+      }
     }
   };
 

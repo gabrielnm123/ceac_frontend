@@ -12,37 +12,41 @@ const Login: React.FC = () => {
   const { setSpinning } = useSpinning();
 
   useEffect(() => {
-    setSpinning(true);
-    document.title = 'Autenticação';
-    axiosInstance.post('token/refresh/verify/')
-      .then(() => {
+    const verifyToken = async () => {
+      setSpinning(true);
+      document.title = 'Autenticação';
+      try {
+        await axiosInstance.post('token/refresh/verify/');
         navigate('/colaborador/perfil');
-      })
-      .catch((error) => {
-        if (error.status && error.status === 400) return
-      })
-      .finally(() => setSpinning(false));
-  }, []);
+      } catch (error) {
+        if ((error as any).status && (error as any).status === 400) return;
+      } finally {
+        setSpinning(false);
+      }
+    };
 
-  const onFinish = (values: object) => {
+    verifyToken();
+  }, [navigate, setSpinning]);
+
+  const onFinish = async (values: object) => {
     setLoadingButton(true);
     setSpinning(true);
-    axiosInstance.post('token/', values)
-      .then(() => {
-        axiosInstance.get('current_user/')
-          .then((userResponse) => {
-            const userId = userResponse.data.id;
-            localStorage.setItem('userId', userId);
-            navigate('/colaborador/perfil');
-          })
-          .catch(() => {
-            message.error('Um erro ocorreu ao obter id do usuário.');
-          });
-      })
-      .catch(() => {
-        message.error('Usuário ou senha inválida(s)!');
-      })
-      .finally(() => { setLoadingButton(false); setSpinning(false); })
+    try {
+      await axiosInstance.post('token/', values);
+      try {
+        const userResponse = await axiosInstance.get('current_user/');
+        const userId = userResponse.data.id;
+        localStorage.setItem('userId', userId);
+        navigate('/colaborador/perfil');
+      } catch {
+        message.error('Um erro ocorreu ao obter id do usuário.');
+      }
+    } catch {
+      message.error('Usuário ou senha inválida(s)!');
+    } finally {
+      setLoadingButton(false);
+      setSpinning(false);
+    }
   };
 
   const onFinishFailed = () => {

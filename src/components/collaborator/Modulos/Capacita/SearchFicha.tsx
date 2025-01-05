@@ -47,9 +47,10 @@ const SearchFicha: React.FC = () => {
   const [getIsEditingFicha, setIsEditingFicha] = useState<boolean>(false);
 
   useEffect(() => {
-    axiosInstance.get('capacita/modulos_capacita/')
-      .then((response) => {
-        setModulosCapacita(response.data);
+    const fetchData = async () => {
+      try {
+        const responseModulos = await axiosInstance.get('capacita/modulos_capacita/');
+        setModulosCapacita(responseModulos.data);
         const columns = [
           {
             title: 'Nome', dataIndex: 'nome_completo', key: 'nome_completo', render: (text: string, record: any) => (
@@ -63,7 +64,7 @@ const SearchFicha: React.FC = () => {
             )
           },
           {
-            title: 'Módulo de Aprendizagem', dataIndex: 'modulo_capacita', key: 'modulo_capacita', render: (id: number) => response.data.map(
+            title: 'Módulo de Aprendizagem', dataIndex: 'modulo_capacita', key: 'modulo_capacita', render: (id: number) => responseModulos.data.map(
               (modulo: modulosCapacitaType) => {
                 if (modulo.id === id) {
                   return modulo.nome;
@@ -101,64 +102,64 @@ const SearchFicha: React.FC = () => {
           },
         ];
         setColumns(columns);
-      })
-      .catch(() => {
+      } catch {
         message.error('Erro ao carregar os módulos de aprendizagem, tente novamente.');
-      })
+      }
 
-    axiosInstance.get('capacita/fichas/')
-      .then((response) => {
-        setData(response.data);
-      })
-      .catch(() => {
+      try {
+        const responseFichas = await axiosInstance.get('capacita/fichas/');
+        setData(responseFichas.data);
+      } catch {
         message.error('Erro ao carregar fichas, recarregue a página.');
-      })
+      }
+    };
+
+    fetchData();
   }, []);
 
-  const handleOpenFicha = (id: number) => {
-    axiosInstance.get(`capacita/fichas/${id}`)
-      .then((response) => {
-        setSelectedFicha(response.data);
-        setVisibleFicha(true);
-      })
-      .catch(() => {
-        message.error('Erro ao carregar a ficha, tente novamente.');
-      })
+  const handleOpenFicha = async (id: number) => {
+    try {
+      const response = await axiosInstance.get(`capacita/fichas/${id}`);
+      setSelectedFicha(response.data);
+      setVisibleFicha(true);
+    } catch {
+      message.error('Erro ao carregar a ficha, tente novamente.');
+    }
   };
 
-  const dowloadFicha = () => {
-    setSpinning(true)
-    axiosInstance.get(`capacita/fichas/${getSelectedFicha.id}/download`, {
-      responseType: 'blob'
-    })
-      .then((response) => {
-        const url = window.URL.createObjectURL(new Blob([response.data]));
-        const link = document.createElement('a');
-        link.href = url;
-        link.setAttribute('download', `${getSelectedFicha.nome_completo}.docx`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      })
-      .catch(() => {
-        message.error('Erro ao baixar a ficha, tente novamente.');
-      })
-      .finally(() => setSpinning(false));
-  }
-
-  const deleteFicha = () => {
+  const dowloadFicha = async () => {
     setSpinning(true);
-    axiosInstance.delete(`capacita/fichas/${getSelectedFicha.id}/`)
-      .then(() => {
-        message.success(`Ficha do(a) ${getSelectedFicha.nome_completo} deletada com sucesso.`)
-        setVisibleFicha(false)
-        onFinish(form.getFieldsValue());
-      })
-      .catch(() => {
-        message.error(`Erro ao deletar a ficha do(a) ${getSelectedFicha.nome_completo}. Tente novamente.`);
-      })
-      .finally(() => setSpinning(false))
-  }
+    try {
+      const response = await axiosInstance.get(`capacita/fichas/${getSelectedFicha.id}/download`, {
+        responseType: 'blob'
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${getSelectedFicha.nome_completo}.docx`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch {
+      message.error('Erro ao baixar a ficha, tente novamente.');
+    } finally {
+      setSpinning(false);
+    }
+  };
+
+  const deleteFicha = async () => {
+    setSpinning(true);
+    try {
+      await axiosInstance.delete(`capacita/fichas/${getSelectedFicha.id}/`);
+      message.success(`Ficha do(a) ${getSelectedFicha.nome_completo} deletada com sucesso.`);
+      setVisibleFicha(false);
+      onFinish(form.getFieldsValue());
+    } catch {
+      message.error(`Erro ao deletar a ficha do(a) ${getSelectedFicha.nome_completo}. Tente novamente.`);
+    } finally {
+      setSpinning(false);
+    }
+  };
 
   const editingFicha = () => {
     setSpinning(true);
@@ -184,20 +185,19 @@ const SearchFicha: React.FC = () => {
     setSpinning(false);
   };
 
-  const onEditFinish = (values: any) => {
-    axiosInstance.put(`capacita/fichas/${getSelectedFicha.id}/`, values)
-      .then(() => {
-        message.success('Ficha editada com sucesso!');
-        setIsEditingFicha(false);
-        handleOpenFicha(getSelectedFicha.id);
-        onFinish(form.getFieldsValue());
-      })
-      .catch(() => {
-        message.error('Erro ao editar ficha, tente novamente.');
-      })
+  const onEditFinish = async (values: any) => {
+    try {
+      await axiosInstance.put(`capacita/fichas/${getSelectedFicha.id}/`, values);
+      message.success('Ficha editada com sucesso!');
+      setIsEditingFicha(false);
+      handleOpenFicha(getSelectedFicha.id);
+      onFinish(form.getFieldsValue());
+    } catch {
+      message.error('Erro ao editar ficha, tente novamente.');
+    }
   };
 
-  const onFinish = (values: any) => {
+  const onFinish = async (values: any) => {
     setSpinning(true);
     setLoadingSearchFicha(true);
     if (values.data_nascimento) {
@@ -220,22 +220,20 @@ const SearchFicha: React.FC = () => {
       Object.entries(values).filter(([_, v]) => v != null && v !== "")
     );
 
-    axiosInstance.get('capacita/fichas/', { params: cleanedValues })
-      .then((response) => {
-        setData(response.data);
-        if (response.data.length === 0) {
-          message.info('Nenhuma ficha encontrada.');
-        } else {
-          message.success('Busca realizada com sucesso!');
-        }
-      })
-      .catch(() => {
-        message.error('Erro ao buscar ficha, tente novamente.');
-      })
-      .finally(() => {
-        setLoadingSearchFicha(false);
-        setSpinning(false);
-      })
+    try {
+      const response = await axiosInstance.get('capacita/fichas/', { params: cleanedValues });
+      setData(response.data);
+      if (response.data.length === 0) {
+        message.info('Nenhuma ficha encontrada.');
+      } else {
+        message.success('Busca realizada com sucesso!');
+      }
+    } catch {
+      message.error('Erro ao buscar ficha, tente novamente.');
+    } finally {
+      setLoadingSearchFicha(false);
+      setSpinning(false);
+    }
   };
 
   return (
