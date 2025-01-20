@@ -13,7 +13,7 @@ const itemCapacita = (
   setBaseTitle: React.Dispatch<React.SetStateAction<string>>,
   permissions: string[]
 ): menuItemType | null => {
-  const menuItem = {
+  const items = {
     searchFicha: {
       label: 'Gerenciar Fichas',
       key: 'searchFicha',
@@ -34,23 +34,21 @@ const itemCapacita = (
     }
   };
 
-  const items: menuItemType[] = [];
+  const menuItem: menuItemType[] = [];
 
   if (permissions.includes('SUPER USUÁRIO')) {
-    for (const item of Object.values(menuItem)) {
-      if (item) {
-        items.push(item);
-      }
+    for (const key in items) {
+      menuItem.push(items.key);
     }
   } else {
-    for (const item of Object.values(menuItem)) {
+    for (const item of Object.values(items)) {
       if (permissions.includes(item.key)) {
-        items.push(item);
+        menuItem.push(item);
       }
     }
   }
 
-  return items.length ? { label: 'Capacita', key: 'capacita', icon: <ReadOutlined />, children: items } : null;
+  return menuItem.length ? { label: 'Capacita', key: 'capacita', icon: <ReadOutlined />, children: menuItem } : null;
 };
 
 export default itemCapacita;

@@ -17,7 +17,7 @@ const itemAdministrator = (
   setBaseTitle: React.Dispatch<React.SetStateAction<string>>,
   permissions: string[]
 ): menuItemType | null => {
-  const menuItem = {
+  const items = {
     searchUser: {
       label: 'Gerenciar Operadores',
       key: 'searchUser',
@@ -56,23 +56,23 @@ const itemAdministrator = (
     }
   }
 
-  const items: menuItemType[] = [];
+  const menuItem: menuItemType[] = [];
 
   if (permissions.includes('SUPER USUÁRIO')) {
-    for (const item of Object.values(menuItem)) {
+    for (const item of Object.values(items)) {
       if (item) {
-        items.push(item);
+        menuItem.push(item);
       }
     }
   } else {
-    for (const item of Object.values(menuItem)) {
+    for (const item of Object.values(items)) {
       if (permissions.includes(item.key)) {
-        items.push(item);
+        menuItem.push(item);
       }
     }
   }
 
-  return items.length ? {label: 'Administrador', key: 'administrator', icon: <SettingOutlined />, children: items} : null
+  return menuItem.length ? {label: 'Administrador', key: 'administrator', icon: <SettingOutlined />, children: menuItem} : null
 }
 
 export default itemAdministrator;
