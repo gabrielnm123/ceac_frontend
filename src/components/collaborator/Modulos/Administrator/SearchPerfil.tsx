@@ -1,29 +1,56 @@
+
 import React, { useState, useEffect } from "react";
-import { Form, Input, Button, Select, DatePicker, Table, message, Modal, Descriptions, Popconfirm, Typography, Spin } from 'antd';
-import MaskedInput from 'antd-mask-input';
+import { Table, Input, Button, message, Spin } from "antd";
 import axiosInstance from "../../services/axiosInstance";
-import dayjs from 'dayjs';
-import type { modulosCapacitaType } from "../../types";
-import { formToJSON } from "axios";
+import "./css/SearchPerfil.css";
 
-const SearchPerfil = () => {
-  const [form] = Form.useForm();
+const SearchPerfil: React.FC = () => {
+  const [loading, setLoading] = useState(false);
+  interface Profile {
+    id: number;
+    name: string;
+  }
 
-  const onFinish = () => {}
+  const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    const fetchProfiles = async () => {
+      setLoading(true);
+      try {
+        const response = await axiosInstance.get("profiles/");
+        setProfiles(response.data);
+      } catch (error) {
+        message.error("Erro ao carregar perfis.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProfiles();
+  }, []);
+
+  const handleSearch = () => {
+    const filtered = profiles.filter((profile) =>
+      profile.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setProfiles(filtered);
+  };
 
   return (
-    <>
-      <div className="search-perfil">
-        <Form form={form} className="form-search-perfil" onFinish={onFinish}>
-          <div className="form-perfil-ficha-minus-button">
-            <Form.Item label='Nome do Perfil' name='nome-perfil' className="form-search-perfil-nome-perfil form-search-perfil-item">
-              <Input onChange={e => form.setFieldValue('nome-perfil', e.target.value.toUpperCase())} />
-            </Form.Item>
-          </div>
-        </Form>
-      </div>
-    </>
-  )
-}
+    <div className="search-perfil-container">
+      <Spin spinning={loading} tip="Carregando...">
+        <Input
+          placeholder="Buscar perfil"
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="search-perfil-input"
+        />
+        <Button onClick={handleSearch} type="primary" className="search-perfil-button">
+          Buscar
+        </Button>
+        <Table dataSource={profiles} rowKey="id" columns={[{ title: "Nome", dataIndex: "name" }]} />
+      </Spin>
+    </div>
+  );
+};
 
 export default SearchPerfil;

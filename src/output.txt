@@ -1,0 +1,2302 @@
+Arquivo: ./percorreCode.py
+import os
+
+def salvar_conteudo_dos_arquivos(diretorio_base, arquivo_saida):
+    with open(arquivo_saida, 'w', encoding='utf-8') as output_file:
+        for root, _, files in os.walk(diretorio_base):
+            for file_name in files:
+                # Obtendo o caminho completo do arquivo
+                caminho_completo = os.path.join(root, file_name)
+                
+                # Lendo o conteúdo do arquivo
+                try:
+                    with open(caminho_completo, 'r', encoding='utf-8') as current_file:
+                        conteudo = current_file.read()
+                    
+                    # Escrevendo o caminho e o conteúdo no arquivo de saída
+                    output_file.write(f'Arquivo: {caminho_completo}\n')
+                    output_file.write(f'{conteudo}\n')
+                    output_file.write('#' * 80 + '\n')  # Separador entre arquivos
+                except Exception as e:
+                    # Caso não seja possível ler o arquivo
+                    output_file.write(f'Arquivo: {caminho_completo}\n')
+                    output_file.write(f'[ERRO AO LER O ARQUIVO: {e}]\n')
+                    output_file.write('#' * 80 + '\n')
+
+# Configurações
+diretorio_base = '.'  # Altere para o diretório que deseja analisar
+arquivo_saida = 'output.txt'  # Nome do arquivo onde será salvo o conteúdo
+
+# Executando a função
+salvar_conteudo_dos_arquivos(diretorio_base, arquivo_saida)
+
+################################################################################
+Arquivo: ./index.tsx
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import App from './components/App';
+import { ConfigProvider } from 'antd';
+import ptBR from 'antd/lib/locale/pt_BR';
+
+const root = createRoot(document.getElementById('root')!);
+root.render(<ConfigProvider locale={ptBR}><App /></ConfigProvider>);
+
+################################################################################
+Arquivo: ./output.txt
+
+################################################################################
+Arquivo: ./components/App.tsx
+import React, { useEffect, useState } from 'react';
+import { BrowserRouter, Route, Routes, Navigate } from 'react-router-dom';
+import Base from './collaborator/Base';
+import Login from './collaborator/Login';
+import Perfil from './collaborator/Perfil';
+import Modulo from './collaborator/Modulos/Modulo';
+import itemUser from './collaborator/menuItems/itemUser';
+import dayjs from 'dayjs';
+import 'dayjs/locale/pt-br';
+import { SpinningProvider } from './collaborator/Provider/Spinning';
+
+const App: React.FC = () => {
+  const [getBaseContent, setBaseContent] = useState<React.ReactNode>(<Perfil />);
+  const [getBaseTitle, setBaseTitle] = useState<string>('Perfil');
+  const perfilName = localStorage.getItem('perfilName')
+
+  useEffect(() => {
+    document.documentElement.lang = 'pt-BR';
+    dayjs.locale('pt-br');
+    const favicon = document.createElement('link');
+    favicon.type = 'image/x-icon';
+    favicon.rel = 'icon';
+    favicon.href = '/ceac.ico';
+    document.head.appendChild(favicon);
+  }, []);
+
+  return (
+    <BrowserRouter>
+      <SpinningProvider>
+        <Routes>
+          <Route path='colaborador/login' element={<Base content={<Login />} title='Autenticação' />} />
+          <Route path='colaborador/perfil' element={<Base content={getBaseContent} title={getBaseTitle} menuItem={[itemUser(setBaseContent, setBaseTitle)]} />} />
+          {
+            perfilName ? <Route path={`colaborador/${perfilName}`} element={<Modulo />} /> : null
+          }
+          <Route path="*" element={<Navigate to="colaborador/perfil" />} />
+        </Routes>
+      </SpinningProvider>
+    </BrowserRouter>
+  );
+};
+
+export default App;
+
+################################################################################
+Arquivo: ./components/collaborator/Login.tsx
+import React, { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import { Form, Input, Button, message } from 'antd';
+import './css/Login.css';
+import axiosInstance from "./services/axiosInstance";
+import { useSpinning } from "./Provider/Spinning";
+import { LoginOutlined } from '@ant-design/icons';
+
+const Login: React.FC = () => {
+  const navigate = useNavigate();
+  const [getLoadingButton, setLoadingButton] = useState(false);
+  const { setSpinning } = useSpinning();
+
+  useEffect(() => {
+    const verifyToken = async () => {
+      setSpinning(true);
+      document.title = 'Autenticação';
+      try {
+        await axiosInstance.post('token/refresh/verify/');
+        navigate('/colaborador/perfil');
+      } catch (error) {
+        if ((error as any).status && (error as any).status === 400) return;
+      } finally {
+        setSpinning(false);
+      }
+    };
+
+    verifyToken();
+  }, [navigate, setSpinning]);
+
+  const onFinish = async (values: object) => {
+    setLoadingButton(true);
+    setSpinning(true);
+    try {
+      await axiosInstance.post('token/', values);
+      try {
+        const userResponse = await axiosInstance.get('current_user/');
+        const userId = userResponse.data.id;
+        localStorage.setItem('userId', userId);
+        navigate('/colaborador/perfil');
+      } catch {
+        message.error('Um erro ocorreu ao obter id do usuário.');
+      }
+    } catch {
+      message.error('Usuário ou senha inválida(s)!');
+    } finally {
+      setLoadingButton(false);
+      setSpinning(false);
+    }
+  };
+
+  const onFinishFailed = () => {
+    message.error('Um erro ocorreu, tente novamente!');
+  };
+
+  return (
+    <Form
+      className="form-login"
+      onFinish={onFinish}
+      onFinishFailed={onFinishFailed}
+    >
+      <Form.Item
+        className="username-login"
+        name="username"
+        rules={[{ required: true, message: 'Insira seu nome de usuário!' }]}
+        label="Usuário"
+      >
+        <Input placeholder="Nome de usuário" />
+      </Form.Item>
+      <Form.Item
+        className="password-login"
+        name="password"
+        rules={[{ required: true, message: 'Insira sua senha!' }]}
+        label="Senha"
+      >
+        <Input.Password placeholder="Senha" />
+      </Form.Item>
+      <Form.Item className="button-login">
+        <Button type="primary" htmlType="submit" loading={getLoadingButton} icon={<LoginOutlined />}>
+          Entrar
+        </Button>
+      </Form.Item>
+    </Form>
+  );
+};
+
+export default Login;
+
+################################################################################
+Arquivo: ./components/collaborator/Perfil.tsx
+import React, { useEffect } from "react";
+import { Form, Anchor } from 'antd';
+import perfisObject from "./services/perfisObject";
+import './css/Perfil.css';
+import { useSpinning } from "./Provider/Spinning";
+
+const Perfil: React.FC = () => {
+  const perfisNamePermissions = perfisObject();
+  const perfisNames = Object.keys(perfisNamePermissions);
+  const { setSpinning } = useSpinning();
+
+  useEffect(() => {
+    document.title = 'Perfil';
+  }, [])
+
+  const selectPerfil = (event: React.MouseEvent<HTMLElement>, link: { title: React.ReactNode }) => {
+    setSpinning(true);
+    localStorage.setItem('perfilName', link.title as string);
+    setSpinning(false);
+  };
+
+  if (perfisNames[0] !== 'null') {
+    return (
+      <Form className="form-perfil">
+        <Anchor onClick={selectPerfil} items={
+          perfisNames ? perfisNames.map((perfilName: string, index: number) => ({
+            key: index.toString(),
+            href: `/colaborador/${perfilName.toLowerCase()}`,
+            title: perfilName,
+          })) : []
+        } />
+      </Form>
+    );
+  }
+};
+
+export default Perfil;
+
+################################################################################
+Arquivo: ./components/collaborator/Base.tsx
+import React from 'react';
+import './css/Base.css'
+import { Layout, Menu, theme, Typography, Spin } from 'antd';
+import type { basePropsType } from './types';
+import { useSpinning } from './Provider/Spinning';
+
+const Base: React.FC<basePropsType> = (props) => {
+  const { Title } = Typography;
+  const { Header, Content, Footer } = Layout;
+  const { getSpinning } = useSpinning();
+
+  const {
+    token: { colorBgContainer, borderRadiusLG },
+  } = theme.useToken();
+
+  return (
+    <Layout className='layout-base'>
+      <Spin spinning={getSpinning} tip='Carregando...' className='spin-base'>
+        <Header className='header-base'>
+          <img src='/ceac.png' alt="logo" className='logo-base' />
+          <Menu
+            className='menu-base'
+            theme="dark"
+            mode="horizontal"
+            items={props.menuItem}
+          />
+        </Header>
+        <Content className='content-base'>
+          <Title className='title'>{props.title}</Title>
+          <div
+            style={{
+              background: colorBgContainer,
+              borderRadius: borderRadiusLG,
+            }}
+            className='content-div1-base'
+          >
+            {props.content}
+          </div>
+        </Content>
+      </Spin>
+      <Footer className='footer-base'>
+        ©2024 Criado por Gabriel Nunes
+      </Footer>
+    </Layout>
+  );
+};
+
+export default Base;
+
+################################################################################
+Arquivo: ./components/collaborator/types.tsx
+import { Dispatch, SetStateAction } from "react";
+import { FormInstance } from 'antd';
+import type { MenuProps } from 'antd';
+
+interface spinningContextType {
+  getSpinning: boolean;
+  setSpinning: Dispatch<SetStateAction<boolean>>;
+}
+
+type modulosCapacitaType = {
+  id: number;
+  nome: string;
+};
+
+type menuItemType = Required<MenuProps>['items'][number];
+
+type createFichaPropsType = {
+  form?: FormInstance;
+  funcEditing?: (values: object) => void;
+};
+
+type basePropsType = {
+  content: React.ReactNode;
+  title?: string;
+  menuItem?: Array<menuItemType>;
+};
+
+export type {
+  spinningContextType,
+  modulosCapacitaType,
+  menuItemType,
+  createFichaPropsType,
+  basePropsType
+};
+
+################################################################################
+Arquivo: ./components/collaborator/Provider/Spinning.tsx
+import React, { createContext, useContext, useState, ReactNode } from "react";
+import type { spinningContextType } from "../types";
+
+const SpinningContext = createContext<spinningContextType>({
+  getSpinning: false,
+  setSpinning: () => { },
+});
+
+const SpinningProvider = ({ children }: { children: ReactNode }) => {
+  const [getSpinning, setSpinning] = useState(false);
+
+  return (
+    <SpinningContext.Provider value={{ getSpinning, setSpinning }}>
+      {children}
+    </SpinningContext.Provider>
+  );
+};
+
+const useSpinning = () => useContext(SpinningContext);
+
+export { SpinningProvider, useSpinning };
+
+################################################################################
+Arquivo: ./components/collaborator/css/Base.css
+.layout-base {
+  position: absolute;
+  top: 0;
+  left: 0;
+  min-width: 100%;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.header-base {  
+  display: flex;
+  align-items: center;
+  background-color: #1677ff;
+  min-height: 85px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.logo-base {
+  width: auto;
+  height: 75px;
+}
+
+.menu-base {
+  flex: 1;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.ant-menu {
+  background-color: #1677ff !important;
+}
+
+.content-base {
+  display: flex;
+  flex-direction: column;
+  padding: 0 48px;
+}
+
+.content-breadcrumb-base {
+  margin: 16px 0;
+}
+
+.content-div1-base {
+  display: block;
+  align-self: center;
+  padding: 24px;
+  min-width: 25%;
+}
+
+.footer-base {
+  text-align: center;
+}
+
+.title {
+  display: flex;
+  justify-content: center;
+  margin: 20px;
+}
+
+################################################################################
+Arquivo: ./components/collaborator/css/Perfil.css
+.form-perfil {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+################################################################################
+Arquivo: ./components/collaborator/css/Login.css
+.form-login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+}
+
+.username-login, .password-login {
+  width: 75%;
+  flex: 1;
+}
+
+################################################################################
+Arquivo: ./components/collaborator/css/Modulos/Capacita/SearchFicha.css
+.search-ficha {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-search-ficha {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-search-ficha-minus-button {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+}
+
+.form-search-ficha-button {
+  align-self: center;
+}
+
+.form-search-ficha-item{
+  margin: 5px;
+}
+
+.form-search-ficha-select-modulos-capacita{
+  min-width: 232px;
+}
+
+.form-search-ficha-select-genero{
+  min-width: 115px;
+}
+
+.form-search-ficha-cpf{
+  max-width: 160px;
+}
+
+.form-search-ficha-select-escolaridade{
+  min-width: 185px;
+}
+
+.form-search-ficha-select-uf{
+  min-width: 200px;
+}
+
+.form-search-ficha-select-atividade {
+  min-width: 200px;
+}
+
+.form-search-ficha-email {
+  min-width: 200px;
+}
+
+.form-search-ficha-contato {
+  max-width: 200px;
+}
+
+.table-search-ficha {
+  margin-top: 20px;
+}
+
+.form-search-ficha-nascimento {
+  max-width: 260px;
+}
+
+.limpar-button {
+  margin-left: 10px;
+}
+
+.button-ficha-description {
+  display: flex;
+  justify-content: space-around;
+  margin: 10px;
+}
+
+.modal-ficha-internal {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.modal-title {
+  display: flex;
+  justify-content: center;
+}
+
+.descriptions-item-search-ficha {
+  white-space: nowrap;
+}
+
+################################################################################
+Arquivo: ./components/collaborator/css/Modulos/Capacita/CreateFicha.css
+.form-create-ficha {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.form-create-ficha-partes {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.form-create-ficha-title {
+  display: flex;
+  justify-content: center;
+}
+
+.form-create-ficha-item {
+  margin: 5px;
+  width: 200px;
+}
+
+.form-create-ficha-button{
+  display: flex;
+  justify-content: center;
+}
+
+.form-create-ficha-checkbox-juridica {
+  margin-right: 5px;
+}
+
+.limpar-button {
+  margin-left: 10px;
+}
+################################################################################
+Arquivo: ./components/collaborator/menuItems/itemAdministrator.tsx
+import React from "react";
+import {
+  UserAddOutlined,
+  UserOutlined,
+  UsergroupAddOutlined,
+  SettingOutlined,
+  TeamOutlined
+} from '@ant-design/icons'
+import SearchUser from "../Modulos/Administrator/SearchUser";
+import CreateUser from "../Modulos/Administrator/CreateUser";
+import SearchPerfil from "../Modulos/Administrator/SearchPerfil";
+import CreatePerfil from "../Modulos/Administrator/CreatePerfil";
+import type { menuItemType } from '../types';
+
+const itemAdministrator = (
+  setBaseContent: React.Dispatch<React.SetStateAction<React.ReactNode>>,
+  setBaseTitle: React.Dispatch<React.SetStateAction<string>>,
+  permissions: string[]
+): menuItemType | null => {
+  const items = {
+    searchUser: {
+      label: 'Gerenciar Operadores',
+      key: 'searchUser',
+      icon: <UserOutlined />,
+      onClick: () => {
+        setBaseContent(<SearchUser />);
+        setBaseTitle('Gerenciar Operadores');
+      }
+    },
+    createUser: {
+      label: 'Criar Operador',
+      key: 'createUser',
+      icon: <UserAddOutlined />,
+      onClick: () => {
+        setBaseContent(<CreateUser />);
+        setBaseTitle('Criar Operador');
+      }
+    },
+    searchPerfil: {
+      label: 'Gerenciar Perfis',
+      key: 'searchPerfil',
+      icon: <TeamOutlined />,
+      onClick: () => {
+        setBaseContent(<SearchPerfil />);
+        setBaseTitle('Gerenciar Perfis de Operadores');
+      }
+    },
+    createPerfil: {
+      label: 'Criar Perfil',
+      key: 'createPerfil',
+      icon: <UsergroupAddOutlined />,
+      onClick: () => {
+        setBaseContent(<CreatePerfil />);
+        setBaseTitle('Criar Perfil de Operadores');
+      }
+    }
+  }
+
+  const menuItem: menuItemType[] = [];
+
+  if (permissions.includes('SUPER USUÁRIO')) {
+    for (const item of Object.values(items)) {
+      if (item) {
+        menuItem.push(item);
+      }
+    }
+  } else {
+    for (const item of Object.values(items)) {
+      if (permissions.includes(item.key)) {
+        menuItem.push(item);
+      }
+    }
+  }
+
+  return menuItem.length ? {label: 'Administrador', key: 'administrator', icon: <SettingOutlined />, children: menuItem} : null
+}
+
+export default itemAdministrator;
+
+################################################################################
+Arquivo: ./components/collaborator/menuItems/itemCapacita.tsx
+import React from 'react';
+import {
+  ReadOutlined,
+  UnorderedListOutlined,
+  FormOutlined
+} from '@ant-design/icons';
+import SearchFicha from '../Modulos/Capacita/SearchFicha';
+import CreateFicha from '../Modulos/Capacita/CreateFicha';
+import type { menuItemType } from '../types';
+
+const itemCapacita = (
+  setBaseContent: React.Dispatch<React.SetStateAction<React.ReactNode>>,
+  setBaseTitle: React.Dispatch<React.SetStateAction<string>>,
+  permissions: string[]
+): menuItemType | null => {
+  const items: { [key: string]: { label: string; key: string; icon: JSX.Element; onClick: () => void } } = {
+    searchFicha: {
+      label: 'Gerenciar Fichas',
+      key: 'searchFicha',
+      icon: <UnorderedListOutlined />,
+      onClick: () => {
+        setBaseContent(<SearchFicha />);
+        setBaseTitle('Gerenciar Fichas de Inscrição de Capacitação');
+      }
+    },
+    createFicha: {
+      label: 'Criar Ficha',
+      key: 'createFicha',
+      icon: <FormOutlined />,
+      onClick: () => {
+        setBaseContent(<CreateFicha />);
+        setBaseTitle('Criar Ficha de Inscrição de Capacitação');
+      }
+    }
+  };
+
+  const menuItem: menuItemType[] = [];
+
+  if (permissions.includes('SUPER USUÁRIO')) {
+    for (const key in items) {
+      menuItem.push(items[key]);
+    }
+  } else {
+    for (const item of Object.values(items)) {
+      if (permissions.includes(item.key)) {
+        menuItem.push(item);
+      }
+    }
+  }
+
+  return menuItem.length ? { label: 'Capacita', key: 'capacita', icon: <ReadOutlined />, children: menuItem } : null;
+};
+
+export default itemCapacita;
+
+################################################################################
+Arquivo: ./components/collaborator/menuItems/itemUser.tsx
+import React from 'react';
+import {
+  UserOutlined,
+  LogoutOutlined,
+  IdcardOutlined,
+  EditOutlined,
+} from '@ant-design/icons';
+import ChangeRegistration from '../Modulos/User/ChangeRegistration';
+import logout from '../services/logout';
+import type { menuItemType } from '../types';
+
+const itemUser = (
+  setBaseContent: React.Dispatch<React.SetStateAction<React.ReactNode>>,
+  setBaseTitle: React.Dispatch<React.SetStateAction<string>>,
+): menuItemType => {
+
+  return {
+    label: 'Operador',
+    key: 'operator',
+    icon: <UserOutlined />,
+    children: [
+      {
+        label: 'Alterar Cadastro',
+        key: 'changeRegistration',
+        icon: <EditOutlined />,
+        onClick: () => {
+          setBaseContent(<ChangeRegistration />);
+          setBaseTitle('Altere seu Cadastro');
+        },
+      },
+      {
+        label: <a href='/colaborador/perfil'>Alterar Perfil</a>,
+        key: 'perfil',
+        icon: <IdcardOutlined />,
+      },
+      {
+        label: <a href='/colaborador/login'>Sair</a>,
+        key: 'sair',
+        icon: <LogoutOutlined />,
+        onClick: logout,
+      },
+    ],
+  };
+};
+
+export default itemUser;
+
+################################################################################
+Arquivo: ./components/collaborator/Modulos/Modulo.tsx
+import React, { useEffect, useState } from "react";
+import perfisObject from "../services/perfisObject";
+import { useNavigate } from "react-router-dom";
+import Base from "../Base";
+import itemUser from "../menuItems/itemUser";
+import itemCapacita from "../menuItems/itemCapacita";
+import itemAdministrator from "../menuItems/itemAdministrator";
+import type { menuItemType } from "../types";
+import SearchFicha from "./Capacita/SearchFicha";
+import CreateFicha from "./Capacita/CreateFicha";
+import SearchUser from "./Administrator/SearchUser";
+import CreateUser from "./Administrator/CreateUser";
+import SearchPerfil from "./Administrator/SearchPerfil";
+import CreatePerfil from "./Administrator/CreatePerfil";
+
+const Modulo: React.FC = () => {
+  const [getItems, setItems] = useState<Array<menuItemType>>();
+  const [getBaseContent, setBaseContent] = useState<null | React.ReactNode>(null);
+  const [getBaseTitle, setBaseTitle] = useState<string>(String);
+  const navigate = useNavigate();
+  const perfisNamePermissions = perfisObject();
+  const perfisNames = Object.keys(perfisNamePermissions);
+  const perfilName = localStorage.getItem('perfilName')!;
+  const permissions = perfisNamePermissions[perfilName];
+
+  useEffect(() => {
+    document.title = getBaseTitle;
+  }, [getBaseContent, getBaseTitle, getItems])
+
+  useEffect(() => {
+    if (!perfisNames.includes(perfilName) && perfisNames[0] !== 'null') {
+      navigate('/colaborador/perfil');
+    }
+  }, [perfisNamePermissions]);
+
+  useEffect(() => {
+    if (permissions) {
+      const user = itemUser(setBaseContent, setBaseTitle);
+      const capacita = itemCapacita(setBaseContent, setBaseTitle, permissions);
+      const administrator = itemAdministrator(setBaseContent, setBaseTitle, permissions);
+      const itemsList = [user, capacita, administrator];
+      const items: menuItemType[] = [];
+      for (const item of itemsList) {
+        if (item) {
+          items.push(item);
+        }
+      }
+      setItems(items);
+
+      switch (true) {
+        case permissions.includes('SUPER USUÁRIO') || permissions.includes('searchFicha'):
+          setBaseContent(<SearchFicha />);
+          setBaseTitle('Gerenciar Fichas de Inscrição de Capacitação');
+          break;
+        case permissions.includes('createFicha'):
+          setBaseContent(<CreateFicha />);
+          setBaseTitle('Criar Ficha de Inscrição de Capacitação');
+          break;
+        case permissions.includes('searchUser'):
+          setBaseContent(<SearchUser />);
+          setBaseTitle('Gerenciar Operadores');
+          break;
+        case permissions.includes('createUser'):
+          setBaseContent(<CreateUser />);
+          setBaseTitle('Criar Operador');
+          break;
+        case permissions.includes('searchPerfil'):
+          setBaseContent(<SearchPerfil />);
+          setBaseTitle('Gerenciar Perfis de Operadores');
+          break;
+        case permissions.includes('createPerfil'):
+          setBaseContent(<CreatePerfil />);
+          setBaseTitle('Criar Perfil de Operadores');
+          break;
+      }
+    }
+  }, [permissions]);
+
+  if (perfisNames.includes(perfilName!)) {
+    return (
+      <Base
+        content={getBaseContent}
+        title={getBaseTitle}
+        menuItem={getItems}
+      />
+    );
+  }
+
+  return null;
+};
+
+export default Modulo;
+
+################################################################################
+Arquivo: ./components/collaborator/Modulos/User/ChangeRegistration.tsx
+import React, { useState, useEffect } from 'react';
+import { Form, Input, Button, message, Typography, Spin } from 'antd';
+import axiosInstance from '../../services/axiosInstance';
+
+interface FormValues {
+  email: string;
+  currentPassword: string;
+  password?: string;
+  confirmPassword?: string;
+  first_name?: string;
+  last_name?: string;
+}
+
+const { Text } = Typography;
+
+const ChangeRegistration: React.FC = () => {
+  const [getLoading, setLoading] = useState<boolean>(false);
+  const [getPasswordMessage, setPasswordMessage] = useState<string>('');
+  const [form] = Form.useForm();
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const userId = localStorage.getItem('userId');
+        const response = await axiosInstance.get(`/users/${userId}/`);
+        form.setFieldsValue({
+          email: response.data.email,
+          first_name: response.data.first_name.toUpperCase(),
+          last_name: response.data.last_name.toUpperCase(),
+        });
+      } catch {
+        message.error('Erro ao carregar dados do usuário.');
+      }
+    };
+
+    fetchUserData();
+  }, [form]);
+
+  const validatePassword = (_: any, value: string | undefined) => {
+    return new Promise<void>((resolve, reject) => {
+      if (!value) {
+        resolve();
+        return;
+      }
+
+      const errors = [];
+      const remainingChars = 8 - value.length;
+
+      if (remainingChars > 0) {
+        errors.push(`Faltam ${remainingChars} ${remainingChars > 1 ? 'caracteres' : 'caractere'} para atingir o mínimo necessário`);
+      }
+      if (!/[A-Z]/.test(value)) {
+        errors.push('uma letra maiúscula');
+      }
+      if (!/[a-z]/.test(value)) {
+        errors.push('uma letra minúscula');
+      }
+      if (!/\d/.test(value)) {
+        errors.push('um número');
+      }
+      if (!/[#@!$%^&*()\-_\+\=\{\}\[\]:;"'<>,.?\/\\|~`]/.test(value)) {
+        errors.push('um caractere especial');
+      }
+
+      setPasswordMessage(errors.length > 0 ? errors.join(', ') + '.' : '');
+
+      if (errors.length === 0) {
+        resolve();
+      } else {
+        reject(new Error(''));
+      }
+    });
+  };
+
+  const onFinish = async (values: FormValues) => {
+    setLoading(true);
+    if (values.password && values.password !== values.confirmPassword) {
+      message.error('As senhas não coincidem!');
+      return;
+    }
+
+    if (!values.currentPassword) {
+      message.error('Por favor, insira sua senha atual para confirmar as alterações.');
+      return;
+    }
+
+    try {
+      const userId = localStorage.getItem('userId');
+      const passwordCheckResponse = await axiosInstance.post(`users/${userId}/check-password/`, {
+        password: values.currentPassword,
+      });
+
+      if (!passwordCheckResponse.data.valid) {
+        message.error('Senha atual incorreta. Por favor, tente novamente.');
+        setLoading(false);
+        return;
+      }
+
+      const updateData = {
+        email: values.email,
+        username: values.email,
+        first_name: values.first_name?.toUpperCase(),
+        last_name: values.last_name?.toUpperCase(),
+        ...(values.password && { password: values.password }),
+      };
+
+      await axiosInstance.put(`users/${userId}/`, updateData);
+      message.success('Cadastro alterado com sucesso!');
+    } catch {
+      message.error('Erro ao alterar cadastro, tente novamente.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <Spin spinning={getLoading} tip='Carregando...'>
+      <Form
+        form={form}
+        onFinish={onFinish}
+        layout="vertical"
+      >
+        <Form.Item
+          label="E-mail"
+          name="email"
+          rules={[{ required: true, message: 'Por favor, insira seu e-mail!' }, { type: 'email', message: 'Por favor, insira um e-mail válido!' }]}
+        >
+          <Input placeholder="E-mail" />
+        </Form.Item>
+        <Form.Item
+          label="Primeiro Nome"
+          name="first_name"
+          rules={[{ required: true, message: 'Por favor, insira seu primeiro nome!' }]}
+        >
+          <Input placeholder="Primeiro Nome" onChange={(e) => form.setFieldValue('first_name', e.target.value.toUpperCase())} />
+        </Form.Item>
+        <Form.Item
+          label="Sobrenome"
+          name="last_name"
+          rules={[{ required: true, message: 'Por favor, insira seu sobrenome!' }]}
+        >
+          <Input placeholder="Sobrenome" onChange={(e) => form.setFieldValue('last_name', e.target.value.toUpperCase())} />
+        </Form.Item>
+        <Form.Item
+          label="Senha Atual"
+          name="currentPassword"
+          rules={[{ required: true, message: 'Por favor, insira sua senha atual!' }]}
+        >
+          <Input.Password placeholder="Senha Atual" />
+        </Form.Item>
+        <Text strong style={{ marginBottom: '8px', display: 'block' }}>
+          Regras para a nova senha (opcional):
+        </Text>
+        <Text style={{ marginBottom: '16px', display: 'block' }}>
+          A senha deve conter pelo menos 8 caracteres, incluindo uma letra maiúscula, uma letra minúscula, um número e um caractere especial. Caracteres especiais permitidos: #@!$%^&*()-_+={ }[]:;"'&lt;&gt;,.?/\\|~`.
+        </Text>
+        <Form.Item
+          label="Nova Senha"
+          name="password"
+          rules={[{ validator: validatePassword }]}
+          hasFeedback
+        >
+          <Input.Password
+            placeholder="Nova senha (opcional)"
+            onChange={(e) => {
+              form.validateFields(['password']);
+            }}
+          />
+        </Form.Item>
+        {getPasswordMessage && <Text type="danger">{getPasswordMessage}</Text>}
+        <Form.Item
+          label="Confirme a Nova Senha"
+          name="confirmPassword"
+          dependencies={['password']}
+          hasFeedback
+          rules={[
+            ({ getFieldValue }) => ({
+              validator(_, value) {
+                if (!value || getFieldValue('password') === value) {
+                  return Promise.resolve();
+                }
+                return Promise.reject(new Error('As senhas não coincidem!'));
+              },
+            }),
+          ]}
+        >
+          <Input.Password placeholder="Confirme a nova senha (se preenchida)" />
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType="submit" loading={getLoading}>
+            Alterar Cadastro
+          </Button>
+        </Form.Item>
+      </Form>
+    </Spin>
+  );
+};
+
+export default ChangeRegistration;
+
+################################################################################
+Arquivo: ./components/collaborator/Modulos/Capacita/SearchFicha.tsx
+import React, { useState, useEffect } from "react";
+import { Form, Input, Button, Select, DatePicker, Table, message, Modal, Descriptions, Popconfirm, Typography } from 'antd';
+import MaskedInput from 'antd-mask-input';
+import axiosInstance from "../../services/axiosInstance";
+import '../../css/Modulos/Capacita/SearchFicha.css';
+import dayjs from 'dayjs';
+import type { modulosCapacitaType } from "../../types";
+import CreateFicha from "./CreateFicha";
+import { useSpinning } from "../../Provider/Spinning";
+import { SearchOutlined, ClearOutlined, DownloadOutlined, DeleteOutlined, EditOutlined } from '@ant-design/icons';
+
+const { Option } = Select;
+const { Title, Text } = Typography
+
+const escolaridadeMap: { [key: string]: string } = {
+  'FUNDAMENTAL': 'ENSINO FUNDAMENTAL',
+  'MEDIO': 'ENSINO MÉDIO',
+  'GRADUACAO': 'GRADUAÇÃO',
+  'POS_GRADUACAO': 'PÓS-GRADUAÇÃO'
+};
+
+const generoMap: { [key: string]: string } = {
+  'M': 'MASCULINO',
+  'F': 'FEMININO'
+};
+
+const atividadeMap: { [key: string]: string } = {
+  'ARTESANATO': 'ARTESANATO',
+  'AGRICULTURA_URBANA': 'AGRICULTURA URBANA',
+  'COMERCIO': 'COMÉRCIO',
+  'ESTETICA_E_BELEZA': 'ESTÉTICA E BELEZA',
+  'GASTRONOMIA': 'GASTRONOMIA',
+  'INDUSTRIA': 'INDÚSTRIA',
+  'SERVICO': 'SERVIÇO'
+};
+
+const SearchFicha: React.FC = () => {
+  const [getLoadingSearchFicha, setLoadingSearchFicha] = useState<boolean>(false);
+  const { setSpinning } = useSpinning();
+  const [getData, setData] = useState<any[]>([]);
+  const [getModulosCapacita, setModulosCapacita] = useState<modulosCapacitaType[]>([]);
+  const [getColumns, setColumns] = useState<undefined | Array<Object>>(undefined);
+  const [form] = Form.useForm();
+  const [form2] = Form.useForm();
+  const [getVisibleFicha, setVisibleFicha] = useState<boolean>(false);
+  const [getSelectedFicha, setSelectedFicha] = useState<any>(null);
+  const [getIsEditingFicha, setIsEditingFicha] = useState<boolean>(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const responseModulos = await axiosInstance.get('capacita/modulos_capacita/');
+        setModulosCapacita(responseModulos.data);
+        const columns = [
+          {
+            title: 'Nome', dataIndex: 'nome_completo', key: 'nome_completo', render: (text: string, record: any) => (
+              <a onClick={() => {
+                setSpinning(true)
+                handleOpenFicha(record.id)
+                setSpinning(false)
+              }}>
+                {text}
+              </a>
+            )
+          },
+          {
+            title: 'Módulo de Aprendizagem', dataIndex: 'modulo_capacita', key: 'modulo_capacita', render: (id: number) => responseModulos.data.map(
+              (modulo: modulosCapacitaType) => {
+                if (modulo.id === id) {
+                  return modulo.nome;
+                }
+                return null;
+              }
+            )
+          },
+          {
+            title: 'CPF', dataIndex: 'cpf', key: 'cpf', render: (cpf: string) =>
+              cpf ? cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : ''
+          },
+          {
+            title: 'Data de Nascimento', dataIndex: 'data_nascimento', key: 'data_nascimento', render: (text: string) =>
+              text ? dayjs(text).format('DD/MM/YYYY') : ''
+          },
+          {
+            title: 'Gênero', dataIndex: 'genero', key: 'genero', render: (genero: string) => generoMap[genero] || genero
+          },
+          {
+            title: 'Escolaridade', dataIndex: 'escolaridade', key: 'escolaridade', render: (escolaridade: string) => escolaridadeMap[escolaridade] || escolaridade
+          },
+          { title: 'UF', dataIndex: 'uf', key: 'uf' },
+          {
+            title: 'Atividade', dataIndex: 'atividade', key: 'atividade', render: (atividade: string) => atividadeMap[atividade] || atividade
+          },
+          { title: 'Email', dataIndex: 'email', key: 'email' },
+          {
+            title: 'Celular', dataIndex: 'celular', key: 'celular', render: (celular: string) =>
+              celular ? celular.replace(/(\d{2})(\d{1})(\d{4})(\d{4})/, '($1) $2 $3-$4') : ''
+          },
+          {
+            title: 'Fixo', dataIndex: 'fixo', key: 'fixo', render: (fixo: string) =>
+              fixo ? fixo.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3') : ''
+          },
+        ];
+        setColumns(columns);
+      } catch {
+        message.error('Erro ao carregar os módulos de aprendizagem, tente novamente.');
+      }
+
+      try {
+        const responseFichas = await axiosInstance.get('capacita/fichas/');
+        setData(responseFichas.data);
+      } catch {
+        message.error('Erro ao carregar fichas, recarregue a página.');
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleOpenFicha = async (id: number) => {
+    try {
+      const response = await axiosInstance.get(`capacita/fichas/${id}`);
+      setSelectedFicha(response.data);
+      setVisibleFicha(true);
+    } catch {
+      message.error('Erro ao carregar a ficha, tente novamente.');
+    }
+  };
+
+  const dowloadFicha = async () => {
+    setSpinning(true);
+    try {
+      const response = await axiosInstance.get(`capacita/fichas/${getSelectedFicha.id}/download`, {
+        responseType: 'blob'
+      });
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `${getSelectedFicha.nome_completo}.docx`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch {
+      message.error('Erro ao baixar a ficha, tente novamente.');
+    } finally {
+      setSpinning(false);
+    }
+  };
+
+  const deleteFicha = async () => {
+    setSpinning(true);
+    try {
+      await axiosInstance.delete(`capacita/fichas/${getSelectedFicha.id}/`);
+      message.success(`Ficha do(a) ${getSelectedFicha.nome_completo} deletada com sucesso.`);
+      setVisibleFicha(false);
+      onFinish(form.getFieldsValue());
+    } catch {
+      message.error(`Erro ao deletar a ficha do(a) ${getSelectedFicha.nome_completo}. Tente novamente.`);
+    } finally {
+      setSpinning(false);
+    }
+  };
+
+  const editingFicha = () => {
+    setSpinning(true);
+    form2.resetFields()
+    form2.setFieldsValue({
+      ...getSelectedFicha,
+      data_nascimento: dayjs(getSelectedFicha.data_nascimento),
+      data_abertura: getSelectedFicha.data_abertura ? dayjs(getSelectedFicha.data_abertura) : null,
+      cpf: getSelectedFicha.cpf ? getSelectedFicha.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4') : '',
+      celular: getSelectedFicha.celular ? getSelectedFicha.celular.replace(/(\d{2})(\d{1})(\d{4})(\d{4})/, '($1) $2 $3-$4') : '',
+      fixo: getSelectedFicha.fixo ? getSelectedFicha.fixo.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3') : '',
+      cep: getSelectedFicha.cep ? getSelectedFicha.cep.replace(/(\d{5})(\d{3})/, '$1-$2') : '',
+      cnpj: getSelectedFicha.cnpj ? getSelectedFicha.cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5') : '',
+      cnae_principal: getSelectedFicha.cnae_principal ? getSelectedFicha.cnae_principal.replace(/(\d{4})(\d{1})(\d{2})/, '$1-$2/$3') : ''
+    });
+    setIsEditingFicha(true);
+    setSpinning(false);
+  };
+
+  const onReset = () => {
+    setSpinning(true);
+    form.resetFields();
+    setSpinning(false);
+  };
+
+  const onEditFinish = async (values: any) => {
+    try {
+      await axiosInstance.put(`capacita/fichas/${getSelectedFicha.id}/`, values);
+      message.success('Ficha editada com sucesso!');
+      setIsEditingFicha(false);
+      handleOpenFicha(getSelectedFicha.id);
+      onFinish(form.getFieldsValue());
+    } catch {
+      message.error('Erro ao editar ficha, tente novamente.');
+    }
+  };
+
+  const onFinish = async (values: any) => {
+    setSpinning(true);
+    setLoadingSearchFicha(true);
+    if (values.data_nascimento) {
+      values.data_nascimento = values.data_nascimento.format('YYYY-MM-DD');
+    }
+
+    if (values.cpf) {
+      values.cpf = values.cpf.replace(/\D/g, '');
+    }
+
+    if (values.celular) {
+      values.celular = values.celular.replace(/\D/g, '');
+    }
+
+    if (values.fixo) {
+      values.fixo = values.fixo.replace(/\D/g, '');
+    }
+
+    const cleanedValues = Object.fromEntries(
+      Object.entries(values).filter(([_, v]) => v != null && v !== "")
+    );
+
+    try {
+      const response = await axiosInstance.get('capacita/fichas/', { params: cleanedValues });
+      setData(response.data);
+      if (response.data.length === 0) {
+        message.info('Nenhuma ficha encontrada.');
+      } else {
+        message.success('Busca realizada com sucesso!');
+      }
+    } catch {
+      message.error('Erro ao buscar ficha, tente novamente.');
+    } finally {
+      setLoadingSearchFicha(false);
+      setSpinning(false);
+    }
+  };
+
+  return (
+    <>
+      <div className="search-ficha">
+        <Form form={form} className="form-search-ficha" onFinish={onFinish}>
+          <div className="form-search-ficha-minus-button">
+            <Form.Item label="Nome" name="nome" className="form-search-ficha-nome form-search-ficha-item">
+              <Input onChange={(e) => form.setFieldValue('nome', e.target.value.toUpperCase())} allowClear />
+            </Form.Item>
+            <Form.Item label="Módulo de Capacitação" name='modulo_capacita' className="form-search-ficha-modulos-capacita form-search-ficha-item">
+              <Select allowClear showSearch className="form-search-ficha-select-modulos-capacita" options={getModulosCapacita.map(
+                (modulo: modulosCapacitaType) => {
+                  return { value: modulo.id, label: modulo.nome };
+                }
+              )} />
+            </Form.Item>
+            <Form.Item label="CPF" name="cpf" className="form-search-ficha-cpf form-search-ficha-item">
+              <MaskedInput mask="000.000.000-00" allowClear />
+            </Form.Item>
+            <Form.Item label="Data de Nascimento" name="data_nascimento" className="form-search-ficha-nascimento form-search-ficha-item">
+              <DatePicker format="DD/MM/YYYY" allowClear />
+            </Form.Item>
+            <Form.Item label="Gênero" name="genero" className="form-search-ficha-genero form-search-ficha-item">
+              <Select allowClear showSearch className="form-search-ficha-select-genero">
+                <Option value="M">MASCULINO</Option>
+                <Option value="F">FEMININO</Option>
+              </Select>
+            </Form.Item>
+            <Form.Item label="Escolaridade" name="escolaridade" className="form-search-ficha-escolaridade form-search-ficha-item">
+              <Select allowClear showSearch className="form-search-ficha-select-escolaridade">
+                <Option value="FUNDAMENTAL">ENSINO FUNDAMENTAL</Option>
+                <Option value="MEDIO">ENSINO MÉDIO</Option>
+                <Option value="GRADUACAO">GRADUAÇÃO</Option>
+                <Option value="POS_GRADUACAO">PÓS-GRADUAÇÃO</Option>
+              </Select>
+            </Form.Item>
+            <Form.Item label="UF" name="uf" className="form-search-ficha-uf form-search-ficha-item">
+              <Select allowClear showSearch className="form-search-ficha-select-uf">
+                <Option value="AC">ACRE</Option>
+                <Option value="AL">ALAGOAS</Option>
+                <Option value="AP">AMAPÁ</Option>
+                <Option value="AM">AMAZONAS</Option>
+                <Option value="BA">BAHIA</Option>
+                <Option value="CE">CEARÁ</Option>
+                <Option value="DF">DISTRITO FEDERAL</Option>
+                <Option value="ES">ESPÍRITO SANTO</Option>
+                <Option value="GO">GOIÁS</Option>
+                <Option value="MA">MARANHÃO</Option>
+                <Option value="MT">MATO GROSSO</Option>
+                <Option value="MS">MATO GROSSO DO SUL</Option>
+                <Option value="MG">MINAS GERAIS</Option>
+                <Option value="PA">PARÁ</Option>
+                <Option value="PB">PARAÍBA</Option>
+                <Option value="PR">PARANÁ</Option>
+                <Option value="PE">PERNAMBUCO</Option>
+                <Option value="PI">PIAUÍ</Option>
+                <Option value="RJ">RIO DE JANEIRO</Option>
+                <Option value="RN">RIO GRANDE DO NORTE</Option>
+                <Option value="RS">RIO GRANDE DO SUL</Option>
+                <Option value="RO">RONDÔNIA</Option>
+                <Option value="RR">RORAIMA</Option>
+                <Option value="SC">SANTA CATARINA</Option>
+                <Option value="SP">SÃO PAULO</Option>
+                <Option value="SE">SERGIPE</Option>
+                <Option value="TO">TOCANTINS</Option>
+              </Select>
+            </Form.Item>
+            <Form.Item label="Atividade" name="atividade" className="form-search-ficha-atividade form-search-ficha-item">
+              <Select allowClear showSearch className="form-search-ficha-select-atividade">
+                <Option value="ARTESANATO">ARTESANATO</Option>
+                <Option value="AGRICULTURA_URBANA">AGRICULTURA URBANA</Option>
+                <Option value="COMERCIO">COMÉRCIO</Option>
+                <Option value="ESTETICA_E_BELEZA">ESTÉTICA E BELEZA</Option>
+                <Option value="GASTRONOMIA">GASTRONOMIA</Option>
+                <Option value="INDUSTRIA">INDÚSTRIA</Option>
+                <Option value="SERVICO">SERVIÇO</Option>
+              </Select>
+            </Form.Item>
+            <Form.Item label="Email" name="email" className="form-search-ficha-email form-search-ficha-item">
+              <Input type="email" allowClear />
+            </Form.Item>
+            <Form.Item label="Celular" name="celular" className="form-search-ficha-celular form-search-ficha-item">
+              <MaskedInput mask="(00) 0.0000-0000" allowClear />
+            </Form.Item>
+            <Form.Item label="Fixo" name="fixo" className="form-search-ficha-fixo form-search-ficha-item">
+              <MaskedInput mask="(00) 0000-0000" allowClear />
+            </Form.Item>
+          </div>
+          <Form.Item className="form-search-ficha-button form-search-ficha-item">
+            <Button type="primary" htmlType="submit" loading={getLoadingSearchFicha} icon={<SearchOutlined />}>
+              Buscar
+            </Button>
+            <Button className="limpar-button" onClick={onReset} icon={<ClearOutlined />}>
+              Limpar
+            </Button>
+          </Form.Item>
+        </Form>
+
+        <div className="table-search-ficha">
+          <Table
+            columns={getColumns}
+            dataSource={getData}
+            rowKey="id"
+            pagination={{ pageSize: 10 }}
+          />
+        </div>
+      </div>
+
+      <Modal
+        open={getVisibleFicha}
+        onCancel={() => setVisibleFicha(false)}
+        footer={null}
+      >
+        {getSelectedFicha && (
+          <div className="modal-ficha-internal">
+            <div className="button-ficha-description">
+              <Button className="dowload-ficha" color="primary" variant="filled" onClick={dowloadFicha} icon={<DownloadOutlined />  }>Baixar Ficha</Button>
+              <Button className="edit-ficha" color="default" variant="filled" onClick={editingFicha} icon={<EditOutlined />}>Editar Ficha</Button>
+              <Popconfirm
+                title="Tem certeza que deseja deletar esta ficha?"
+                onConfirm={deleteFicha}
+                okText="Sim"
+                cancelText="Não"
+              >
+                <Button className="delete-ficha" color="danger" variant="filled" icon={<DeleteOutlined />}>Deletar Ficha</Button>
+              </Popconfirm>
+            </div>
+            <Title className="modal-title" level={2}>Dados Pessoais</Title>
+            <Descriptions column={2} layout="horizontal">
+
+              <Descriptions.Item className="descriptions-item-search-ficha" label="Nome"><Text ellipsis={{ tooltip: true }}>{getSelectedFicha.nome_completo}</Text></Descriptions.Item>
+              <Descriptions.Item className="descriptions-item-search-ficha" label="CPF">
+                <Text ellipsis={{ tooltip: true }}>{getSelectedFicha.cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4')}</Text>
+              </Descriptions.Item>
+              <Descriptions.Item className="descriptions-item-search-ficha" label="Gênero"><Text ellipsis={{ tooltip: true }}>{generoMap[getSelectedFicha.genero]}</Text></Descriptions.Item>
+              <Descriptions.Item className="descriptions-item-search-ficha" label="Data de Nascimento">
+                <Text ellipsis={{ tooltip: true }}>{dayjs(getSelectedFicha.data_nascimento).format('DD/MM/YYYY').toUpperCase()}</Text>
+              </Descriptions.Item>
+              <Descriptions.Item className="descriptions-item-search-ficha" label="Escolaridade"><Text ellipsis={{ tooltip: true }}>{escolaridadeMap[getSelectedFicha.escolaridade]}</Text></Descriptions.Item>
+              <Descriptions.Item className="descriptions-item-search-ficha" label="Atividade"><Text ellipsis={{ tooltip: true }}>{atividadeMap[getSelectedFicha.atividade]}</Text></Descriptions.Item>
+              <Descriptions.Item className="descriptions-item-search-ficha" label="Endereço"><Text ellipsis={{ tooltip: true }}>{getSelectedFicha.endereco}</Text></Descriptions.Item>
+              {getSelectedFicha.complemento && (
+                <Descriptions.Item className="descriptions-item-search-ficha" label="Complemento"><Text ellipsis={{ tooltip: true }}>{getSelectedFicha.complemento}</Text></Descriptions.Item>
+              )}
+              <Descriptions.Item className="descriptions-item-search-ficha" label="Bairro"><Text ellipsis={{ tooltip: true }}>{getSelectedFicha.bairro}</Text></Descriptions.Item>
+              <Descriptions.Item className="descriptions-item-search-ficha" label="CEP">
+                <Text ellipsis={{ tooltip: true }}>{getSelectedFicha.cep.replace(/(\d{5})(\d{3})/, '$1-$2')}</Text>
+              </Descriptions.Item>
+              <Descriptions.Item className="descriptions-item-search-ficha" label="UF"><Text ellipsis={{ tooltip: true }}>{getSelectedFicha.uf}</Text></Descriptions.Item>
+              <Descriptions.Item className="descriptions-item-search-ficha" label="Celular">
+                <Text ellipsis={{ tooltip: true }}>{getSelectedFicha.celular.replace(/(\d{2})(\d{1})(\d{4})(\d{4})/, '($1) $2 $3-$4')}</Text>
+              </Descriptions.Item>
+              {getSelectedFicha.fixo && (
+                <Descriptions.Item className="descriptions-item-search-ficha" label="Fixo">
+                  <Text ellipsis={{ tooltip: true }}>
+                    {getSelectedFicha.fixo.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3')}
+                  </Text>
+                </Descriptions.Item>
+              )}
+              <Descriptions.Item className="descriptions-item-search-ficha" label="Email"><Text ellipsis={{ tooltip: true }}>{getSelectedFicha.email.toLowerCase()}</Text></Descriptions.Item>
+              <Descriptions.Item className="descriptions-item-search-ficha" label="Interesse em ter negócio">
+                <Text ellipsis={{ tooltip: true }}>{getSelectedFicha.interesse_ter_negocio === 'S' ? 'SIM' : 'NÃO'}</Text>
+              </Descriptions.Item>
+              <Descriptions.Item className="descriptions-item-search-ficha" label="Preferência de Aula"><Text ellipsis={{ tooltip: true }}>{getSelectedFicha.preferencia_aula}</Text></Descriptions.Item>
+              <Descriptions.Item className="descriptions-item-search-ficha" label="Meio de Comunicação de Aula"><Text ellipsis={{ tooltip: true }}>{getSelectedFicha.meio_comunicacao_aula}</Text></Descriptions.Item>
+              <Descriptions.Item className="descriptions-item-search-ficha" label="Assistir Online"><Text ellipsis={{ tooltip: true }}>{getSelectedFicha.assistir_online === 'S' ? 'SIM' : 'NÃO'}</Text></Descriptions.Item>
+              {getSelectedFicha.assistir_online === 'S' && getSelectedFicha.if_true_assistir_casa && (
+                <Descriptions.Item className="descriptions-item-search-ficha" label="Se assistir em casa, como?"><Text ellipsis={{ tooltip: true }}>{getSelectedFicha.if_true_assistir_casa}</Text></Descriptions.Item>
+              )}
+            </Descriptions>
+
+            {getSelectedFicha.nome_fantasia && (
+              <Title className="modal-title" level={2}>Dados Jurídicos</Title>
+            )}
+            <Descriptions column={2} layout="horizontal">
+              {getSelectedFicha.nome_fantasia && (
+                <Descriptions.Item className="descriptions-item-search-ficha" label="Nome Fantasia"><Text ellipsis={{ tooltip: true }}>{getSelectedFicha.nome_fantasia}</Text></Descriptions.Item>
+              )}
+              {getSelectedFicha.cnpj && (
+                <Descriptions.Item className="descriptions-item-search-ficha" label="CNPJ">
+                  <Text ellipsis={{ tooltip: true }}>{getSelectedFicha.cnpj.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, '$1.$2.$3/$4-$5')}</Text>
+                </Descriptions.Item>
+              )}
+              {getSelectedFicha.situacao_empresa && (
+                <Descriptions.Item className="descriptions-item-search-ficha" label="Situação da Empresa">
+                  <Text ellipsis={{ tooltip: true }}>{getSelectedFicha.situacao_empresa === 'ATIVA' ? 'ATIVA' : 'NÃO ATIVA'}</Text>
+                </Descriptions.Item>
+              )}
+              {getSelectedFicha.porte_empresa && (
+                <Descriptions.Item className="descriptions-item-search-ficha" label="Porte da Empresa"><Text ellipsis={{ tooltip: true }}>{getSelectedFicha.porte_empresa}</Text></Descriptions.Item>
+              )}
+              {getSelectedFicha.data_abertura && (
+                <Descriptions.Item className="descriptions-item-search-ficha" label="Data de Abertura">
+                  <Text ellipsis={{ tooltip: true }}>{dayjs(getSelectedFicha.data_abertura).format('DD/MM/YYYY').toUpperCase()}</Text>
+                </Descriptions.Item>
+              )}
+              {getSelectedFicha.cnae_principal && (
+                <Descriptions.Item className="descriptions-item-search-ficha" label="CNAE Principal">
+                  <Text ellipsis={{ tooltip: true }}>{getSelectedFicha.cnae_principal.replace(/(\d{4})(\d{1})(\d{2})/, '$1-$2/$3')}</Text>
+                </Descriptions.Item>
+              )}
+              {getSelectedFicha.setor && (
+                <Descriptions.Item className="descriptions-item-search-ficha" label="Setor"><Text ellipsis={{ tooltip: true }}>{getSelectedFicha.setor}</Text></Descriptions.Item>
+              )}
+              {getSelectedFicha.tipo_vinculo && (
+                <Descriptions.Item className="descriptions-item-search-ficha" label="Tipo de Vínculo"><Text ellipsis={{ tooltip: true }}>{getSelectedFicha.tipo_vinculo}</Text></Descriptions.Item>
+              )}
+            </Descriptions>
+
+            <Title className="modal-title" level={2}>Módulo de Capacitação</Title>
+            <Descriptions column={2} layout="horizontal">
+              {getModulosCapacita.find((modulo) => modulo.id === getSelectedFicha.modulo_capacita)?.nome && (
+                <Descriptions.Item className="descriptions-item-search-ficha" label="Módulo de Capacitação">
+                  <Text ellipsis={{ tooltip: true }}>{getModulosCapacita.find((modulo) => modulo.id === getSelectedFicha.modulo_capacita)?.nome.split(": ").join(": ")}</Text>
+                </Descriptions.Item>
+              )}
+            </Descriptions>
+
+          </div>
+        )}
+      </Modal>
+      <Modal
+        open={getIsEditingFicha}
+        onCancel={() => setIsEditingFicha(false)}
+        footer={null}
+      >
+        <Title className="modal-title" level={2}>Editar Ficha</Title>
+        <CreateFicha form={form2} funcEditing={onEditFinish} />
+      </Modal>
+    </>
+  );
+}
+
+export default SearchFicha;
+
+################################################################################
+Arquivo: ./components/collaborator/Modulos/Capacita/CreateFicha.tsx
+import React, { useEffect, useState } from "react";
+import { Form, Input, Button, Select, DatePicker, Typography, message, Checkbox, Popconfirm, Spin } from 'antd';
+import MaskedInput from 'antd-mask-input';
+import axios from 'axios';
+import axiosInstance from "../../services/axiosInstance";
+import '../../css/Modulos/Capacita/CreateFicha.css';
+import type { CheckboxChangeEvent } from 'antd/es/checkbox';
+import type { createFichaPropsType, modulosCapacitaType } from "../../types";
+import { isCPF, isCNPJ, isPhone, isCEP } from 'brazilian-values';
+import { EditOutlined, FileAddOutlined, ClearOutlined } from '@ant-design/icons';
+
+const { Option } = Select;
+const { Title, Text } = Typography;
+
+const CreateFicha: React.FC<createFichaPropsType> = (props) => {
+  if (props.form) {
+    var form = props.form;
+  } else {
+    var [form] = Form.useForm();
+  }
+  const [getIsOnline, setIsOnline] = useState<boolean>(form.getFieldsValue().assistir_online === 'S');
+  const [getIsPJRequired, setIsPJRequired] = useState<boolean>(false);
+  const [getModulosCapacita, setModulosCapacita] = useState<Array<modulosCapacitaType> | []>([])
+  const [getLoading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsOnline(form.getFieldValue('assistir_online') === 'S');
+        if (props.form && form.getFieldsValue().nome_fantasia) {
+          setIsPJRequired(true);
+        }
+        const response = await axiosInstance.get('capacita/modulos_capacita/');
+        setModulosCapacita(response.data);
+      } catch {
+        message.error('Erro ao carregar os módulos da capacitação, recarregue a página.');
+      }
+    };
+    fetchData();
+  }, [props.form ? form.getFieldValue('id') : null]);
+
+  const isValidCNAE = async (cnae: string) => {
+    if (/^\d{7}$/.test(cnae.replace(/\D/g, ''))) {
+      try {
+        const value = await axios.get(`https://servicodados.ibge.gov.br/api/v2/cnae/subclasses/${cnae.replace(/\D/g, '')}`);
+        return Boolean(value.data.length);
+      } catch {
+        message.error('Não foi possível verificar o CNAE. Prossiga apenas se tiver certeza da validade do código.');
+        return true;
+      }
+    } else return Promise.resolve(false);
+  };
+
+  const isValidInput = (input: string) => typeof input === 'string' && (input.trim() !== '' || input === '');
+
+  const fetchAddressByCEP = async (cep: string) => {
+    try {
+      const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
+      if (response.data.erro) {
+        throw new Error('CEP não encontrado');
+      }
+      return response.data;
+    } catch {
+      message.error('Erro ao buscar o endereço. Verifique o CEP.');
+      return null;
+    }
+  };
+
+  const handleCEPBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
+    const cep = typeof e.target.value === 'string' ? e.target.value.replace(/\D/g, '') : null;
+    if (cep && cep.length === 8) {
+      const addressData = await fetchAddressByCEP(cep);
+      if (addressData) {
+        form.setFieldsValue({
+          endereco: addressData.logradouro.toUpperCase(),
+          bairro: addressData.bairro.toUpperCase(),
+          uf: addressData.uf,
+        });
+      }
+    }
+  };
+
+  const handleAssistirCasa = (value: string) => {
+    form.resetFields(['if_true_assistir_casa']);
+    setIsOnline(value === 'S');
+  }
+
+  const handlePJFieldChange = (e: CheckboxChangeEvent) => {
+    const PJFields: Array<string> = [
+      'nome_fantasia',
+      'cnpj',
+      'situacao_empresa',
+      'porte_empresa',
+      'data_abertura',
+      'cnae_principal',
+      'setor',
+      'tipo_vinculo'
+    ];
+    form.resetFields(PJFields);
+    setIsPJRequired(e.target.checked);
+  };
+
+  const onFinish = async () => {
+    setLoading(true)
+    const values = form.getFieldsValue()
+    Object.entries(values).forEach(([key, value]) => {
+      if (!value || value === '(__) ____-____' || (typeof value === 'string' && value.trim() === '')) {
+        values[key] = null
+      } else if (typeof value === 'string') {
+        values[key] = value.trim()
+      }
+    });
+    if (values.data_nascimento) values.data_nascimento = values.data_nascimento.format('YYYY-MM-DD');
+    if (values.data_abertura) values.data_abertura = values.data_abertura.format('YYYY-MM-DD');
+
+    values.cpf = typeof values.cpf === 'string' ? values.cpf.replace(/\D/g, '') : null;
+    values.celular = typeof values.celular === 'string' ? values.celular.replace(/\D/g, '') : null;
+    if (values.cnpj) values.cnpj = typeof values.cnpj === 'string' ? values.cnpj.replace(/\D/g, '') : null;
+    if (values.fixo) values.fixo = typeof values.fixo === 'string' ? values.fixo.replace(/\D/g, '') : null;
+    values.cep = typeof values.cep === 'string' ? values.cep.replace(/\D/g, '') : null;
+    if (values.cnae_principal) values.cnae_principal = typeof values.cnae_principal === 'string' ? values.cnae_principal.replace(/\D/g, '') : null;
+
+    if (!isCPF(values.cpf)) {
+      message.error('CPF inválido');
+      return null;
+    }
+
+    if (!isCNPJ(values.cnpj) && getIsPJRequired) {
+      message.error('CNPJ inválido');
+      return null;
+    }
+
+    const validCNAE = await isValidCNAE(values.cnae_principal);
+
+    if (!validCNAE && getIsPJRequired) {
+      message.error('CNAE inválido');
+      setLoading(false);
+      return null;
+    }
+
+    if (!isPhone(values.celular) && values.celular !== null) {
+      message.error('Celular inválido');
+      setLoading(false);
+      return null;
+    }
+    if (!isPhone(values.fixo) && values.fixo !== null) {
+      message.error('Telefone inválido');
+      setLoading(false);
+      return null;
+    }
+
+    if (!isCEP(values.cep)) {
+      message.error('CEP inválidoj');
+      setLoading(false);
+      return null;
+    }
+
+    if (values.comunicacao) {
+      values.comunicacao = values.comunicacao === 'Sim, eu concordo.' ? 'S' : 'N';
+    }
+    if (props.funcEditing) {
+      props.funcEditing(values);
+      setLoading(false);
+    } else {
+      try {
+        await axiosInstance.post('capacita/fichas/', values);
+        message.success('Ficha criada com sucesso!');
+      } catch {
+        message.error('Erro ao criar ficha, tente novamente.');
+      } finally {
+        setLoading(false);
+      }
+    }
+  };
+
+  const onReset = () => {
+    form.resetFields();
+  };
+
+  return (
+    <Spin spinning={getLoading} tip='Carregando...'>
+      <Form className="form-create-ficha" onFinish={onFinish} layout="vertical" form={form}>
+        <div className="form-create-ficha-partes">
+          <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
+            label="Nome Completo"
+            name="nome_completo"
+            rules={[{ required: true, message: 'Por favor, insira o nome completo' },
+            {
+              validator: (_, value) => {
+                if (!isValidInput(value)) {
+                  return Promise.reject(new Error('Por favor, insira o nome completo'))
+                }
+                return Promise.resolve()
+              }
+            }
+            ]}
+          >
+            <Input onChange={(e) => form.setFieldValue('nome_completo', e.target.value.toUpperCase())} allowClear />
+          </Form.Item>
+
+          <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
+            label="CPF"
+            name="cpf"
+            rules={[
+              { required: true, message: 'Por favor, insira o CPF' },
+              {
+                validator: (_, value) => {
+                  if (!isCPF(value)) {
+                    return Promise.reject(new Error('CPF inválido'));
+                  }
+                  return Promise.resolve();
+                },
+              },
+            ]}
+          >
+            <MaskedInput mask="000.000.000-00" allowClear />
+          </Form.Item>
+
+          <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
+            label="Gênero"
+            name="genero"
+            rules={[{ required: true, message: 'Por favor, selecione o gênero' }]}
+          >
+            <Select showSearch className="form-create-ficha-select" allowClear>
+              <Option value="M">MASCULINO</Option>
+              <Option value="F">FEMININO</Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
+            label="Data de Nascimento"
+            name="data_nascimento"
+            rules={[{ required: true, message: 'Por favor, selecione a data de nascimento' }]}
+          >
+            <DatePicker format="DD/MM/YYYY" allowClear />
+          </Form.Item>
+
+          <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
+            label="Escolaridade"
+            name="escolaridade"
+            rules={[{ required: true, message: 'Por favor, selecione a escolaridade' }]}
+          >
+            <Select showSearch className="form-create-ficha-select" allowClear>
+              <Option value="FUNDAMENTAL">ENSINO FUNDAMENTAL</Option>
+              <Option value="MEDIO">ENSINO MÉDIO</Option>
+              <Option value="GRADUACAO">GRADUAÇÃO</Option>
+              <Option value="POS_GRADUACAO">PÓS-GRADUAÇÃO</Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
+            label="Atividade"
+            name="atividade"
+            rules={[{ required: true, message: 'Por favor, selecione a atividade' }]}
+          >
+            <Select showSearch className="form-create-ficha-select" allowClear>
+              <Option value="ARTESANATO">ARTESANATO</Option>
+              <Option value="AGRICULTURA_URBANA">AGRICULTURA URBANA</Option>
+              <Option value="COMERCIO">COMÉRCIO</Option>
+              <Option value="ESTETICA_E_BELEZA">ESTÉTICA E BELEZA</Option>
+              <Option value="GASTRONOMIA">GASTRONOMIA</Option>
+              <Option value="INDUSTRIA">INDÚSTRIA</Option>
+              <Option value="SERVICO">SERVIÇO</Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
+            label="CEP"
+            name="cep"
+            rules={[
+              { required: true, message: 'Por favor, insira o CEP' },
+              {
+                validator: (_, value) => {
+                  if (!isCEP(value)) {
+                    return Promise.reject(new Error('CEP inválido'));
+                  }
+                  return Promise.resolve();
+                },
+              },
+            ]}
+          >
+            <MaskedInput mask="00000-000" onBlur={handleCEPBlur} allowClear />
+          </Form.Item>
+
+          <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
+            label="Endereço Residencial"
+            name="endereco"
+            rules={[{ required: true, message: 'Por favor, insira o endereço' }, {
+              validator: (_, value) => {
+                if (!isValidInput(value)) {
+                  return Promise.reject('Por favor, insira o endereço');
+                }
+                return Promise.resolve();
+              }
+            }]}
+          >
+            <Input onChange={(e) => form.setFieldValue('endereco', e.target.value.toUpperCase())} allowClear />
+          </Form.Item>
+
+          <Form.Item validateTrigger="onBlur" className="form-create-ficha-item" label="Complemento" name="complemento">
+            <Input onChange={(e) => { if (e.target.value) { form.setFieldValue('complemento', e.target.value.toUpperCase()) } }} allowClear />
+          </Form.Item>
+
+          <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
+            label="Bairro"
+            name="bairro"
+            rules={[{ required: true, message: 'Por favor, insira o bairro' }, {
+              validator: (_, value) => {
+                if (!isValidInput(value)) {
+                  return Promise.reject('Por favor, insira o bairro')
+                }
+                return Promise.resolve()
+              }
+            }]}
+          >
+            <Input onChange={(e) => form.setFieldValue('bairro', e.target.value.toUpperCase())} allowClear />
+          </Form.Item>
+
+          <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
+            label="UF"
+            name="uf"
+            rules={[{ required: true, message: 'Por favor, selecione o estado' }]}
+          >
+            <Select showSearch className="form-create-ficha-select" allowClear>
+              <Option value="AC">ACRE</Option>
+              <Option value="AL">ALAGOAS</Option>
+              <Option value="AP">AMAPÁ</Option>
+              <Option value="AM">AMAZONAS</Option>
+              <Option value="BA">BAHIA</Option>
+              <Option value="CE">CEARÁ</Option>
+              <Option value="DF">DISTRITO FEDERAL</Option>
+              <Option value="ES">ESPÍRITO SANTO</Option>
+              <Option value="GO">GOIÁS</Option>
+              <Option value="MA">MARANHÃO</Option>
+              <Option value="MT">MATO GROSSO</Option>
+              <Option value="MS">MATO GROSSO DO SUL</Option>
+              <Option value="MG">MINAS GERAIS</Option>
+              <Option value="PA">PARÁ</Option>
+              <Option value="PB">PARAÍBA</Option>
+              <Option value="PR">PARANÁ</Option>
+              <Option value="PE">PERNAMBUCO</Option>
+              <Option value="PI">PIAUÍ</Option>
+              <Option value="RJ">RIO DE JANEIRO</Option>
+              <Option value="RN">RIO GRANDE DO NORTE</Option>
+              <Option value="RS">RIO GRANDE DO SUL</Option>
+              <Option value="RO">RONDÔNIA</Option>
+              <Option value="RR">RORAIMA</Option>
+              <Option value="SC">SANTA CATARINA</Option>
+              <Option value="SP">SÃO PAULO</Option>
+              <Option value="SE">SERGIPE</Option>
+              <Option value="TO">TOCANTINS</Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
+            label="Celular"
+            name="celular"
+            rules={[
+              { required: true, message: 'Por favor, insira o número de celular' },
+              {
+                validator: (_, value) => {
+                  if (!isPhone(value)) {
+                    return Promise.reject(new Error('Celular inválido'));
+                  }
+                  return Promise.resolve();
+                },
+              },
+            ]}
+          >
+            <MaskedInput mask="(00) 0 0000-0000" allowClear />
+          </Form.Item>
+
+          <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
+            label="Telefone Fixo"
+            name="fixo"
+            rules={[
+              {
+                validator: (_, value) => {
+                  if (typeof value === 'string') {
+                    if (!isPhone(value) && value !== '(__) ____-____') {
+                      return Promise.reject(new Error('Telefone fixo inválido'));
+                    }
+                  }
+                  return Promise.resolve();
+                },
+              },
+            ]}
+          >
+            <MaskedInput mask="(00) 0000-0000" allowClear />
+          </Form.Item>
+
+          <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
+            label="E-mail"
+            name="email"
+            rules={[
+              { required: true, message: 'Por favor, insira o e-mail' },
+              { type: 'email', message: 'Por favor, insira um e-mail válido' },
+            ]}
+          >
+            <Input onChange={(e) => form.setFieldValue('email', e.target.value.toLowerCase())} allowClear />
+          </Form.Item>
+
+          <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
+            label="Interesse em ter negócio"
+            name="interesse_ter_negocio"
+            rules={[{ required: true, message: 'Por favor, selecione' }]}
+          >
+            <Select showSearch className="form-create-ficha-select" allowClear>
+              <Option value="S">SIM</Option>
+              <Option value="N">NÃO</Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
+            label="Preferência de Aula"
+            name="preferencia_aula"
+            rules={[{ required: true, message: 'Por favor, selecione' }]}
+          >
+            <Select showSearch className="form-create-ficha-select" allowClear>
+              <Option value="ONLINE">ONLINE</Option>
+              <Option value="PRESENCIAL">PRESENCIAL</Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
+            label="Meio de Comunicação para Aula"
+            name="meio_comunicacao_aula"
+            rules={[{ required: true, message: 'Por favor, selecione' }]}
+          >
+            <Select showSearch className="form-create-ficha-select" allowClear>
+              <Option value="WHATSAPP">WHATSAPP</Option>
+              <Option value="EMAIL">EMAIL</Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
+            label="Condições de Assistir Aulas Online"
+            name="assistir_online"
+            rules={[{ required: true, message: 'Por favor, selecione' }]}
+          >
+            <Select showSearch className="form-create-ficha-select" onChange={handleAssistirCasa} allowClear>
+              <Option value="S">SIM</Option>
+              <Option value="N">NÃO</Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
+            label="Por onde assistiria as aulas online"
+            name="if_true_assistir_casa"
+            rules={[
+              {
+                required: getIsOnline,
+                message: 'Por favor, selecione por onde assistiria as aulas online',
+              },
+            ]}
+          >
+            <Select showSearch className="form-create-ficha-select" disabled={!getIsOnline} allowClear>
+              <Option value="COMPUTADOR">COMPUTADOR</Option>
+              <Option value="CELULAR">CELULAR</Option>
+              <Option value="TABLET">TABLET</Option>
+              <Option value="OUTRO">OUTRO</Option>
+            </Select>
+          </Form.Item>
+
+        </div>
+        <Title className="form-create-ficha-title" level={2}>Dados Pessoa Jurídica</Title>
+        <div className="form-create-ficha-title">
+          <Checkbox checked={getIsPJRequired} className='form-create-ficha-checkbox-juridica' onChange={handlePJFieldChange} />
+          <Text type="warning">
+            Marque a caixa ao lado se for preencher os dados jurídicos
+          </Text>
+        </div>
+        <div className="form-create-ficha-partes">
+          <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
+            label="Nome Fantasia"
+            name="nome_fantasia"
+            rules={[{ required: getIsPJRequired, message: 'Por favor, insira o nome fantasia' },
+            {
+              validator: (_, value) => {
+                if (!isValidInput(value) && getIsPJRequired) {
+                  return Promise.reject('Por favor, insira o nome fantasia');
+                }
+                return Promise.resolve();
+              }
+            }
+            ]}
+          >
+            <Input onChange={(e) => form.setFieldValue('nome_fantasia', e.target.value.toUpperCase())} disabled={!getIsPJRequired} allowClear />
+          </Form.Item>
+
+          <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
+            label="CNPJ"
+            name="cnpj"
+            rules={[{ required: getIsPJRequired, message: 'Por favor, insira o CNPJ' },
+            {
+              validator: (_, value) => {
+                if (getIsPJRequired && value) {
+                  if (!isCNPJ(value)) {
+                    return Promise.reject(new Error('CNPJ inválido'));
+                  }
+                }
+                return Promise.resolve();
+              },
+            },
+            ]}
+          >
+            <MaskedInput disabled={!getIsPJRequired} mask="00.000.000/0000-00" allowClear />
+          </Form.Item>
+
+          <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
+            label="Situação da Empresa"
+            name="situacao_empresa"
+            rules={[{ required: getIsPJRequired, message: 'Por favor, selecione a situação da empresa' }]}
+          >
+            <Select showSearch disabled={!getIsPJRequired} className="form-create-ficha-select" allowClear>
+              <Option value="ATIVA">ATIVA</Option>
+              <Option value="N_ATIVA">NÃO ATIVA</Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
+            label="Porte da Empresa"
+            name="porte_empresa"
+            rules={[{ required: getIsPJRequired, message: 'Por favor, selecione o porte da empresa' }]}
+          >
+            <Select showSearch disabled={!getIsPJRequired} className="form-create-ficha-select" allowClear>
+              <Option value="MEI">MICROEMPREENDEDOR INDIVIDUAL (MEI)</Option>
+              <Option value="ME">MICROEMPRESA (ME)</Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
+            label="Data de Abertura"
+            name="data_abertura"
+            rules={[{ required: getIsPJRequired, message: 'Por favor, selecione a data de abertura' },
+            {
+              validator: (_, value) => {
+                if (getIsPJRequired && value) {
+                  if (typeof value === 'string' && value.replace(/\D/g, '').length !== 10) {
+                    return Promise.reject(new Error('A data de abertura deve conter exatamente 8 dígitos numéricos'));
+                  }
+                }
+                return Promise.resolve();
+              },
+            },
+            ]}
+          >
+            <DatePicker disabled={!getIsPJRequired} format="DD/MM/YYYY" allowClear />
+          </Form.Item>
+
+          <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
+            label="CNAE Principal"
+            name="cnae_principal"
+            rules={[{ required: getIsPJRequired, message: 'Por favor, insira o CNAE Principal' },
+            {
+              validator: async (_, value) => {
+                if (getIsPJRequired && value) {
+                  const validCNAE = await isValidCNAE(value)
+                  if (!validCNAE) {
+                    return Promise.reject(new Error('CNAE inválido'));
+                  }
+                }
+                return Promise.resolve();
+              },
+            },
+            ]}
+          >
+            <MaskedInput disabled={!getIsPJRequired} mask="0000-0/00" allowClear />
+          </Form.Item>
+
+          <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
+            label="Setor"
+            name="setor"
+            rules={[{ required: getIsPJRequired, message: 'Por favor, selecione o setor' }]}
+          >
+            <Select showSearch disabled={!getIsPJRequired} className="form-create-ficha-select" allowClear>
+              <Option value="COMERCIO">COMÉRCIO</Option>
+              <Option value="SERVICO">SERVIÇO</Option>
+              <Option value="AGRONEGOCIOS">AGRONEGÓCIOS</Option>
+              <Option value="INDUSTRIA">INDÚSTRIA</Option>
+            </Select>
+          </Form.Item>
+
+          <Form.Item validateTrigger="onBlur" className="form-create-ficha-item"
+            label="Tipo de Vínculo"
+            name="tipo_vinculo"
+            rules={[{ required: getIsPJRequired, message: 'Por favor, selecione o tipo de vínculo' }]}
+          >
+            <Select showSearch disabled={!getIsPJRequired} className="form-create-ficha-select" allowClear>
+              <Option value="REPRESENTANTE">REPRESENTANTE</Option>
+              <Option value="RESPONSAVEL">RESPONSÁVEL</Option>
+            </Select>
+          </Form.Item>
+        </div>
+        <Title className="form-create-ficha-title" level={2}>Módulos de Capacitação</Title>
+        <div className="form-create-ficha-partes">
+          <Form.Item validateTrigger="onBlur" className="form-create-ficha-item" label="Selecione um Módulo" name="modulo_capacita" rules={[{ required: true, message: "Selecione um Módulo" }]}>
+            <Select className="form-create-ficha-select" allowClear showSearch options={getModulosCapacita.map((modulo: modulosCapacitaType) => {
+              return { value: modulo.id, label: modulo.nome }
+            })} />
+          </Form.Item>
+        </div>
+        <div className="form-create-ficha-button">
+          <Form.Item validateTrigger="onBlur" className="form-create-ficha-item form-create-ficha-button" >
+            {
+              props.form ? <Popconfirm
+                title="Tem certeza que deseja confirmar a edição"
+                onConfirm={() => onFinish()}
+                okText="Sim"
+                cancelText="Não"
+              >
+                <Button type="primary" loading={getLoading} icon={<EditOutlined />}>Editar</Button>
+              </Popconfirm> : <Button type="primary" htmlType="submit" loading={getLoading} icon={<FileAddOutlined />}>Criar</Button>
+            }
+            <Button className="limpar-button" onClick={onReset} icon={<ClearOutlined />}>Limpar</Button>
+          </Form.Item>
+        </div>
+      </Form>
+    </Spin>
+  );
+};
+
+export default CreateFicha;
+
+################################################################################
+Arquivo: ./components/collaborator/Modulos/Administrator/CreatePerfil.tsx
+import React from "react";
+
+const CreatePerfil = () => {
+  return (
+    <h1>teste criar perfil</h1>
+  )
+}
+
+export default CreatePerfil;
+
+################################################################################
+Arquivo: ./components/collaborator/Modulos/Administrator/SearchUser.tsx
+import React from "react";
+
+const SearchUser = () => {
+  return (
+    <h1>teste procurar user</h1>
+  )
+}
+
+export default SearchUser;
+
+################################################################################
+Arquivo: ./components/collaborator/Modulos/Administrator/SearchPerfil.tsx
+import React, { useState, useEffect } from "react";
+import { Form, Input, Button, Select, DatePicker, Table, message, Modal, Descriptions, Popconfirm, Typography, Spin } from 'antd';
+import MaskedInput from 'antd-mask-input';
+import axiosInstance from "../../services/axiosInstance";
+import dayjs from 'dayjs';
+import type { modulosCapacitaType } from "../../types";
+import { formToJSON } from "axios";
+
+const SearchPerfil = () => {
+  const [form] = Form.useForm();
+
+  const onFinish = () => {}
+
+  return (
+    <>
+      <div className="search-perfil">
+        <Form form={form} className="form-search-perfil" onFinish={onFinish}>
+          <div className="form-perfil-ficha-minus-button">
+            <Form.Item label='Nome do Perfil' name='nome-perfil' className="form-search-perfil-nome-perfil form-search-perfil-item">
+              <Input onChange={e => form.setFieldValue('nome-perfil', e.target.value.toUpperCase())} />
+            </Form.Item>
+          </div>
+        </Form>
+      </div>
+    </>
+  )
+}
+
+export default SearchPerfil;
+
+################################################################################
+Arquivo: ./components/collaborator/Modulos/Administrator/CreateUser.tsx
+import React from "react";
+
+const CreateUser = () => {
+  return (
+    <h1>teste criar user</h1>
+  )
+}
+
+export default CreateUser;
+
+################################################################################
+Arquivo: ./components/collaborator/services/logout.tsx
+import axiosInstance from "./axiosInstance";
+
+const logout = async () => {
+  localStorage.removeItem('userId');
+  localStorage.removeItem('perfilName');
+  if (window.location.pathname !== '/colaborador/login') {
+    await axiosInstance.post('token/logout/');
+    window.location.href = '/colaborador/login';
+  }
+};
+
+export default logout;
+
+################################################################################
+Arquivo: ./components/collaborator/services/perfisObject.tsx
+import { useEffect, useState } from "react";
+import axiosInstance from "./axiosInstance";
+import logout from "./logout";
+
+const perfisObject = () => {
+  const [getPerfis, setPerfis] = useState<{ [key: string]: Array<string> } | { [key: string]: null }>({ 'null': null });
+  const userId = localStorage.getItem('userId');
+
+  useEffect(() => {
+    const fetchPerfisData = async () => {
+      if (userId) {
+        try {
+          const user = await axiosInstance.get(`users/${userId}/`);
+          const perfisLinks = user.data.groups;
+          const perfisNamePermissions: { [key: string]: Array<string> } = {};
+
+          const fetchPerfis = perfisLinks.map(async (perfilLink: string) => {
+            const perfil = await axiosInstance.get(perfilLink);
+            const permissionCodeName: Array<string> = [];
+            const fetchPermissions = perfil.data.permissions.map(async (permission: string) => {
+              const response = await axiosInstance.get(permission);
+              permissionCodeName.push(response.data.codename);
+            });
+
+            await Promise.all(fetchPermissions);
+            perfisNamePermissions[perfil.data.name] = permissionCodeName;
+          });
+
+          await Promise.all(fetchPerfis);
+
+          if (user.data.is_superuser) {
+            perfisNamePermissions['SUPER USUÁRIO'] = ['SUPER USUÁRIO'];
+          }
+
+          setPerfis(perfisNamePermissions);
+        } catch {
+          logout();
+        }
+      } else {
+        logout();
+      }
+    };
+
+    fetchPerfisData();
+  }, []);
+
+  return getPerfis;
+};
+
+export default perfisObject;
+
+################################################################################
+Arquivo: ./components/collaborator/services/axiosInstance.tsx
+import axios from "axios";
+import logout from "./logout";
+
+const url = process.env.REACT_APP_URL || 'http://localhost:8002/api/';
+
+const axiosInstance = axios.create({
+  baseURL: url,
+  withCredentials: true,
+});
+
+axiosInstance.interceptors.response.use(
+  response => response,
+  async error => {
+    const originalRequest = error.config;
+
+    if (error.response && error.response.status === 401 && !originalRequest.url.includes('token/refresh/')) {
+      try {
+        await axiosInstance.post('token/refresh/');
+        return axiosInstance(originalRequest);
+      } catch {
+        logout();
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
+
+export default axiosInstance;
+
+################################################################################

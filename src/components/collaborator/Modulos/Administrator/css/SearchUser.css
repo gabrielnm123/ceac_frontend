@@ -1,0 +1,11 @@
+
+.search-user-container {
+  padding: 20px;
+}
+.search-user-input {
+  width: 300px;
+  margin-bottom: 20px;
+}
+.search-user-button {
+  margin-left: 10px;
+}
