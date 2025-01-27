@@ -13,7 +13,7 @@ const itemCapacita = (
   setBaseTitle: React.Dispatch<React.SetStateAction<string>>,
   permissions: string[]
 ): menuItemType | null => {
-  const items = {
+  const items: { [key: string]: { label: string; key: string; icon: JSX.Element; onClick: () => void } } = {
     searchFicha: {
       label: 'Gerenciar Fichas',
       key: 'searchFicha',
@@ -38,7 +38,7 @@ const itemCapacita = (
 
   if (permissions.includes('SUPER USUÁRIO')) {
     for (const key in items) {
-      menuItem.push(items.key);
+      menuItem.push(items[key]);
     }
   } else {
     for (const item of Object.values(items)) {
