@@ -6,9 +6,9 @@ import {
   SettingOutlined,
   TeamOutlined
 } from '@ant-design/icons'
-import SearchUser from "../Modulos/Administrator/SearchUser";
+import ManageUser from "../Modulos/Administrator/ManageUser";
 import CreateUser from "../Modulos/Administrator/CreateUser";
-import SearchPerfil from "../Modulos/Administrator/SearchPerfil";
+import ManagePerfil from "../Modulos/Administrator/ManagePerfil";
 import CreatePerfil from "../Modulos/Administrator/CreatePerfil";
 import type { menuItemType } from '../types';
 
@@ -18,12 +18,12 @@ const itemAdministrator = (
   permissions: string[]
 ): menuItemType | null => {
   const items = {
-    searchUser: {
+    manageUser: {
       label: 'Gerenciar Operadores',
-      key: 'searchUser',
+      key: 'manageUser',
       icon: <UserOutlined />,
       onClick: () => {
-        setBaseContent(<SearchUser />);
+        setBaseContent(<ManageUser />);
         setBaseTitle('Gerenciar Operadores');
       }
     },
@@ -36,12 +36,12 @@ const itemAdministrator = (
         setBaseTitle('Criar Operador');
       }
     },
-    searchPerfil: {
+    managePerfil: {
       label: 'Gerenciar Perfis',
-      key: 'searchPerfil',
+      key: 'managePerfil',
       icon: <TeamOutlined />,
       onClick: () => {
-        setBaseContent(<SearchPerfil />);
+        setBaseContent(<ManagePerfil />);
         setBaseTitle('Gerenciar Perfis de Operadores');
       }
     },

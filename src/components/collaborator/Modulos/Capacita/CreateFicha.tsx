@@ -3,7 +3,7 @@ import { Form, Input, Button, Select, DatePicker, Typography, message, Checkbox,
 import MaskedInput from 'antd-mask-input';
 import axios from 'axios';
 import axiosInstance from "../../services/axiosInstance";
-import '../../css/Modulos/Capacita/CreateFicha.css';
+import './css/CreateFicha.css';
 import type { CheckboxChangeEvent } from 'antd/es/checkbox';
 import type { createFichaPropsType, modulosCapacitaType } from "../../types";
 import { isCPF, isCNPJ, isPhone, isCEP } from 'brazilian-values';

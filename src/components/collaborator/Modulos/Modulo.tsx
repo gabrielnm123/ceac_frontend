@@ -6,11 +6,11 @@ import itemUser from "../menuItems/itemUser";
 import itemCapacita from "../menuItems/itemCapacita";
 import itemAdministrator from "../menuItems/itemAdministrator";
 import type { menuItemType } from "../types";
-import SearchFicha from "./Capacita/SearchFicha";
+import ManageFicha from "./Capacita/ManageFicha";
 import CreateFicha from "./Capacita/CreateFicha";
-import SearchUser from "./Administrator/SearchUser";
+import ManageUser from "./Administrator/ManageUser";
 import CreateUser from "./Administrator/CreateUser";
-import SearchPerfil from "./Administrator/SearchPerfil";
+import ManagePerfil from "./Administrator/ManagePerfil";
 import CreatePerfil from "./Administrator/CreatePerfil";
 
 const Modulo: React.FC = () => {
@@ -48,24 +48,24 @@ const Modulo: React.FC = () => {
       setItems(items);
 
       switch (true) {
-        case permissions.includes('SUPER USUÁRIO') || permissions.includes('searchFicha'):
-          setBaseContent(<SearchFicha />);
+        case permissions.includes('SUPER USUÁRIO') || permissions.includes('manageFicha'):
+          setBaseContent(<ManageFicha />);
           setBaseTitle('Gerenciar Fichas de Inscrição de Capacitação');
           break;
         case permissions.includes('createFicha'):
           setBaseContent(<CreateFicha />);
           setBaseTitle('Criar Ficha de Inscrição de Capacitação');
           break;
-        case permissions.includes('searchUser'):
-          setBaseContent(<SearchUser />);
+        case permissions.includes('manageUser'):
+          setBaseContent(<ManageUser />);
           setBaseTitle('Gerenciar Operadores');
           break;
         case permissions.includes('createUser'):
           setBaseContent(<CreateUser />);
           setBaseTitle('Criar Operador');
           break;
-        case permissions.includes('searchPerfil'):
-          setBaseContent(<SearchPerfil />);
+        case permissions.includes('managePerfil'):
+          setBaseContent(<ManagePerfil />);
           setBaseTitle('Gerenciar Perfis de Operadores');
           break;
         case permissions.includes('createPerfil'):

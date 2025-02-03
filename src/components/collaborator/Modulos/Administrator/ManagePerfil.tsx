@@ -2,9 +2,9 @@
 import React, { useState, useEffect } from "react";
 import { Table, Input, Button, message, Spin } from "antd";
 import axiosInstance from "../../services/axiosInstance";
-import "./css/SearchPerfil.css";
+import "./css/ManagePerfil.css";
 
-const SearchPerfil: React.FC = () => {
+const ManagePerfil: React.FC = () => {
   const [loading, setLoading] = useState(false);
   interface Profile {
     id: number;
@@ -53,4 +53,4 @@ const SearchPerfil: React.FC = () => {
   );
 };
 
-export default SearchPerfil;
+export default ManagePerfil;

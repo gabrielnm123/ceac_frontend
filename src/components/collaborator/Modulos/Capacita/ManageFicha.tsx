@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Form, Input, Button, Select, DatePicker, Table, message, Modal, Descriptions, Popconfirm, Typography } from 'antd';
 import MaskedInput from 'antd-mask-input';
 import axiosInstance from "../../services/axiosInstance";
-import '../../css/Modulos/Capacita/SearchFicha.css';
+import './css/ManageFicha.css';
 import dayjs from 'dayjs';
 import type { modulosCapacitaType } from "../../types";
 import CreateFicha from "./CreateFicha";
@@ -34,7 +34,7 @@ const atividadeMap: { [key: string]: string } = {
   'SERVICO': 'SERVIÇO'
 };
 
-const SearchFicha: React.FC = () => {
+const ManageFicha: React.FC = () => {
   const [getLoadingSearchFicha, setLoadingSearchFicha] = useState<boolean>(false);
   const { setSpinning } = useSpinning();
   const [getData, setData] = useState<any[]>([]);
@@ -468,4 +468,4 @@ const SearchFicha: React.FC = () => {
   );
 }
 
-export default SearchFicha;
+export default ManageFicha;

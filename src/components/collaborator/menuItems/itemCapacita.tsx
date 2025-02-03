@@ -4,7 +4,7 @@ import {
   UnorderedListOutlined,
   FormOutlined
 } from '@ant-design/icons';
-import SearchFicha from '../Modulos/Capacita/SearchFicha';
+import ManageFicha from '../Modulos/Capacita/ManageFicha';
 import CreateFicha from '../Modulos/Capacita/CreateFicha';
 import type { menuItemType } from '../types';
 
@@ -14,12 +14,12 @@ const itemCapacita = (
   permissions: string[]
 ): menuItemType | null => {
   const items: { [key: string]: { label: string; key: string; icon: JSX.Element; onClick: () => void } } = {
-    searchFicha: {
+    manageFicha: {
       label: 'Gerenciar Fichas',
-      key: 'searchFicha',
+      key: 'manageFicha',
       icon: <UnorderedListOutlined />,
       onClick: () => {
-        setBaseContent(<SearchFicha />);
+        setBaseContent(<ManageFicha />);
         setBaseTitle('Gerenciar Fichas de Inscrição de Capacitação');
       }
     },

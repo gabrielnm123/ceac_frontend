@@ -2,9 +2,9 @@
 import React, { useState, useEffect } from "react";
 import { Table, Input, Button, message, Spin } from "antd";
 import axiosInstance from "../../services/axiosInstance";
-import "./css/SearchUser.css";
+import "./css/ManageUser.css";
 
-const SearchUser: React.FC = () => {
+const ManageUser: React.FC = () => {
   const [loading, setLoading] = useState(false);
   interface User {
     id: number;
@@ -61,4 +61,4 @@ const SearchUser: React.FC = () => {
   );
 };
 
-export default SearchUser;
+export default ManageUser;
