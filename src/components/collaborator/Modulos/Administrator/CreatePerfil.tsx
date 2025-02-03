@@ -1,5 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Form, Input, Button, Select, message, Spin, Typography } from "antd";
+import { Form, Input, Button, Select, message, Spin, Typography, Breadcrumb } from "antd";
+import {
+  UserAddOutlined,
+  UserOutlined,
+  UsergroupAddOutlined,
+  SettingOutlined,
+  FormOutlined,
+  ReadOutlined,
+  UnorderedListOutlined,
+  TeamOutlined
+} from '@ant-design/icons'
 import axiosInstance from "../../services/axiosInstance";
 import "./css/CreatePerfil.css";
 
@@ -13,24 +23,8 @@ const CreatePerfil: React.FC = () => {
     name: string;
   }
 
-  const [permissions, setPermissions] = useState<Permission[]>([]);
   const [form] = Form.useForm();
 
-  // Fetch permissions from API
-  useEffect(() => {
-    const fetchPermissions = async () => {
-      try {
-        const response = await axiosInstance.get("permissions/");
-        setPermissions(response.data);
-      } catch (error) {
-        message.error("Erro ao carregar permissões.");
-      }
-    };
-
-    fetchPermissions();
-  }, []);
-
-  // Handle form submission
   const onFinish = async (values: any) => {
     setLoading(true);
     try {
@@ -75,11 +69,12 @@ const CreatePerfil: React.FC = () => {
               allowClear
               className="create-perfil-select"
             >
-              {permissions.map((permission) => (
-                <Option key={permission.id} value={permission.id}>
-                  {permission.name}
-                </Option>
-              ))}
+              <Option value='manageUser'><Breadcrumb items={[{title: <><SettingOutlined /><span>Administrador</span></>}, {title: <><UserOutlined /><span>Gerenciar Operadores</span></>}]}></Breadcrumb> </Option>
+              <Option value='createUser'><Breadcrumb items={[{title: <><SettingOutlined /><span>Administrador</span></>}, {title: <><UserAddOutlined /><span>Criar Operador</span></>}]}></Breadcrumb> </Option>
+              <Option value='managePerfil'><Breadcrumb items={[{title: <><SettingOutlined /><span>Administrador</span></>}, {title: <><TeamOutlined /><span>Gerenciar Perfis</span></>}]}></Breadcrumb> </Option>
+              <Option value='createPerfil'><Breadcrumb items={[{title: <><SettingOutlined /><span>Administrador</span></>}, {title: <><UsergroupAddOutlined /><span>Criar Perfil</span></>}]}></Breadcrumb> </Option>
+              <Option value='mangeFicha'><Breadcrumb items={[{title: <><ReadOutlined /><span>Capacita</span></>}, {title: <><UnorderedListOutlined /><span>Gerenciar Fichas</span></>}]}></Breadcrumb> </Option>
+              <Option value='createFicha'><Breadcrumb items={[{title: <><ReadOutlined /><span>Capacita</span></>}, {title: <><FormOutlined /><span>Criar Ficha</span></>}]}></Breadcrumb> </Option>
             </Select>
           </Form.Item>
 

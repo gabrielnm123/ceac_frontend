@@ -18,18 +18,18 @@ const itemAdministrator = (
   permissions: string[]
 ): menuItemType | null => {
   const items = {
-    manageUser: {
+    manageOperator: {
       label: 'Gerenciar Operadores',
-      key: 'manageUser',
+      key: 'manageOperator',
       icon: <UserOutlined />,
       onClick: () => {
         setBaseContent(<ManageUser />);
         setBaseTitle('Gerenciar Operadores');
       }
     },
-    createUser: {
+    createOperator: {
       label: 'Criar Operador',
-      key: 'createUser',
+      key: 'createOperator',
       icon: <UserAddOutlined />,
       onClick: () => {
         setBaseContent(<CreateUser />);

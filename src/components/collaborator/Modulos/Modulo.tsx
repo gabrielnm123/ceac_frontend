@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import perfisObject from "../services/perfisObject";
 import { useNavigate } from "react-router-dom";
 import Base from "../Base";
-import itemUser from "../menuItems/itemUser";
+import itemOperator from "../menuItems/itemOperator";
 import itemCapacita from "../menuItems/itemCapacita";
 import itemAdministrator from "../menuItems/itemAdministrator";
 import type { menuItemType } from "../types";
@@ -35,7 +35,7 @@ const Modulo: React.FC = () => {
 
   useEffect(() => {
     if (permissions) {
-      const user = itemUser(setBaseContent, setBaseTitle);
+      const user = itemOperator(setBaseContent, setBaseTitle);
       const capacita = itemCapacita(setBaseContent, setBaseTitle, permissions);
       const administrator = itemAdministrator(setBaseContent, setBaseTitle, permissions);
       const itemsList = [user, capacita, administrator];

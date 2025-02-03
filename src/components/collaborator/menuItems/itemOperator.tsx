@@ -9,7 +9,7 @@ import ChangeRegistration from '../Modulos/User/ChangeRegistration';
 import logout from '../services/logout';
 import type { menuItemType } from '../types';
 
-const itemUser = (
+const itemOperator = (
   setBaseContent: React.Dispatch<React.SetStateAction<React.ReactNode>>,
   setBaseTitle: React.Dispatch<React.SetStateAction<string>>,
 ): menuItemType => {
@@ -43,4 +43,4 @@ const itemUser = (
   };
 };
 
-export default itemUser;
+export default itemOperator;

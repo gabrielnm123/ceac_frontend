@@ -4,7 +4,7 @@ import Base from './collaborator/Base';
 import Login from './collaborator/Login';
 import Perfil from './collaborator/Perfil';
 import Modulo from './collaborator/Modulos/Modulo';
-import itemUser from './collaborator/menuItems/itemUser';
+import itemOperator from './collaborator/menuItems/itemOperator';
 import dayjs from 'dayjs';
 import 'dayjs/locale/pt-br';
 import { SpinningProvider } from './collaborator/Provider/Spinning';
@@ -29,7 +29,7 @@ const App: React.FC = () => {
       <SpinningProvider>
         <Routes>
           <Route path='colaborador/login' element={<Base content={<Login />} title='Autenticação' />} />
-          <Route path='colaborador/perfil' element={<Base content={getBaseContent} title={getBaseTitle} menuItem={[itemUser(setBaseContent, setBaseTitle)]} />} />
+          <Route path='colaborador/perfil' element={<Base content={getBaseContent} title={getBaseTitle} menuItem={[itemOperator(setBaseContent, setBaseTitle)]} />} />
           {
             perfilName ? <Route path={`colaborador/${perfilName}`} element={<Modulo />} /> : null
           }
