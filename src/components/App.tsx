@@ -33,7 +33,7 @@ const App: React.FC = () => {
           {
             perfilName ? <Route path={`colaborador/${perfilName}`} element={<Modulo />} /> : null
           }
-          <Route path="*" element={<Navigate to="colaborador/perfil" />} />
+          <Route path="*" element={<Navigate to="colaborador/login" />} />
         </Routes>
       </SpinningProvider>
     </BrowserRouter>
