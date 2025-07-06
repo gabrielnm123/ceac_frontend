@@ -1,0 +1,62 @@
+.layout-base {
+  position: absolute;
+  top: 0;
+  left: 0;
+  min-width: 100%;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.header-base {  
+  display: flex;
+  align-items: center;
+  background-color: #1677ff;
+  min-height: 85px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
+.logo-base {
+  width: auto;
+  height: 75px;
+}
+
+.menu-base {
+  flex: 1;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.ant-menu {
+  background-color: #1677ff !important;
+}
+
+.content-base {
+  display: flex;
+  flex-direction: column;
+  padding: 0 48px;
+}
+
+.content-breadcrumb-base {
+  margin: 16px 0;
+}
+
+.content-div1-base {
+  display: block;
+  align-self: center;
+  padding: 24px;
+  min-width: 25%;
+}
+
+.footer-base {
+  text-align: center;
+}
+
+.title {
+  display: flex;
+  justify-content: center;
+  margin: 20px;
+}
